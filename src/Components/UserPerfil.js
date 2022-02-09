@@ -11,13 +11,13 @@ import Footer from './footer';
 
 var token = localStorage.getItem('tokenClient');
 var username = localStorage.getItem('usernameClient');
-
+var img = '';
 
 
 
 const headers = {
-    "Content-Type": "multipart/form-data",
-    'Authorization': `Token ${token}`
+    'Authorization': `Token ${token}`,
+    "Content-Type": "multipart/form-data"
 };
 
 
@@ -25,7 +25,7 @@ const UserPerfil = () =>{
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    const [selectedFile, setSelectedFile] = React.useState(null);
+    const [selectedFile, setSelectedFile] = useState("");
 
     const [inputs, setInputs] = useState({
         email: "",
@@ -42,7 +42,16 @@ const UserPerfil = () =>{
           axios.get('https://yellowrabbit.herokuapp.com/users/api/my-account/'+username+'/',{ headers })
           .then((response) => {
             //setInputs(response.data[0]);
-            console.log(response.data);
+            console.log(response.data.profile_picture);
+            if(response.data.profile_picture != null){
+                img = response.data.profile_picture;
+                console.log("No es null");
+                document.getElementById("ImgProfile").style.display = "none"
+
+            }else{
+                console.log("Es null");
+                document.getElementById("ImgProfileLoad").style.display = "none"
+            }
             setInputs(response.data);
 
           })
@@ -55,16 +64,22 @@ const UserPerfil = () =>{
         }// eslint-disable-next-line react-hooks/exhaustive-deps
       },[setInputs])
       
-
   const handleSubmitImage = (event) => {
     event.preventDefault()
-    const formData = new FormData();
-    formData.append("image", selectedFile);
+    let formData = new FormData();
+    formData.append('image', selectedFile)
     console.log(selectedFile);
+    console.log(formData.getAll('image'));
+    
     try {
-        axios.post('https://yellowrabbit.herokuapp.com/users/api/update/profile-picture/'+username+'/', {
-            data: formData,
-        },{headers})
+        axios.post('https://yellowrabbit.herokuapp.com/users/api/update/profile-picture/'+username+'/', 
+        formData    
+        ,{headers})
+        .then((response) => {
+            console.log(response);
+            window.location.href = "/user/mi-perfil";
+
+        })
     } catch(error) {
       console.log(error)
     }
@@ -135,7 +150,8 @@ const UserPerfil = () =>{
                         <div className='row'>
                             <div className='col-sm-4'>
                                 <div style={{width:"100%",backgroundColor:"#DFDFDF"}}>
-                                    <IconPerfil style={{width:"100%",height:"100%"}}></IconPerfil>
+                                    <IconPerfil id="ImgProfile" style={{width:"100%",height:"100%"}}></IconPerfil>
+                                    <img id="ImgProfileLoad" alt="Imagen Perfil Usuario" src={img} style={{width:"100%",height:"100%"}}></img>
                                 </div>
                             </div>
                             <div className='col-sm-8' >
@@ -210,8 +226,8 @@ const UserPerfil = () =>{
             <div>
                 <h4>Cambiar foto de perfil</h4>
                 <form onSubmit={handleSubmitImage}>
-                <input type="file" onChange={handleFileSelect}/>
-                <input type="submit" value="Upload File" />
+                <input type="file" onChange={handleFileSelect}/><br></br><br></br>
+                <input type="submit" value="Upload File" style={{backgroundColor:"#E94E1B",borderRadius:5,borderWidth:0,color:"white"}}/>
                 </form>
             </div>
             </Modal.Body>
