@@ -6,15 +6,18 @@ import Datos from './Components/Datos';
 import Contacto from './Components/Contacto';
 import Blog from './Components/Blog';
 import Producto from './Components/Productos';
+import ProductoEspecifico from './Components/ProductoEspecifico';
 import UserPerfil from './Components/UserPerfil';
 import UserOrders from './Components/UserOrders';
-import UserWhiteList from './Components/UserWhiteList';
+import UserWishlist from './Components/UserWishlist';
 import UserOrderDetails from './Components/UserOrderDetails';
-
+import UserCarShop from './Components/UserCarShop';
+import UserDirecciones from './Components/UserDirecciones';
 
 function App() {
   return (
     <div className="App" style={{width:"100%", height:"100vh"}}>
+        <p>Hola</p>
       <Router>        
         <Switch>
 
@@ -34,6 +37,9 @@ function App() {
             <Producto></Producto>
         </Route>
 
+        <Route path="/article/details/:idproduct/">
+            <ProductoEspecifico></ProductoEspecifico>
+        </Route>
 
 
         <Route path="/user/mi-perfil">
@@ -43,16 +49,21 @@ function App() {
             <UserOrders></UserOrders>
         </Route>
 
-        <Route path="/user/mi-whitelist">
-            <UserWhiteList></UserWhiteList>
+        <Route path="/user/mi-wishlist">
+            <UserWishlist></UserWishlist>
         </Route>
 
         <Route path="/detallesPedido/:idorder/">
             <UserOrderDetails></UserOrderDetails>
         </Route>
-        <Route path="/user/mi-whitlist">
-            <UserWhiteList></UserWhiteList>
+        <Route path="/user/mi-carrito">
+            <UserCarShop></UserCarShop>
         </Route>
+
+        <Route path="/user/mis-direcciones">
+            <UserDirecciones></UserDirecciones>
+        </Route>
+
 
 
         </Switch>

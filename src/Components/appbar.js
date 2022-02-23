@@ -9,7 +9,6 @@ import { ReactComponent as IconPerfil } from '../images/icons/IconPerfil.svg';
 import { Button,Modal,Tab,Tabs,Col,Form,Row } from 'react-bootstrap';
 import axios from 'axios';
 
-const urlregistro = "https://yellowrabbit.herokuapp.com/users/api/register-customer/";
 const urlLogin = "https://yellowrabbit.herokuapp.com/access/api/login/";
 
 const Appbar = () =>{
@@ -153,8 +152,8 @@ const Appbar = () =>{
                             <a className="nav-link active dropdown-toggle" aria-current="page" href="http://localhost:3000/#" data-bs-toggle="dropdown" aria-expanded="false"><IconPerfil style={{width:30,height:"100%",marginRight:10}}/>{localStorage.getItem('username')} </a>
                             <ul className="dropdown-menu" aria-labelledby="dropdownMenu2">
                                 <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-perfil">Mi Perfil</a></li>
-                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mis/pedidos">Mis pedidos</a></li>
-                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-whitlist">WhiteList</a></li>
+                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mis-pedidos">Mis pedidos</a></li>
+                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-wishlist">Mi Wishlist</a></li>
                                 <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-carrito">Carrito de compras</a></li>
                                 <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mis-compras">Mis compras</a></li>
                                 <hr style={{height:"2px",backgroundColor:"#EB5929",opacity:1}}></hr>

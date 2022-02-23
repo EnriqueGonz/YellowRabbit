@@ -8,7 +8,7 @@ import Appbar from './appbar';
 import Footer from './footer';
 
 import axios from 'axios';
-import { MdOutlineFavorite } from "react-icons/md";
+import { MdOutlineFavorite,MdAddShoppingCart } from "react-icons/md";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -63,7 +63,8 @@ const Productos = () =>{
     useEffect(() =>{  
         try {
           axios.post('https://yellowrabbit.herokuapp.com/products/api/all-products/',{
-            product_name: ""
+            product_name: "",
+            category_name:""
           })
           .then((response) => {
             console.log(response);
@@ -103,9 +104,33 @@ const Productos = () =>{
         } catch (error) {
             console.log(' . ', error);
         }
-          
+    }
 
-        
+    function methodAddCarshop(id) {
+        console.log(id);
+        console.log(idusuario);
+
+        try {
+            axios.post('https://yellowrabbit.herokuapp.com/shoppingcart/api/add/',{
+            user: idusuario,
+            products:id,
+            amount: 1
+            },{headers})
+            .then((response) => {
+                console.log(response);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        } catch (error) {
+            console.log(' . ', error);
+        }
+    }
+
+    function methodShowProduct(id) {
+        console.log(id);
+        window.location = '/article/details/'+id;
+
     }
 
     return(    
@@ -136,40 +161,29 @@ const Productos = () =>{
 
         <div className='container'>
             <center>
-            <div style={{width:"90%",textAlign:"justify"}}>
+            <div style={{width:"100%",textAlign:"justify"}}>
                 <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:"bold",color:"#EB5929"}}>Catalogo de productos</p>
-                <div>
+                <div className="grid-container-productos">
                     {listProductos.map((item) => (
-                        <div key={item.id} style={{marginBottom:10}} className="col-sm-12">
-                            <div  style={{backgroundColor:"#FFE9EB",borderRadius:20,height:"100%"}} className="card">
-                            <div className="card-body">
-                            
-                            <div className='row'>
-                                <div className='col-sm-4'>
-                                    <img alt="producto" style={{width:"100%"}} src={ 'https://yellowrabbitbucket.s3.amazonaws.com/' + item.image_one}></img>
+                        <div className="grid-item" key={item.id}>
+                            <div className="column" style={{height:"100%"}}>
+                                <div className="card" >
+                                    <div className="card__content">
+                                        <div className='row' style={{height:"50%"}}>
+                                            <img onClick = {() => { methodShowProduct(item[0][0]["id"]);} } alt={'Img'} style={{height:"100%"}} src={'https://yellowrabbitbucket.s3.amazonaws.com/'+item[0][0]["image_one"]}></img>    
+                                        </div>
+                                        <div className='row' style={{height:"50%"}}>
+                                            <p onClick = {() => { methodShowProduct(item[0][0]["id"]);} } className="card__info" style={{marginBottom:0}}>{item[0][0]["product_name"]}</p>
+                                            <p className="card__info"><span className='simbol_price'>$</span>{item[0][0]["price"]} <span className='simbol_price'>+ envio</span></p>
+                                            <div className='container' style={{textAlign:"right"}}>
+                                                <MdOutlineFavorite style={{marginLeft:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodName(item[0][0]["id"]);} } ></MdOutlineFavorite>
+                                                <MdAddShoppingCart style={{marginLeft:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodAddCarshop(item[0][0]["id"]);} } ></MdAddShoppingCart>
+                                                <ToastContainer></ToastContainer>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
                                 </div>
-                                <div className='col-sm-8'>
-                                    <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:"bold",color:"#EB5929"}}>{item.product_name}</p>
-                                    <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>{item.description}</p>
-                                    <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>Precio: ${item.price}</p>
-                                    <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>Disponible: {item.unit_of_existence}</p>
-                                </div>
-
-                            </div>
-
-                            </div>
-                            <div className="card-footer">
-                                <div style={{textAlign:"right"}} className="contianer">
-                                <button onClick = {() => { methodName(item.id);} }  className='btn corazon'><MdOutlineFavorite className='colorear'></MdOutlineFavorite></button>
-                                <button style={{borderRadius:15,backgroundColor:"#E75353",color:"white"}} className="btn"   >Comprar</button>
-                                <button style={{borderRadius:15,backgroundColor:"#7B3E90",color:"white",marginLeft:10}} className="btn" >Agregar al carrito</button>
-                                
-                                <ToastContainer></ToastContainer>
-                                
-                                
-
-                                </div>
-                            </div>
                             </div>
                         </div>
                     ))}

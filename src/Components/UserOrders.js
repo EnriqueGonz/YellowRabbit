@@ -63,7 +63,7 @@ const UserOrders = () =>{
                     {listOrders.map((item,index) => (
                         <div key={index} style={{marginBottom:10}} className="col-sm-12">
                             
-                            <div  style={{backgroundColor:"#FFE9EB",borderRadius:20,height:"100%"}} className="card">
+                            <div  style={{backgroundColor:"#FFF",borderRadius:20,height:"100%",textAlign: "start"}} className="card">
 
                             <div className="card-body">
                                 <div className='row'>

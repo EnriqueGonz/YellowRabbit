@@ -39,7 +39,7 @@ const Appbar = () =>{
                                 <hr style={{height:"2px",backgroundColor:"#EB5929",opacity:1}}></hr>
                                 <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-perfil">Mi Perfil</a></li>
                                 <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mis-pedidos">Mis pedidos</a></li>
-                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-whitelist">WhiteList</a></li>
+                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-wishlist">Mi Wishlist</a></li>
                                 <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-carrito">Carrito de compras</a></li>
                                 <hr style={{height:"2px",backgroundColor:"#EB5929",opacity:1}}></hr>
                                 <li><button  className="dropdown-item"  type="button" onClick = {handleShow}>Cerrar sesion</button></li>

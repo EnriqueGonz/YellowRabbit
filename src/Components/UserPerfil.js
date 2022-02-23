@@ -34,6 +34,35 @@ const UserPerfil = () =>{
         phone: "",
         identity: "",
     })
+    const [inputsDireccion, setinputsDireccion] = useState({
+        user: 0, 
+        street: "",
+        avenue: "",
+        neighborhood: "",
+        street_number: 0,
+        apartment_number: "",
+        postal_code: 0,
+        city: "",
+        state: "",
+        additional_data: "",
+    })
+
+    useEffect(() =>{
+        try {
+          axios.get('https://yellowrabbit.herokuapp.com/addresses/api/my-addresses/'+username+"/",{ headers })
+          .then((response) => {
+            setinputsDireccion(response.data[0]);
+            console.log(response)
+
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    
+        } catch (error) {
+          console.log(' . ', error);
+        }// eslint-disable-next-line react-hooks/exhaustive-deps
+      },[setinputsDireccion])
 
     
 
@@ -42,7 +71,7 @@ const UserPerfil = () =>{
           axios.get('https://yellowrabbit.herokuapp.com/users/api/my-account/'+username+'/',{ headers })
           .then((response) => {
             //setInputs(response.data[0]);
-            console.log(response.data.profile_picture);
+            console.log(response.data);
             if(response.data.profile_picture != null){
                 img = response.data.profile_picture;
                 console.log("No es null");
@@ -133,9 +162,44 @@ const UserPerfil = () =>{
       function handleChange(evt) {
         const name = evt.target.name;
         const value = evt.target.value;
-        console.log(name + value)
-        setInputs(values => ({ ...values, [name]: value }))
+        //console.log(name + value)
+        try{
+            setInputs(values => ({ ...values, [name]: value }))
+            setinputsDireccion(values => ({ ...values, [name]: value }))
+        }catch{
+
+        }
     }
+
+    const handleSubmitDireccion = (event) => {
+        axios.put('https://yellowrabbit.herokuapp.com/addresses/api/update/'+5+"/", {
+            user: 2,
+            street: inputsDireccion.street,
+            avenue: inputsDireccion.avenue,
+            neighborhood: inputsDireccion.neighborhood,
+            street_number: inputsDireccion.street_number,
+            apartment_number: inputsDireccion.apartment_number,
+            postal_code: inputsDireccion.postal_code,
+            city: inputsDireccion.city,
+            state: inputsDireccion.state,
+            additional_data: inputsDireccion.additional_data,
+        },{
+            headers:{
+                "Authorization" : "Token "+token
+            }
+        }
+        )
+        .then((response) => {
+            console.log(response);
+            window.location = '/user/mi-perfil'
+        })
+        .catch(err => console.log(err));
+
+        return false;
+
+
+    }
+      
 
     return(    
         <>
@@ -190,18 +254,18 @@ const UserPerfil = () =>{
                             <Row className="mb-3">
                                 <Form.Group as={Col} controlId="">
                                 <Form.Label>Edad:</Form.Label>
-                                <Form.Control style={{backgroundColor:"#DFDFDF"}} placeholder='Edad' required type="number" name="age" value={inputs.age} onChange={handleChange}  />
+                                <Form.Control style={{backgroundColor:"#DFDFDF"}} placeholder='Edad' required type="number" name="age" value={inputs.age == null ? '' : inputs.age} onChange={handleChange}  />
                                 </Form.Group>
 
                                 <Form.Group as={Col} controlId="">
                                 <Form.Label>Identidad:</Form.Label>
-                                <Form.Control style={{backgroundColor:"#DFDFDF"}} placeholder='Identidad' required type="text" name="identity" value={inputs.identity} onChange={handleChange}  />
+                                <Form.Control style={{backgroundColor:"#DFDFDF"}} placeholder='Identidad' required type="text" name="identity" value={inputs.identity == null ? '' : inputs.identity} onChange={handleChange}  />
                                 </Form.Group>
                             </Row>
                             <Row className="mb-3">
                                 <Form.Group as={Col} controlId="">
                                 <Form.Label>Telefono:</Form.Label>
-                                <Form.Control style={{backgroundColor:"#DFDFDF"}} placeholder='Telefono' required type="number" name="phone" value={inputs.phone} onChange={handleChange}  />
+                                <Form.Control style={{backgroundColor:"#DFDFDF"}} placeholder='Telefono' required type="number" name="phone" value={inputs.phone == null ? '' : inputs.phone} onChange={handleChange}  />
                                 </Form.Group>
                             </Row>
 
@@ -211,8 +275,83 @@ const UserPerfil = () =>{
                         </Form>  
 
                     </div><br></br><br></br>
+
                     <hr style={{height:"5px",backgroundColor:"#EB5929",opacity:1}}></hr>
+                    <div className='container'>
+                        <div className="row">
+                            <div className="col">
+                                <h3>Direccion</h3>
+                            </div>
+                            <div className="col" style={{textAlign:"right"}}>
+                                <a href='/user/mis-direcciones'>Ver todas</a>
+                            </div>
+                        </div>
+                    </div>
                     <br></br>
+                    <div className='container' style={{width:"90%"}}>
+                    <Form onSubmit={handleSubmitDireccion}>
+                    <Row className="mb-3">
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Calle</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="text" name="street" value={inputsDireccion.street || ''} onChange={handleChange} />
+                        </Form.Group>
+
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Barrio/Colonia</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="text" name="neighborhood" value={inputsDireccion.neighborhood == null ? '' : inputsDireccion.neighborhood} onChange={handleChange}  />
+                        </Form.Group>
+
+                        
+                    </Row>
+                    <Row className="mb-3">
+
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Avenida</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="text" name="avenue" value={inputsDireccion.avenue == null ? '' : inputsDireccion.avenue} onChange={handleChange}  />
+                        </Form.Group>
+
+                        
+                    </Row>
+                    <Row className="mb-3">
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Numero de calle</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="number" name="street_number" value={inputsDireccion.street_number == null ? '' : inputsDireccion.street_number}  onChange={handleChange}/>
+                        </Form.Group>
+
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Numero de casa</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="number" name="apartment_number" value={inputsDireccion.apartment_number == null ? '' : inputsDireccion.apartment_number} onChange={handleChange} />
+                        </Form.Group>
+                    </Row>
+                    <Row className="mb-3">
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Codigo Postal (CP)</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="number" name="postal_code" value={inputsDireccion.postal_code == null ? '' : inputsDireccion.postal_code} onChange={handleChange} />
+                        </Form.Group>
+
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Ciudad/Pueblo</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="text" name="city" value={inputsDireccion.city == null ? '' : inputsDireccion.city} onChange={handleChange} />
+                        </Form.Group>
+                    </Row>
+                    <Row className="mb-3">
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Estado</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="text"  name="state" value={inputsDireccion.state == null ? '' : inputsDireccion.state} onChange={handleChange} />
+                        </Form.Group>
+
+                    </Row>
+                    
+                    <Form.Group className="mb-3" controlId="">
+                        <Form.Label>Informacion adicional</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} as="textarea" required type="text"  name="additional_data" value={inputsDireccion.additional_data == null ? '' : inputsDireccion.additional_data} onChange={handleChange} />
+                    </Form.Group>
+                    <Button style={{marginLeft:10,float:"right",backgroundColor:"#E94E1B",borderColor:"#E94E1B"}} onClick={handleSubmitDireccion}>
+                        Actualizar
+                    </Button>
+                    </Form>
+
+                    </div><br></br><br></br>
                     
 
                 </div>

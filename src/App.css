@@ -19,11 +19,114 @@
 }
 
 
+  .card__content:hover{
+    margin-top:-10px;
+  }
+  .card__content {
+    width: 95%;
+    height: 100%;
+    border-radius: 5px;
+    padding: 15px;
+    cursor: pointer;
+    transition: 0.3s all ease-in-out;
+  }
+  .card__content:hover{
+    border: 1px solid;
+    padding: 10px;
+    box-shadow: 5px 10px #888888;
+      
+  }
+.card {
+  width: 100%;
+  height: 100%;
+  padding: auto;
+  text-align: center;
+  border-radius: 10px;
+
+  
+  
+  
+  
+}
+.card__header {
+    text-transform: uppercase;
+    font-size: 20px;
+  }
+  .card__button {
+    padding: 10px;
+    border-radius: 50px;
+    background: white;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+  }
+  .btnFav:hover {
+    color: red;
+  }
+
+  .btnQuitarfav{
+    color: red;
+  }
+  .btnQuitarfav:hover{
+    color: black;
+  }
+
+  .gallery {
+    width: 100%;
+    margin: 0 auto;
+    padding: 5px;
+  }
+  
+  .gallery > div {
+    position: relative;
+  }
+  
+  .gallery > div > img {
+    display: block;
+    transition: .1s transform;
+    transform: translateZ(0); /* hack */
+    
+  }
+  
+  .gallery > div:hover {
+    z-index: 1;
+  }
+  
+  .test1 > div:hover > img {
+    transform: scale(1.2,1.2);
+    transition: .3s transform;
+  }
+  
+
+  .test2 > div:hover > img {
+    transform: scale(3,3);
+    transition: .3s transform;
+  }
+  
 
 
+  .simbol_price{
+    vertical-align: top;
+    font-size: 12px;
+  }
+
+  .BotonSumarDisminuir{
+    border: none;
+    background-color: white;
+    color: orange;
+    font-weight: 900;
+    font-size: 27px;
+  }
+  
 
 
 @media (max-width: 767.98px) {
+    .grid-container-productos{
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-gap: 10px;
+      }
     .possText1Img1{
         display: none;
     }
@@ -47,6 +150,11 @@
   
   }
   @media (min-width: 768px) {
+      .grid-container-productos{
+        display: grid;
+        grid-template-columns: auto auto auto auto;
+        grid-gap: 10px;
+      }
     .possText1Img1{
         position: absolute;
         top: 25%;
