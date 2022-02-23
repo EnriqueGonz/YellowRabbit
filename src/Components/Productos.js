@@ -164,8 +164,8 @@ const Productos = () =>{
             <div style={{width:"100%",textAlign:"justify"}}>
                 <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:"bold",color:"#EB5929"}}>Catalogo de productos</p>
                 <div className="grid-container-productos">
-                    {listProductos.map((item) => (
-                        <div className="grid-item" key={item.id}>
+                    {listProductos.map((item,index) => (
+                        <div className="grid-item" key={index}>
                             <div className="column" style={{height:"100%"}}>
                                 <div className="card" >
                                     <div className="card__content">

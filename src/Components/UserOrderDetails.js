@@ -41,10 +41,12 @@ const UserOrderDetails = () =>{
 
 let i = 0;
 
+
 ListOrderPago.map((item) =>(
     i += parseInt(item.total_price)
 
 ))
+
 
     return(    
         <>
@@ -65,7 +67,7 @@ ListOrderPago.map((item) =>(
                                 </div>
                                 <div className='col-sm-10'>
                                     <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:"bold",color:"#EB5929"}}>{ListOrderPago[index].amount +' * '+  item[0].product_name}</p>
-                                    <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>Precio: ({ListOrderPago[index].amount +' * ' +item[0].price} c/u) = {ListOrderPago[index].total_price}</p>
+                                    <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>Precio: ({ListOrderPago[index].amount +' * ' +item[0].price} c/u) = {new Intl.NumberFormat().format(ListOrderPago[index].total_price)}</p>
 
                                 </div>
                             </div>
@@ -82,7 +84,7 @@ ListOrderPago.map((item) =>(
                                 <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>Pedido realizado: {ListOrderDetalles.order_date}</p>
                                 <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>Status del pedido: {ListOrderDetalles.status}</p>
                                 <br></br>
-                                <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>Costo total: {i}</p>
+                                <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>Costo total: {new Intl.NumberFormat().format(i)}</p>
                                 
 
                             </div>

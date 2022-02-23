@@ -17,7 +17,6 @@ import UserDirecciones from './Components/UserDirecciones';
 function App() {
   return (
     <div className="App" style={{width:"100%", height:"100vh"}}>
-        <p>Hola</p>
       <Router>        
         <Switch>
 
