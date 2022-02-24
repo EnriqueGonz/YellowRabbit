@@ -54,9 +54,9 @@ const ProductoEspecifico = () =>{
 
     useEffect(() =>{  
         try {
-          axios.get('https://yellowrabbit.herokuapp.com/products/api/specific-product/'+idproduct+'/',{ headers })
+          axios.get('https://yellowrabbit.herokuapp.com/products/api/specific-product/'+idproduct+'/')
           .then((response) => {
-            console.log(response.data);
+            console.log(response);
             setListProducto(response.data[0][0]);
           })
           .catch((error) => {
