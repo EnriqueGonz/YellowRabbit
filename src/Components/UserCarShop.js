@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Row, Col, Modal } from 'react-bootstrap';
+import { Form, Button, Row, Col, Modal} from 'react-bootstrap';
 
 import imgindex1 from '../images/fondouser.png';
 import LoadingUserCarShop from './LoadingUserCarShop';
@@ -18,7 +18,6 @@ var username = localStorage.getItem('usernameClient');
 var idusuario = localStorage.getItem('userId');
 
 
-
 const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Token ${token}`
@@ -26,10 +25,8 @@ const headers = {
 
 
 const UserCarShop = () => {
-    const [list, setList] = useState([]);
-    const [inputsQuantity, setinputsQuantity] = useState({
-        quantity: undefined,
-    })
+    const [list, setList] = React.useState([]);
+    const [quantity, setQuantity] = useState(null);
 
     const notify = () => {
         toast('Producto agregado a tu whitelist🔥', {
@@ -83,22 +80,12 @@ const UserCarShop = () => {
     }
 
 
-    useEffect(() => {
+    React.useEffect(() => {
         try {
             axios.get('https://yellowrabbit.herokuapp.com/shoppingcart/api/my-shopping-cart/' + username + '/', { headers })
                 .then((response) => {
                     console.log(response.data);
-
-                    /* Fill the array with 0 in the quantity as quantity of products to order. */
-                    var len = response.data.length;
-                    var temp0 = [];
-                    for (let index = 0; index < len; index++) {
-                        temp0.push(0);
-                    }
-
                     setList(response.data);
-                    setinputsQuantity(temp0);
-
                 })
                 .catch((error) => {
                     console.log(error);
@@ -107,7 +94,10 @@ const UserCarShop = () => {
         } catch (error) {
             console.log(' . ', error);
         }// eslint-disable-next-line react-hooks/exhaustive-deps
+
+        
     }, [setList])
+
 
     if (!list.length) return <LoadingUserCarShop />;
 
@@ -168,7 +158,9 @@ const UserCarShop = () => {
     function handleChange(evt) {
         const name = evt.target.name;
         const value = evt.target.value;
-        /* setinputsQuantity(values => ({ ...values, [name]: value })) */
+        console.log(name + value);
+        
+        //setList(values => ({ ...values, [name]: value }))
     }
 
     // Set sleep
@@ -176,27 +168,41 @@ const UserCarShop = () => {
         return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
 
-    const sumarCantidad = (index) => {
-        var arrActual = inputsQuantity;
-        arrActual[index] += 1;
-        setinputsQuantity(arrActual);
+    //const sumarCantidad = () => { 
+    function sumarCantidad(index) {
+        var arrActual = list;
+        var arrModificar = arrActual[index][0]
+        arrModificar[0].amount += 1;
+        // Empty the list before reassigning the new value.
+        setList([]);
+        setList(prevState => ([...prevState, ...arrActual]));        
     }
 
     const restarCantidad = (index) => {
-        var arrActual = inputsQuantity;
-        if (parseInt(arrActual[index]) === 0) {
-            setinputsQuantity(arrActual);
+        var arrActual = list;
+        var arrModificar = arrActual[index][0]
+        if (parseInt(arrModificar[0].amount) === 1) {
+            // Empty the list before reassigning the new value.
+            setList([]); 
+            setList(prevState => ([...prevState, ...arrActual]));
         }
         else {
-            arrActual[index] -= 1;
-            setinputsQuantity(arrActual);
+            arrModificar[0].amount -= 1;
+            // Empty the list before reassigning the new value.
+            setList([]);
+            setList(prevState => ([...prevState, ...arrActual]));
         }
+    }
+
+    const handleSubmitDireccion = (event) => {
+
     }
 
 
     return (
         <>
-            <Appbar></Appbar>
+            <Appbar></Appbar>  
+                        
             <div style={{ backgroundImage: "url('" + imgindex1 + "')" }}>
                 <div className='container' style={{ backgroundColor: "white", width: "60%" }}>
 
@@ -212,6 +218,8 @@ const UserCarShop = () => {
 
                         <br></br>
                         <div className='container' style={{ width: "90%" }}>
+                            <p>     Vuee  --------------------</p>
+
                             {list.map((item, index) => (
                                 <div key={index} style={{ marginBottom: 10 }} className="col-sm-12">
 
@@ -226,9 +234,14 @@ const UserCarShop = () => {
                                                     <a href={'/article/details/' + item[1][0].id} title='Ver producto' style={{ textDecorationLine: "none" }}><p style={{ fontFamily: "'Cairo', sans-serif", fontWeight: "bold", color: "#EB5929" }}>{item[1][0].product_name}</p></a>
                                                     <p style={{ fontFamily: "'Cairo', sans-serif", fontWeight: 500 }}>{'$' + item[1][0].price}</p>
                                                     <div style={{ position: "absolute", right: "2%", bottom: "2%" }} className="contianer">
-
+                                                    
+                                                    
+                                                    <Form onSubmit={handleSubmitDireccion}>
                                                         {/* <Form.Label>Cantidad</Form.Label> */}
-                                                        
+                                                        <Button style={{ marginLeft: 10, float: "right", backgroundColor: "#E94E1B", borderColor: "#E94E1B" }}>
+                                                            Guardar
+                                                        </Button>
+
                                                         <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Menos</Tooltip>}>
                                                             {({ ref, ...triggerHandler }) => (
                                                                 <div variant="light" {...triggerHandler} className="d-inline-flex align-items-center">
@@ -237,7 +250,7 @@ const UserCarShop = () => {
                                                             )}
                                                         </OverlayTrigger>
 
-                                                        <Form.Label style={{ backgroundColor: "#DFDFDF", width: "35px", textAlign: 'center' }} required type="text" name="neighborhood" value={inputsQuantity.quantity} onChange={handleChange}> {inputsQuantity.quantity} </Form.Label>
+                                                        <Form.Label style={{ backgroundColor: "#DFDFDF", width: "35px", textAlign: 'center' }} required type="text" name="quantity" onChange={handleChange}> {item[0][0].amount} </Form.Label>
 
                                                         <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Más</Tooltip>}>
                                                             {({ ref, ...triggerHandler }) => (
@@ -246,6 +259,9 @@ const UserCarShop = () => {
                                                                 </div>
                                                             )}
                                                         </OverlayTrigger>
+                                                        </Form>
+
+
 
 
 
@@ -286,7 +302,7 @@ const UserCarShop = () => {
             </div>
             <Footer></Footer>
 
-        </> 
+        </>
     )
 
 }
