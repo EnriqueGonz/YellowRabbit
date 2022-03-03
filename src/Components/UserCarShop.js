@@ -26,7 +26,7 @@ const headers = {
 
 const UserCarShop = () => {
     const [list, setList] = React.useState([]);
-    const [quantity, setQuantity] = useState(null);
+    const [initialCost, setInitialCost] = useState(null);
 
     const notify = () => {
         toast('Producto agregado a tu whitelist🔥', {
@@ -86,6 +86,8 @@ const UserCarShop = () => {
                 .then((response) => {
                     console.log(response.data);
                     setList(response.data);
+                    var costoTotalInicio = calcularCostoTotal(response.data);
+                    setInitialCost(costoTotalInicio);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -175,7 +177,10 @@ const UserCarShop = () => {
         arrModificar[0].amount += 1;
         // Empty the list before reassigning the new value.
         setList([]);
-        setList(prevState => ([...prevState, ...arrActual]));        
+        setList(prevState => ([...prevState, ...arrActual]));   
+        setInitialCost(calcularCostoTotal(list));
+
+        
     }
 
     const restarCantidad = (index) => {
@@ -185,13 +190,30 @@ const UserCarShop = () => {
             // Empty the list before reassigning the new value.
             setList([]); 
             setList(prevState => ([...prevState, ...arrActual]));
+            setInitialCost(calcularCostoTotal(list));
         }
         else {
             arrModificar[0].amount -= 1;
             // Empty the list before reassigning the new value.
             setList([]);
             setList(prevState => ([...prevState, ...arrActual]));
+            setInitialCost(calcularCostoTotal(list));
         }
+    }
+
+
+
+    function calcularCostoTotal(costo){
+        var precioTotal = 0
+        for (let index = 0; index < costo.length; index++) {
+            var element = costo[index];
+            var precioUnitario = element[0][0].unit_price;
+            precioTotal += (parseFloat(precioUnitario) * parseInt(element[0][0].amount));
+        }
+        // total price with 2 decimals
+        console.log('pt: ', precioTotal);
+        var totalPriceTDecimal = (Math.round(parseFloat(precioTotal) * 100) / 100);
+        return totalPriceTDecimal;
     }
 
     const handleSubmitDireccion = (event) => {
@@ -201,7 +223,8 @@ const UserCarShop = () => {
 
     return (
         <>
-            <Appbar></Appbar>  
+            <Appbar></Appbar> 
+            <p>Costo Inicio: { initialCost }</p> 
                         
             <div style={{ backgroundImage: "url('" + imgindex1 + "')" }}>
                 <div className='container' style={{ backgroundColor: "white", width: "60%" }}>
@@ -218,8 +241,7 @@ const UserCarShop = () => {
 
                         <br></br>
                         <div className='container' style={{ width: "90%" }}>
-                            <p>     Vuee  --------------------</p>
-
+                           
                             {list.map((item, index) => (
                                 <div key={index} style={{ marginBottom: 10 }} className="col-sm-12">
 
@@ -227,7 +249,7 @@ const UserCarShop = () => {
 
                                         <div className="card-body">
                                             <div className='row'>
-                                                <div className='col-sm-3'>
+                                                <div className='col-sm-3'> 
                                                     <img alt="Quitar de la wishlist" style={{ width: "100%", height: "100px" }} src={'https://yellowrabbitbucket.s3.amazonaws.com/' + item[1][0].image_one}></img>
                                                 </div>
                                                 <div className='col-sm-9'>
