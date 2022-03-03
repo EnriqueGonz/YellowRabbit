@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Row, Col, Modal} from 'react-bootstrap';
+import { Form, Button, Row, Col, Modal } from 'react-bootstrap';
 
 import imgindex1 from '../images/fondouser.png';
 import LoadingUserCarShop from './LoadingUserCarShop';
@@ -52,6 +52,20 @@ const UserCarShop = () => {
             progress: undefined,
         })
     }
+
+    const notifyUpdateShoppingCart = () => {
+        toast('Se ha guardado los cambios.', {
+            position: "bottom-center",
+            autoClose: 1000,
+            hideProgressBar: true,
+            closeOnClick: false,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+        })
+    }
+
+
     // End notifyShoppingCart
 
     const notifyerror = () => {
@@ -97,7 +111,7 @@ const UserCarShop = () => {
             console.log(' . ', error);
         }// eslint-disable-next-line react-hooks/exhaustive-deps
 
-        
+
     }, [setList])
 
 
@@ -130,9 +144,8 @@ const UserCarShop = () => {
         }
     }
 
-    function methodRemoveCardhop(id) {
-        console.log(id);
-
+    /* Shopping Cart */
+    function methodRemoveShopCart(id) {
         try {
             axios.delete('https://yellowrabbit.herokuapp.com/shoppingcart/api/delete/' + parseInt(id) + '/', { headers })
                 .then((response) => {
@@ -157,18 +170,52 @@ const UserCarShop = () => {
 
 
 
-    function handleChange(evt) {
-        const name = evt.target.name;
-        const value = evt.target.value;
-        console.log(name + value);
-        
-        //setList(values => ({ ...values, [name]: value }))
+    function updateShoppingCart() {
+        var arrValores = list;
+        var arrShoppingCart = [];
+
+        // Only Shoppint cart
+        for (let i = 0; i < arrValores.length; i++) {
+            var element = arrValores[i];
+            arrShoppingCart.push(element[0])
+        }
+
+        // Shopping cart id & amount
+        for (let j = 0; j < arrShoppingCart.length; j++) {
+            var quantity = arrShoppingCart[j][0].amount;
+            var shoppingId = arrShoppingCart[j][0].id;
+            // Update
+            try {
+                axios.put('https://yellowrabbit.herokuapp.com/shoppingcart/api/update/' + parseInt(shoppingId) + '/', {
+                    amount: parseInt(quantity)
+                }, { headers })
+                    .then((response) => {
+                        console.log(response.status);
+                        if (response.status === 200) {
+                            // Do something
+                        }
+                    })
+                    .catch((error) => {
+                        notifyerror();
+                    });
+
+            } catch (error) {
+                console.log(' . ', error);
+            }
+        }
+        // sleep 2 seconds
+        notifyUpdateShoppingCart();
+        sleep(2000).then(r => {
+            window.location.href = "/user/mi-carrito";
+        })
     }
+    // END Shopping cart
 
     // Set sleep
     function sleep(milliseconds) {
         return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
+
 
     //const sumarCantidad = () => { 
     function sumarCantidad(index) {
@@ -177,18 +224,17 @@ const UserCarShop = () => {
         arrModificar[0].amount += 1;
         // Empty the list before reassigning the new value.
         setList([]);
-        setList(prevState => ([...prevState, ...arrActual]));   
+        setList(prevState => ([...prevState, ...arrActual]));
         setInitialCost(calcularCostoTotal(list));
-
-        
     }
+
 
     const restarCantidad = (index) => {
         var arrActual = list;
         var arrModificar = arrActual[index][0]
         if (parseInt(arrModificar[0].amount) === 1) {
             // Empty the list before reassigning the new value.
-            setList([]); 
+            setList([]);
             setList(prevState => ([...prevState, ...arrActual]));
             setInitialCost(calcularCostoTotal(list));
         }
@@ -203,7 +249,7 @@ const UserCarShop = () => {
 
 
 
-    function calcularCostoTotal(costo){
+    function calcularCostoTotal(costo) {
         var precioTotal = 0
         for (let index = 0; index < costo.length; index++) {
             var element = costo[index];
@@ -211,21 +257,14 @@ const UserCarShop = () => {
             precioTotal += (parseFloat(precioUnitario) * parseInt(element[0][0].amount));
         }
         // total price with 2 decimals
-        console.log('pt: ', precioTotal);
         var totalPriceTDecimal = (Math.round(parseFloat(precioTotal) * 100) / 100);
         return totalPriceTDecimal;
-    }
-
-    const handleSubmitDireccion = (event) => {
-
     }
 
 
     return (
         <>
-            <Appbar></Appbar> 
-            <p>Costo Inicio: { initialCost }</p> 
-                        
+            <Appbar></Appbar>
             <div style={{ backgroundImage: "url('" + imgindex1 + "')" }}>
                 <div className='container' style={{ backgroundColor: "white", width: "60%" }}>
 
@@ -240,8 +279,8 @@ const UserCarShop = () => {
                         <hr style={{ height: "5px", backgroundColor: "#EB5929", opacity: 1 }}></hr>
 
                         <br></br>
-                        <div className='container' style={{ width: "90%" }}>
-                           
+                        <div className='container' style={{ width: "90%"}}>
+
                             {list.map((item, index) => (
                                 <div key={index} style={{ marginBottom: 10 }} className="col-sm-12">
 
@@ -249,52 +288,40 @@ const UserCarShop = () => {
 
                                         <div className="card-body">
                                             <div className='row'>
-                                                <div className='col-sm-3'> 
+                                                <div className='col-sm-3'>
                                                     <img alt="Quitar de la wishlist" style={{ width: "100%", height: "100px" }} src={'https://yellowrabbitbucket.s3.amazonaws.com/' + item[1][0].image_one}></img>
                                                 </div>
                                                 <div className='col-sm-9'>
                                                     <a href={'/article/details/' + item[1][0].id} title='Ver producto' style={{ textDecorationLine: "none" }}><p style={{ fontFamily: "'Cairo', sans-serif", fontWeight: "bold", color: "#EB5929" }}>{item[1][0].product_name}</p></a>
                                                     <p style={{ fontFamily: "'Cairo', sans-serif", fontWeight: 500 }}>{'$' + item[1][0].price}</p>
                                                     <div style={{ position: "absolute", right: "2%", bottom: "2%" }} className="contianer">
-                                                    
-                                                    
-                                                    <Form onSubmit={handleSubmitDireccion}>
-                                                        {/* <Form.Label>Cantidad</Form.Label> */}
-                                                        <Button style={{ marginLeft: 10, float: "right", backgroundColor: "#E94E1B", borderColor: "#E94E1B" }}>
-                                                            Guardar
-                                                        </Button>
 
-                                                        <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Menos</Tooltip>}>
-                                                            {({ ref, ...triggerHandler }) => (
-                                                                <div variant="light" {...triggerHandler} className="d-inline-flex align-items-center">
-                                                                    <span ref={ref} className="ms-1"><MdRemove style={{ marginRight: "10px", fontSize: 25 }} className='btnFav' onClick={() => { restarCantidad(index) }}></MdRemove></span>
-                                                                </div>
-                                                            )}
-                                                        </OverlayTrigger>
+                                                        <Form.Label style={{ width: "auto", textAlign: 'center', color:"#EB5929", fontWeight:"bold" }} type="text" name="quantity"> Cantidad </Form.Label>
+                                                            <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Menos</Tooltip>}>
+                                                                {({ ref, ...triggerHandler }) => (
+                                                                    <div variant="light" {...triggerHandler} className="d-inline-flex align-items-center">
+                                                                        <span ref={ref} className="ms-1"><MdRemove style={{ marginRight: "10px", fontSize: 25 }} className='btnFav' onClick={() => { restarCantidad(index) }}></MdRemove></span>
+                                                                    </div>
+                                                                )}
+                                                            </OverlayTrigger>
 
-                                                        <Form.Label style={{ backgroundColor: "#DFDFDF", width: "35px", textAlign: 'center' }} required type="text" name="quantity" onChange={handleChange}> {item[0][0].amount} </Form.Label>
+                                                            <Form.Label style={{ backgroundColor: "#DFDFDF", width: "35px", textAlign: 'center' }} required type="text" name="quantity"> {item[0][0].amount} </Form.Label>
 
-                                                        <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Más</Tooltip>}>
-                                                            {({ ref, ...triggerHandler }) => (
-                                                                <div variant="light" {...triggerHandler} className="d-inline-flex align-items-center">
-                                                                    <span ref={ref} className="ms-1"><MdAdd style={{ marginRight: "10px", fontSize: 25 }} className='btnFav' onClick={() => { sumarCantidad(index) }}></MdAdd></span>
-                                                                </div>
-                                                            )}
-                                                        </OverlayTrigger>
-                                                        </Form>
-
-
-
-
-
+                                                            <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Más</Tooltip>}>
+                                                                {({ ref, ...triggerHandler }) => (
+                                                                    <div variant="light" {...triggerHandler} className="d-inline-flex align-items-center">
+                                                                        <span ref={ref} className="ms-1"><MdAdd style={{ marginRight: "10px", fontSize: 25 }} className='btnFav' onClick={() => { sumarCantidad(index) }}></MdAdd></span>
+                                                                    </div>
+                                                                )}
+                                                            </OverlayTrigger>
+                                                        
                                                         <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Quitar del carrito de compras</Tooltip>}>
                                                             {({ ref, ...triggerHandler }) => (
                                                                 <div variant="light" {...triggerHandler} className="d-inline-flex align-items-center">
-                                                                    <span ref={ref} className="ms-1"><MdRemoveShoppingCart style={{ marginRight: "10px", fontSize: 25 }} className='btnFav' onClick={() => { methodRemoveCardhop(item[0][0].id); }} ></MdRemoveShoppingCart></span>
+                                                                    <span ref={ref} className="ms-1"><MdRemoveShoppingCart style={{ marginRight: "10px", fontSize: 25 }} className='btnFav' onClick={() => { methodRemoveShopCart(item[0][0].id); }} ></MdRemoveShoppingCart></span>
                                                                 </div>
                                                             )}
                                                         </OverlayTrigger>
-
 
                                                         <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Agregar a la wishlist</Tooltip>}>
                                                             {({ ref, ...triggerHandler }) => (
@@ -313,9 +340,12 @@ const UserCarShop = () => {
                                 </div>
                             ))}
                         </div><br></br><br></br>
+                        <div style={{ textAlign: "center", fontSize: "20px", marginBottom: "2%", fontWeight: "bold" }}>
+                            <p><span style={{ color: "#EB5929", opacity: 1 }}>Costo total: </span> {initialCost} </p>
+                            <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", fontSize: "18px" }} onClick={() => { updateShoppingCart(); }}> Guardar cambios </Button>
+                        </div>
+
                         <hr style={{ height: "5px", backgroundColor: "#EB5929", opacity: 1 }}></hr>
-
-
                         <br></br>
 
                     </div>
