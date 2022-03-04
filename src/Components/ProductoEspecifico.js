@@ -14,12 +14,11 @@ import 'react-toastify/dist/ReactToastify.css';
 var token = localStorage.getItem('tokenClient');
 var idusuario = localStorage.getItem('userId');
 
+
 const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Token ${token}`
 };
-
-
 
 
 const ProductoEspecifico = () => {
@@ -218,8 +217,19 @@ const ProductoEspecifico = () => {
 
 
 const ChildProductDetails = (datas) => {
+
+    const [detailsSelected, setDetailsSelected] = useState({
+        size:"",
+        color:"",
+        flavor:"",
+        other_details:""
+    });
+
+
     var arrDatas = datas['datas'];
     var size = arrDatas.length;
+
+
 
     if (size === 0) {
         return (<div></div>)
@@ -237,6 +247,22 @@ const ChildProductDetails = (datas) => {
         var dataColor = dato.color;
         var dataSize = dato.size;
 
+        //console.log('Este es el color: ', selectedColor);
+
+      function handleChange(evt) {
+        console.log('handle change');
+
+        var color = document.getElementById('selectColor').value;
+        var flavor = document.getElementById('selectFlavor').value;
+        var size = document.getElementById('selectSize').value;
+
+        //setDetailsSelected(values => ({ ...values, ['color']: color }))
+        //setDetailsSelected(values => ({ ...values, ['flavor']: flavor }))
+        //setDetailsSelected(values => ({ ...values, ['size']: size }))
+
+        //console.log('lista: ', detailsSelected);
+    }
+
        
         // Only color
         if (dataFlavor === "" && dataSize === "" && dataColor !== "") {
@@ -245,10 +271,10 @@ const ChildProductDetails = (datas) => {
             return (
                 <div>
                     <span style={{ fontWeight: "bold", fontSize: "18px" }}>Seleccionar Color</span>
-                    <Form.Select aria-label="Default select example">
-                        <option disabled>Seleccionar</option>
+                    <Form.Select aria-label="Select" id='selectColor' onChange={handleChange}>
+                        <option value="" disabled>Seleccionar</option>
                         {arrColor.map((c, index) => (
-                            <option value={c}> {c}</option>
+                            <option key={index} value={c} name="color"> {c}</option>
                         ))}
                     </Form.Select>
                 </div>
@@ -262,10 +288,10 @@ const ChildProductDetails = (datas) => {
                 return (
                     <div className='col-md-7'>
                         <span style={{ fontWeight: "bold", fontSize: "18px" }}>Seleccionar tamaño</span>
-                        <Form.Select aria-label="Default select example">
-                            <option disabled>Seleccionar</option>
+                        <Form.Select aria-label="Select" id='selectSize' onChange={handleChange}>
+                            <option value="" disabled>Seleccionar</option>
                             {arrSize.map((s, index) => (
-                                <option value={s}> {s}</option>
+                                <option key={index} value={s} name="size"> {s}</option>
                             ))}
                         </Form.Select>
                     </div>
@@ -277,10 +303,10 @@ const ChildProductDetails = (datas) => {
                     return (
                         <div className='col-md-7'>
                             <span style={{ fontWeight: "bold", fontSize: "18px" }}>Seleccionar Sabor</span>
-                            <Form.Select aria-label="Default select example">
-                                <option disabled>Seleccionar</option>
+                            <Form.Select aria-label="Select" id='selectFlavor' onChange={handleChange}>
+                                <option value="" disabled>Seleccionar</option>
                                 {arrFlavor.map((f, index) => (
-                                    <option value={f}> {f}</option>
+                                    <option key={index} value={f} name="flavor"> {f}</option>
                                 ))}
                             </Form.Select>
                         </div>
@@ -290,24 +316,24 @@ const ChildProductDetails = (datas) => {
                     // Color & size
                     if (dataFlavor === "" && dataColor !== "" && dataSize !== "") {
                         var datasFilled = fillArrays(arrDatas, 3);
-                        var arrColor = datasFilled[0];
-                        var arrSize = datasFilled[1];
+                        var arrSize = datasFilled[0];
+                        var arrColor = datasFilled[1];
 
                         return (
                             <div className='col-md-7'>
                                 <span style={{ fontWeight: "bold", fontSize: "18px" }}>Seleccionar Color</span>
-                                <Form.Select aria-label="Default select example">
-                                    <option disabled>Seleccionar</option>
+                                <Form.Select aria-label="Select" id='selectColor' onChange={handleChange}>
+                                    <option value="" disabled>Seleccionar</option>
                                     {arrColor.map((c, index) => (
-                                        <option value={c}> {c}</option>
+                                        <option key={index} value={c} name="color"> {c} </option>
                                     ))}
                                 </Form.Select>
                                 <br></br>
                                 <span style={{ fontWeight: "bold", fontSize: "18px" }}>Seleccionar Talla</span>
-                                <Form.Select aria-label="Default select example">
-                                    <option disabled>Seleccionar</option>
+                                <Form.Select aria-label="Select" id='selectSize' onChange={handleChange}>
+                                    <option value="" disabled>Seleccionar</option>
                                     {arrSize.map((s, index) => (
-                                        <option value={s}> {s}</option>
+                                        <option key={index} value={s} name="size"> {s} </option>
                                     ))}
                                 </Form.Select>
                             </div>
