@@ -191,21 +191,18 @@ const ProductoEspecifico = () => {
                                     <MdOutlineFavorite style={{ marginRight: 10, fontSize: 32 }} className='btnFav' onClick={() => { methodAddWishlist(listProducto.id); }} ></MdOutlineFavorite>
                                     <MdAddShoppingCart style={{ marginRight: 10, fontSize: 32 }} className='btnFav' onClick={() => { methodAddCarshop(listProducto.id); }} ></MdAddShoppingCart>
                                     <ToastContainer></ToastContainer>
+                                    <br></br>
+                                </div>
+                                <div>
+                                <ChildProductDetails datas={productDetails} />
                                 </div>
 
                             </div>
-
-
                         </div>
                         <br></br>
                         <p style={{ fontWeight: "bold", fontSize: "18px" }}>Descripcion del producto</p>
                         <p>{listProducto.description}</p>
                     </div>
-
-
-                    <ChildProductDetails datas={productDetails} />
-
-
                     <hr style={{ height: "5px", backgroundColor: "#EB5929", opacity: 1 }}></hr>
 
                 </div>
@@ -217,7 +214,6 @@ const ProductoEspecifico = () => {
 
         </>
     )
-
 }
 
 
@@ -228,31 +224,169 @@ const ChildProductDetails = (datas) => {
     if (size === 0) {
         return (<div></div>)
     } else {
-        // Options
-        // color - size -> si tiene color debe ser alguna ropa que tenga talla
-        // flavor -> Si tiene sabor entonces es un líquido
-        // size -> Si sólo tiene talla, entonces podría ser un producto cualquiera.
-        //console.log(' - ', arrDatas[0].flavor)
-        var dato = arrDatas[0];
+        /*
+          * Options: 
+            * color & size: Some product, such as clothing, lingerie for example.
+            * color: Some product without size.
+            * flavor: Any product, containing liquid.
+            * size: Some product, such as vibrators for example.
+        */
 
-        if(dato.flavor !== '' || dato.flavor !== undefined){
-            console.log('Es líquido');
-        }else{
-            if((dato.color !== '' || dato.color !== undefined) && (dato.size !== '' || dato.size === undefined)){
-                console.log("Es alguna ropa");
-            }else{
-                if(dato.size !== '' || dato.size === undefined){
-                    console.log('Es algún objeto');
+        var dato = arrDatas[0];
+        var dataFlavor = dato.flavor;
+        var dataColor = dato.color;
+        var dataSize = dato.size;
+
+       
+        // Only color
+        if (dataFlavor === "" && dataSize === "" && dataColor !== "") {
+            var arrColor = fillArrays(arrDatas, 0);
+
+            return (
+                <div>
+                    <span style={{ fontWeight: "bold", fontSize: "18px" }}>Seleccionar Color</span>
+                    <Form.Select aria-label="Default select example">
+                        <option disabled>Seleccionar</option>
+                        {arrColor.map((c, index) => (
+                            <option value={c}> {c}</option>
+                        ))}
+                    </Form.Select>
+                </div>
+
+            )
+        } else {
+            // Only size
+            if (dataFlavor === "" && dataColor === "" && dataSize !== "") {
+                var arrSize = fillArrays(arrDatas, 1);
+
+                return (
+                    <div className='col-md-7'>
+                        <span style={{ fontWeight: "bold", fontSize: "18px" }}>Seleccionar tamaño</span>
+                        <Form.Select aria-label="Default select example">
+                            <option disabled>Seleccionar</option>
+                            {arrSize.map((s, index) => (
+                                <option value={s}> {s}</option>
+                            ))}
+                        </Form.Select>
+                    </div>
+                )
+            } else {
+                // Only Flavor
+                if (dataColor === "" && dataSize === "" && dataFlavor !== "") {
+                    var arrFlavor = fillArrays(arrDatas, 2);
+                    return (
+                        <div className='col-md-7'>
+                            <span style={{ fontWeight: "bold", fontSize: "18px" }}>Seleccionar Sabor</span>
+                            <Form.Select aria-label="Default select example">
+                                <option disabled>Seleccionar</option>
+                                {arrFlavor.map((f, index) => (
+                                    <option value={f}> {f}</option>
+                                ))}
+                            </Form.Select>
+                        </div>
+                    )
                 }
-                else{
-                    console.log('Devolver un NULL');
+                else {
+                    // Color & size
+                    if (dataFlavor === "" && dataColor !== "" && dataSize !== "") {
+                        var datasFilled = fillArrays(arrDatas, 3);
+                        var arrColor = datasFilled[0];
+                        var arrSize = datasFilled[1];
+
+                        return (
+                            <div className='col-md-7'>
+                                <span style={{ fontWeight: "bold", fontSize: "18px" }}>Seleccionar Color</span>
+                                <Form.Select aria-label="Default select example">
+                                    <option disabled>Seleccionar</option>
+                                    {arrColor.map((c, index) => (
+                                        <option value={c}> {c}</option>
+                                    ))}
+                                </Form.Select>
+                                <br></br>
+                                <span style={{ fontWeight: "bold", fontSize: "18px" }}>Seleccionar Talla</span>
+                                <Form.Select aria-label="Default select example">
+                                    <option disabled>Seleccionar</option>
+                                    {arrSize.map((s, index) => (
+                                        <option value={s}> {s}</option>
+                                    ))}
+                                </Form.Select>
+                            </div>
+                        )
+                    }
                 }
             }
         }
+    }
 
-        return (
-            <div>Message here</div>
-        )
+
+    // fill arrays with NOT null values.
+    function fillArrays(datosFill, option){
+        var arrColors = [];
+        var arrSizes = [];
+        var arrFlavors = [];
+        var arrdatasReturn = [];
+
+        switch (option) {
+            // color
+            case 0: 
+            Object.entries(datosFill).forEach(([key, value]) => {
+                if (value.color === "" || value.color === undefined) {
+                    // Do something
+                }
+                else{
+                    arrColors.push(value.color);
+                }
+            })
+            return arrColors;
+
+            // size
+            case 1: 
+            Object.entries(datosFill).forEach(([key, value]) => {
+                if (value.size === "" || value.size === undefined) {
+                    // Do something
+                }
+                else{
+                    arrSizes.push(value.size);
+                }
+            })
+            return arrSizes;
+
+            // flavor
+            case 2: 
+            Object.entries(datosFill).forEach(([key, value]) => {
+                if (value.flavor === "" || value.flavor === undefined) {
+                    // Do something
+                }
+                else{
+                    arrFlavors.push(value.flavor);
+                }
+            })
+            return arrFlavors;
+            
+
+            // Color & size
+            case 3: 
+            Object.entries(datosFill).forEach(([key, value]) => {
+                if (value.size === "" || value.size === undefined) {
+                    // Do something
+                }
+                else{
+                    arrSizes.push(value.size);
+                }
+                if (value.color === "" || value.color === undefined) {
+                    // Do something
+                }
+                else{
+                    arrColors.push(value.color);
+                }
+            });
+
+            arrdatasReturn.push(arrSizes);
+            arrdatasReturn.push(arrColors);
+
+            return arrdatasReturn;
+                
+        }
     }
 }
 
