@@ -217,7 +217,6 @@ const UserCarShop = () => {
     }
 
 
-    //const sumarCantidad = () => { 
     function sumarCantidad(index) {
         var arrActual = list;
         var arrModificar = arrActual[index][0]
