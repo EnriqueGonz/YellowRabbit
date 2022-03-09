@@ -14,6 +14,8 @@ import UserOrderDetails from './Components/UserOrderDetails';
 import UserCarShop from './Components/UserCarShop';
 import UserDirecciones from './Components/UserDirecciones';
 
+import ConfirmOrder from './Components/ConfirmOrder';
+
 function App() {
   return (
     <div className="App" style={{width:"100%", height:"100vh"}}>
@@ -63,7 +65,9 @@ function App() {
             <UserDirecciones></UserDirecciones>
         </Route>
 
-
+        <Route path="/confirmar/pedido/:idproducto">
+            <ConfirmOrder></ConfirmOrder>
+        </Route>
 
         </Switch>
       </Router>

@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Button, Row, Col, Modal } from 'react-bootstrap';
-
-
 import Appbar from './appbarClient';
 import Footer from './footer';
 import axios from 'axios';
@@ -11,13 +9,11 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
 var token = localStorage.getItem('tokenClient');
 var idusuario = localStorage.getItem('userId');
 
-
-var arrProductDetailList = [];
 var opcion = undefined;
-
 var jsonProductDetailList = {
     size: "",
     color: "",
@@ -25,16 +21,15 @@ var jsonProductDetailList = {
     other_details: ""
 };
 
-var arrOrderDetails = [];
 // Order details - raw
 var jsonOrderDetails = {
     products: undefined,
     amount: undefined,
     unit_price: undefined,
     total_price: undefined
-}
+};
 
-
+var orderSpecifications = []
 
 
 const headers = {
@@ -160,7 +155,7 @@ const ProductoEspecifico = () => {
 
 
     function methodBuyProduct(id) {
-        /**
+        /*
          * Options
          *  - 0: Not description
          *  - 1: Color
@@ -168,6 +163,7 @@ const ProductoEspecifico = () => {
          *  - 3: Flavor
          *  - 4: Color & size
          */
+
         console.log('id product: ', id);
 
         let getColor = jsonProductDetailList.color;
@@ -182,16 +178,26 @@ const ProductoEspecifico = () => {
         setTotalCost(values => ({ ...values, ['totalcost']: totalPriceTDecimal }))
 
 
-        switch (opcion) {
+        jsonOrderDetails['products'] = id;
+        jsonOrderDetails['amount'] = parseInt(cantidadProducto);
+        jsonOrderDetails['unit_price'] = parseFloat(precioUnitario);
+        jsonOrderDetails['total_price'] = totalPriceTDecimal;
 
+        orderSpecifications.push(opcion);
+        orderSpecifications.push(listProducto);
+
+
+        switch (opcion) {
             case 0:
                 // En otros detalles poner, que el pedido no tiene especificación.
                 console.log('Proceder a realizar el pedido');
                 break;
-
             case 1:
                 if (getColor !== "") {
-                    console.log('SI');
+                    orderSpecifications.push(jsonProductDetailList);
+                    orderSpecifications.push(jsonOrderDetails);
+                    localStorage.setItem('orderSpecifications', JSON.stringify(orderSpecifications));
+                    window.location = '/confirmar/pedido/' + id;
                 } else {
                     console.log('NO');
                 }
@@ -200,7 +206,10 @@ const ProductoEspecifico = () => {
 
             case 2:
                 if (getSize !== "") {
-                    console.log('SI');
+                    orderSpecifications.push(jsonProductDetailList);
+                    orderSpecifications.push(jsonOrderDetails);
+                    localStorage.setItem('orderSpecifications', JSON.stringify(orderSpecifications));
+                    window.location = '/confirmar/pedido/' + id;
                 } else {
                     console.log('NO');
                 }
@@ -209,7 +218,10 @@ const ProductoEspecifico = () => {
 
             case 3:
                 if (getFlavor !== "") {
-                    console.log('Si');
+                    orderSpecifications.push(jsonProductDetailList);
+                    orderSpecifications.push(jsonOrderDetails);
+                    localStorage.setItem('orderSpecifications', JSON.stringify(orderSpecifications));
+                    window.location = '/confirmar/pedido/' + id;
 
                 } else {
                     console.log('NO');
@@ -218,11 +230,10 @@ const ProductoEspecifico = () => {
 
             case 4:
                 if (getSize !== "" && getColor !== "") {
-                    //console.log('-p: ', precioUnitario);
-                    //console.log('-c: ', cantidadProducto);
-                    //console.log('-pt: ', totalPriceTDecimal);
-
-                    console.log(jsonProductDetailList);
+                    orderSpecifications.push(jsonProductDetailList);
+                    orderSpecifications.push(jsonOrderDetails);
+                    localStorage.setItem('orderSpecifications', JSON.stringify(orderSpecifications));
+                    window.location = '/confirmar/pedido/' + id;
                 } else {
                     console.log('Elegir Color y Talla');
                 }
