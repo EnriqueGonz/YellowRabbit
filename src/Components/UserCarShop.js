@@ -98,7 +98,6 @@ const UserCarShop = () => {
         try {
             axios.get('https://yellowrabbit.herokuapp.com/shoppingcart/api/my-shopping-cart/' + username + '/', { headers })
                 .then((response) => {
-                    console.log(response.data);
                     setList(response.data);
                     var costoTotalInicio = calcularCostoTotal(response.data);
                     setInitialCost(costoTotalInicio);
@@ -118,16 +117,12 @@ const UserCarShop = () => {
     if (!list.length) return <LoadingUserCarShop />;
 
     function methodName(id) {
-        console.log(id);
-        console.log(idusuario);
-
         try {
             axios.post('https://yellowrabbit.herokuapp.com/wishlist/api/add-wishlist/', {
                 user: idusuario,
                 products: id
             }, { headers })
                 .then((response) => {
-                    console.log(response.status);
                     if (response.status === 200) {
                         notify();
                     }
@@ -149,7 +144,6 @@ const UserCarShop = () => {
         try {
             axios.delete('https://yellowrabbit.herokuapp.com/shoppingcart/api/delete/' + parseInt(id) + '/', { headers })
                 .then((response) => {
-                    console.log(response.status);
                     if (response.status === 200) {
                         notifyShoppingCart();
                         // sleep 3 seconds
@@ -245,7 +239,6 @@ const UserCarShop = () => {
             setInitialCost(calcularCostoTotal(list));
         }
     }
-
 
 
     function calcularCostoTotal(costo) {

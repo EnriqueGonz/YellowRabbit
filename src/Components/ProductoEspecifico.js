@@ -29,9 +29,6 @@ var jsonOrderDetails = {
     total_price: undefined
 };
 
-var orderSpecifications = []
-
-
 const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Token ${token}`
@@ -50,6 +47,8 @@ const ProductoEspecifico = () => {
         total_price: undefined
     });
 
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
 
     var { idproduct } = useParams(); // params
     const notify = () => {
@@ -183,61 +182,53 @@ const ProductoEspecifico = () => {
         jsonOrderDetails['unit_price'] = parseFloat(precioUnitario);
         jsonOrderDetails['total_price'] = totalPriceTDecimal;
 
-        orderSpecifications.push(opcion);
+
+        let orderSpecifications = [];
+        localStorage.removeItem('orderSpecifications');
+
+
         orderSpecifications.push(listProducto);
+        orderSpecifications.push(parseInt(opcion));
+        orderSpecifications.push(jsonProductDetailList);
+        orderSpecifications.push(jsonOrderDetails);
+        localStorage.setItem('orderSpecifications', JSON.stringify(orderSpecifications));
 
 
         switch (opcion) {
             case 0:
-                // En otros detalles poner, que el pedido no tiene especificación.
-                console.log('Proceder a realizar el pedido');
+                // El producto no cuenta con especificaciones
+                window.location = '/confirmar/pedido/' + id;
                 break;
             case 1:
                 if (getColor !== "") {
-                    orderSpecifications.push(jsonProductDetailList);
-                    orderSpecifications.push(jsonOrderDetails);
-                    localStorage.setItem('orderSpecifications', JSON.stringify(orderSpecifications));
                     window.location = '/confirmar/pedido/' + id;
                 } else {
-                    console.log('NO');
+                    setShow(true);
                 }
-
                 break;
 
             case 2:
                 if (getSize !== "") {
-                    orderSpecifications.push(jsonProductDetailList);
-                    orderSpecifications.push(jsonOrderDetails);
-                    localStorage.setItem('orderSpecifications', JSON.stringify(orderSpecifications));
                     window.location = '/confirmar/pedido/' + id;
                 } else {
-                    console.log('NO');
+                    setShow(true);
                 }
-
                 break;
 
             case 3:
                 if (getFlavor !== "") {
-                    orderSpecifications.push(jsonProductDetailList);
-                    orderSpecifications.push(jsonOrderDetails);
-                    localStorage.setItem('orderSpecifications', JSON.stringify(orderSpecifications));
                     window.location = '/confirmar/pedido/' + id;
-
                 } else {
-                    console.log('NO');
+                    setShow(true);
                 }
                 break;
 
             case 4:
                 if (getSize !== "" && getColor !== "") {
-                    orderSpecifications.push(jsonProductDetailList);
-                    orderSpecifications.push(jsonOrderDetails);
-                    localStorage.setItem('orderSpecifications', JSON.stringify(orderSpecifications));
                     window.location = '/confirmar/pedido/' + id;
                 } else {
-                    console.log('Elegir Color y Talla');
+                    setShow(true);
                 }
-
                 break;
         }
     }
@@ -371,10 +362,21 @@ const ProductoEspecifico = () => {
                 </div>
             </div>
 
+        
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Hola </Modal.Title>
+                </Modal.Header>
+                <Modal.Body style={{ fontSize: "19px" }}>¡Por favor! selecciona los detalles de tu producto.</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Cerrar
+                    </Button>
+
+                </Modal.Footer>
+            </Modal>
+
             <Footer></Footer>
-
-
-
         </>
     )
 }
@@ -486,8 +488,9 @@ const ChildProductDetails = (datas) => {
 
                         return (
                             <div className='col-md-7'>
+
                                 <span style={{ fontWeight: "bold", fontSize: "18px" }}>Seleccionar Color</span>
-                                <Form.Select aria-label="Select" id='selectColor' name="color" onChange={handleChange} value={detailsSelected.color}>
+                                <Form.Select required as="select" aria-label="Select" id='selectColor' name="color" onChange={handleChange} value={detailsSelected.color}>
                                     <option value="" disabled>Seleccionar</option>
                                     {arrColor.map((c, index) => (
                                         <option key={index} value={c} name="color"> {c} </option>
@@ -495,7 +498,7 @@ const ChildProductDetails = (datas) => {
                                 </Form.Select>
                                 <br></br>
                                 <span style={{ fontWeight: "bold", fontSize: "18px" }}>Seleccionar Talla</span>
-                                <Form.Select aria-label="Select" id='selectSize' name="size" onChange={handleChange} value={detailsSelected.size}>
+                                <Form.Select required as="select" aria-label="Select" id='selectSize' name="size" onChange={handleChange} value={detailsSelected.size}>
                                     <option value="" disabled>Seleccionar</option>
                                     {arrSize.map((s, index) => (
                                         <option key={index} value={s}> {s} </option>
@@ -581,7 +584,6 @@ const ChildProductDetails = (datas) => {
 
                 arrdatasReturn.push(arrSizes);
                 arrdatasReturn.push(arrColors);
-
                 return arrdatasReturn;
         }
     }
