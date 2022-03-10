@@ -28,18 +28,22 @@ var pricePlusShipping = undefined;
 
 
 
-
 const ConfirmOrder = () => {
     const [listProducto, setListProducto] = useState([]);
     const [orderSpecifications, setOrderSpecifications] = useState([]);
     const [listDirecciones, setlistDirecciones] = useState([]);
     const [inputCoupon, setInputCoupon] = useState([]);
     const [totalToPay, setTotalToPay] = useState([]);
-    /*Show invalid coupon message*/
+    // Show invalid coupon message
     const [show, setShow] = useState(false);
+    // Show message to select a payment method
+    const [showSelectPayment, setShowSelectPayment] = useState(false);
+    
+    // Select Payment method
+    const [paymentMethod, setPaymentMethod] = useState(null);
 
     const [productSpecifications, setProductSpecifications] = useState([]);
-    const [makeAnOrder, setMakeAnOrder] = useState([]);
+    const [datasMakeOrder, setDatasMakeOrder] = useState([]);
 
 
     useEffect(() => {
@@ -95,7 +99,7 @@ const ConfirmOrder = () => {
             axios.post('https://yellowrabbit.herokuapp.com/redeemedcoupons/api/get-discount/' + username + "/", {
                 coupon_key: inputCoupon,
                 total_price: parseFloat(pricePlusShipping)
-            }, { headers }) // 202 or 406 // LIOSEJ174678
+            }, { headers }) // LIOSEJ174678
                 .then((response) => {
                     var datasRC = response.data;
                     discountApplied = datasRC.discount_applied;
@@ -114,24 +118,50 @@ const ConfirmOrder = () => {
         }
     }
 
-    
+
+    function handleChangeCoupon(evt) {
+        const name = evt.target.name;
+        const value = evt.target.value;
+        setInputCoupon(value);
+        evt.preventDefault();
+    }
+
+    const handleChangePaymentMethod = (item) => {
+        item === paymentMethod ? setPaymentMethod(null) : setPaymentMethod(item);
+    };    
+
+
+    /* Alerts */
+    // Invalid coupon
     const InvalidCoupon = () => (
         <div style={{ marginTop: "1%" }}>
             <span style={{ color: "#FF5733" }}>Código de cupón no válido</span>
         </div>
     )
 
+    /* Select a payment method message */
+    const PaymentMethodMessage = () => (
+        <div style={{ marginTop: "1%" }}>
+            <span style={{ color: "#FF5733" }}>Selecciona un método de pago.</span>
+        </div>
+    )
 
 
+    function makeAnOrder(){
+        console.log('metodo de pago: ', paymentMethod);
 
+        if(paymentMethod === "" || paymentMethod === undefined || paymentMethod ===  NaN || paymentMethod === null){
+            setShowSelectPayment(true);
+        }
+        else{
+            setShowSelectPayment(false);
+            console.log('Si hay método de pago');
+        }
 
-    function handleChangeCoupon(evt) {
-        const name = evt.target.name;
-        const value = evt.target.value;
-
-        setInputCoupon(value);
-        evt.preventDefault();
     }
+
+
+
 
 
 
@@ -167,7 +197,7 @@ const ConfirmOrder = () => {
                                         <Form.Group>
                                             <Form.Control style={{ backgroundColor: "#DFDFDF" }} type="text" name="coupon" value={inputCoupon} onChange={handleChangeCoupon} placeholder='Ingresa tu cupón' />
                                         </Form.Group>
-                                        {/* Show message - invalid coupon */}
+                                        {/* Show invalid coupon message */}
                                         {show ? <InvalidCoupon /> : null}
 
 
@@ -217,27 +247,32 @@ const ConfirmOrder = () => {
                                 <Form>
                                     <Form.Check
                                         type='checkbox'
-                                        id="visaPayment"
+                                        id="creditCardPayment"
+                                        checked={paymentMethod === "creditCardPayment"} onChange={() => handleChangePaymentMethod("creditCardPayment")}
                                         label="Tarjeta de credito, debíto VISA, Master Card"
                                     />
                                     <Form.Check
                                         type='checkbox'
-                                        id="PpyPalPayment"
+                                        id="payPalPayment"
+                                        checked={paymentMethod === "payPalPayment"} onChange={() => handleChangePaymentMethod("payPalPayment")}
                                         label="PayPal"
                                     />
                                     <Form.Check
                                         type='checkbox'
                                         id="oxxoPayment"
+                                        checked={paymentMethod === "oxxoPayment"} onChange={() => handleChangePaymentMethod("oxxoPayment")}
                                         label="Pago en OXXO"
                                     />
                                     <Form.Check
                                         type='checkbox'
                                         id="transferPayment"
-                                        label="Tranferencia electronica"
+                                        checked={paymentMethod === "transferPayment"} onChange={() => handleChangePaymentMethod("transferPayment")}
+                                        label="Transferencia electrónica"
                                     />
-                                    <div style={{ marginTop: "1%" }}>
-                                        <span style={{ color: "#FF5733" }}>Selecciona un método de pago.</span>
-                                    </div>
+
+                                    {/* Show message to select a payment method */}
+                                    {showSelectPayment ? <PaymentMethodMessage /> : null} 
+
                                 </Form>
                                 <hr style={{ height: "5px", backgroundColor: "#EB5929", opacity: 1 }}></hr>
                             </div>
@@ -267,8 +302,8 @@ const ConfirmOrder = () => {
                                 </Form>
                             </div>
 
-                            <div style={{ textAlign: "center", marginTop: "5%", marginBottom: "2%", textAlign: "right" }}>
-                                <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", margin: "2%", fontSize: "19px", width: "100px" }}> Comprar </Button>
+                            <div style={{ textAlign: "center", marginTop: "5%", marginBottom: "2%"}}>
+                                <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", margin: "2%", fontSize: "19px", width: "100px" }} onClick={() => { makeAnOrder() }}> Comprar </Button>
                                 <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", margin: "2%", fontSize: "19px", width: "100px" }}> Volver </Button>
                             </div>
                             <hr style={{ height: "5px", backgroundColor: "#EB5929", opacity: 1 }}></hr>
