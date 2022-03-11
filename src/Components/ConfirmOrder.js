@@ -38,9 +38,27 @@ const ConfirmOrder = () => {
     const [show, setShow] = useState(false);
     // Show message to select a payment method
     const [showSelectPayment, setShowSelectPayment] = useState(false);
-    
+    // Show message to select an address
+    const [showSelectAddress, setshowSelectAddress] = useState(false);
+
+    // Id of the selected address
+    const [idSelectedAddress, setIdSelectedAddress] = useState(false);
     // Select Payment method
     const [paymentMethod, setPaymentMethod] = useState(null);
+
+    // Address
+    const [inputsDireccion, setinputsDireccion] = useState({
+        user: 0,
+        street: "",
+        avenue: "",
+        neighborhood: "",
+        street_number: 0,
+        apartment_number: "",
+        postal_code: 0,
+        city: "",
+        state: "",
+        additional_data: "",
+    })
 
     const [productSpecifications, setProductSpecifications] = useState([]);
     const [datasMakeOrder, setDatasMakeOrder] = useState([]);
@@ -82,7 +100,7 @@ const ConfirmOrder = () => {
             axios.get('https://yellowrabbit.herokuapp.com/addresses/api/my-addresses/' + username + "/", { headers })
                 .then((response) => {
                     setlistDirecciones(response.data);
-                    //console.log(response)
+                    //console.log(response.data);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -119,6 +137,53 @@ const ConfirmOrder = () => {
     }
 
 
+    const handleSubmitDireccion = (event) => {
+        axios.post('https://yellowrabbit.herokuapp.com/addresses/api/register/', {
+            user: idusuario,
+            street: inputsDireccion.street,
+            avenue: inputsDireccion.avenue,
+            neighborhood: inputsDireccion.neighborhood,
+            street_number: inputsDireccion.street_number,
+            apartment_number: inputsDireccion.apartment_number,
+            postal_code: inputsDireccion.postal_code,
+            city: inputsDireccion.city,
+            state: inputsDireccion.state,
+            additional_data: inputsDireccion.additional_data,
+        }, {
+            headers: {
+                "Authorization": "Token " + token
+            }
+        }
+        )
+            .then((response) => {
+                console.log(response);
+                setlistDirecciones(response.data);
+            })
+            .catch(err => console.log(err));
+
+        cancelAddress();
+        return false;
+
+    }
+
+    function methodAddDireccion() {
+        document.getElementById('formContent').style.display = "block";
+    }
+
+    // Cancel address registration
+    function cancelAddress() {
+        // Hide
+        document.getElementById('formContent').style.display = "none";
+    }
+
+
+    function handleChange(evt) {
+        const name = evt.target.name;
+        const value = evt.target.value;
+        console.log(name + value)
+        setinputsDireccion(values => ({ ...values, [name]: value }))
+    }
+
     function handleChangeCoupon(evt) {
         const name = evt.target.name;
         const value = evt.target.value;
@@ -126,9 +191,13 @@ const ConfirmOrder = () => {
         evt.preventDefault();
     }
 
+    const handleChangeSelectedAddress = (item) => {
+        item === idSelectedAddress ? setIdSelectedAddress(null) : setIdSelectedAddress(item);
+    };
+
     const handleChangePaymentMethod = (item) => {
         item === paymentMethod ? setPaymentMethod(null) : setPaymentMethod(item);
-    };    
+    };
 
 
     /* Alerts */
@@ -146,28 +215,70 @@ const ConfirmOrder = () => {
         </div>
     )
 
+    /* Select a address message */
+    const SelectAddressMessage = () => (
+        <div style={{ marginTop: "1%" }}>
+            <span style={{ color: "#FF5733" }}>Selecciona una dirección.</span>
+        </div>
+    )
 
-    function makeAnOrder(){
-        console.log('metodo de pago: ', paymentMethod);
-
-        if(paymentMethod === "" || paymentMethod === undefined || paymentMethod ===  NaN || paymentMethod === null){
+    // Validate address and payment method
+    function validateAddresPaymentM(){
+        if (paymentMethod === "" || paymentMethod === undefined || paymentMethod === NaN || paymentMethod === null || paymentMethod === false || paymentMethod === 0) {
             setShowSelectPayment(true);
+            return false;
         }
-        else{
+        else {
             setShowSelectPayment(false);
-            console.log('Si hay método de pago');
         }
 
+        if (idSelectedAddress === "" || idSelectedAddress === undefined || idSelectedAddress === NaN || idSelectedAddress === null || idSelectedAddress === false || idSelectedAddress === 0) {
+            setshowSelectAddress(true);
+            return false;
+        }
+        else {
+            setshowSelectAddress(false);
+        }
+
+        return true;
+    }
+
+    function makeAnOrder() {
+        let rowOrder = [];
+        console.log(validateAddresPaymentM());
+
+        if (validateAddresPaymentM() === true) {
+            let datasUserRow = {
+                "user": parseInt(idusuario),
+                "addresses": parseInt(idSelectedAddress),
+                "delivery_number": "",
+                "date_delivery": "",
+                "was_bought_coupon": false,
+                "status": "Pendiente"
+            }
+    
+            let datasOrderRow = {
+                "products": parseInt(listProducto.id),
+                "amount": parseInt(orderSpecifications.amount),
+                "unit_price":parseFloat(listProducto.price),
+                "total_price": parseFloat(totalToPay)
+            }
+
+            rowOrder.push(datasUserRow);
+            rowOrder.push(datasOrderRow);
+
+            console.log('datos para el pedido: ', rowOrder);
+            
+        } else {
+            setShowSelectPayment(true);
+            setshowSelectAddress(true);
+        }
     }
 
 
-
-
-
-
-    //console.log('especificaciones ', productSpecifications);
-    //console.log('order: ', orderSpecifications);
-    //console.log('opcion ', opcion);
+    function returnToPreviousView() {
+        window.location = '/article/details/' + listProducto.id;
+    }
 
 
     return (
@@ -209,36 +320,26 @@ const ConfirmOrder = () => {
 
                             <div className='container'>
                                 <Row>
-                                    <Col style={{ textAlign: "right" }}>
-                                        <Form.Label style={{ fontSize: "18px" }}>Precio por producto:</Form.Label>
-                                        <br></br>
-                                        <Form.Label style={{ fontSize: "18px" }}>Precio total:</Form.Label>
-                                        <br></br>
-                                        <Form.Label style={{ fontSize: "18px" }}>Total de productos:</Form.Label>
-                                        <br></br>
-                                        <Form.Label style={{ fontSize: "18px" }}>Descuento:</Form.Label>
-                                        <br></br>
-                                        <Form.Label style={{ fontSize: "18px" }}>Costo de envío:</Form.Label>
-                                        <br></br>
-                                        <Form.Label style={{ fontSize: "18px" }}>Total a pagar:</Form.Label>
-                                        <br></br>
+                                    <Col style={{ textAlign: "right", fontSize: "18px" }}>
+                                        <p>Precio por producto: <span style={{ fontWeight: "bold" }}>${listProducto.price}</span> </p>
+                                        <p>Precio total: <span style={{ fontWeight: "bold" }}>${orderSpecifications.total_price}</span></p>
+                                        <p>Total de productos: <span style={{ fontWeight: "bold" }}> {orderSpecifications.amount}</span></p>
+                                        <p>Descuento: <span style={{ fontWeight: "bold" }}> {discountApplied}</span></p>
+                                        <p>Costo de envío: <span style={{ fontWeight: "bold" }}>${shippingCost}</span></p>
+                                        <p>Total a pagar: <span style={{ fontWeight: "bold" }}>${totalToPay}</span></p>
                                     </Col>
-                                    <Col style={{ textAlign: "left", borderLeft: "5px solid #C4C4C4" }}>
-
-
-                                        <Form.Label style={{ fontSize: "18px" }}>$ {listProducto.price}</Form.Label>
-                                        <br></br>
-                                        <Form.Label style={{ fontSize: "18px" }}>$ {orderSpecifications.total_price}</Form.Label>
-                                        <br></br>
-                                        <Form.Label style={{ fontSize: "18px" }}> {orderSpecifications.amount}</Form.Label>
-                                        <br></br>
-                                        <Form.Label style={{ fontSize: "18px" }}> {discountApplied} </Form.Label>
-                                        <br></br>
-                                        <Form.Label style={{ fontSize: "18px" }}>$ {shippingCost} </Form.Label>
-                                        <br></br>
-                                        <Form.Label style={{ fontSize: "18px" }}>$ {totalToPay}</Form.Label>
-                                        <br></br>
+                                    <Col></Col>
+                                    {/*
+                                    <Col style={{ textAlign: "left", borderLeft: "5px solid #C4C4C4", fontSize: "18px" }}>
+                                        <p>$ {listProducto.price}</p>
+                                        <p>$ {orderSpecifications.total_price}</p>
+                                        <p> {orderSpecifications.amount}</p>
+                                        <p> {discountApplied} </p>
+                                        <p>$ {shippingCost} </p>
+                                        <p>$ {totalToPay}</p>
                                     </Col>
+                                    */}
+
                                 </Row>
                             </div>
 
@@ -271,7 +372,7 @@ const ConfirmOrder = () => {
                                     />
 
                                     {/* Show message to select a payment method */}
-                                    {showSelectPayment ? <PaymentMethodMessage /> : null} 
+                                    {showSelectPayment ? <PaymentMethodMessage /> : null}
 
                                 </Form>
                                 <hr style={{ height: "5px", backgroundColor: "#EB5929", opacity: 1 }}></hr>
@@ -281,30 +382,96 @@ const ConfirmOrder = () => {
 
                             <div className='col-md' style={{ marginTop: "8%" }}>
                                 <span style={{ fontWeight: "bold", fontSize: "18px" }}>DIRECCIÓN</span>
-                                <Form>
-                                    <div className=''>
-                                        {listDirecciones.map((item, index) => (
-                                            <div key={index} className="row">
-                                                <div className="col">
-                                                    <p style={{ margin: "0px", paddingTop: "0px" }}>DIRECCION #{index}</p>
-                                                    <div style={{ backgroundColor: "#DFDFDF", padding: "20px" }}>
-                                                        <p style={{ margin: "2px" }}>{item.street + " " + item.avenue + " " + item.street_number + " " + item.neighborhood + " " + item.city + " " + item.state + " C.P: " + item.postal_code}</p>
-                                                        <p style={{ margin: "2px" }}>{item.additional_data + " N°" + item.apartment_number}</p>
-                                                    </div>
+
+                                <div className=''>
+                                    {listDirecciones.map((item, index) => (
+                                        <div key={index} className="row">
+                                            <div className="col">
+                                                <p style={{ margin: "0px", paddingTop: "0px" }}>DIRECCION #{index}</p>
+                                                <div style={{ backgroundColor: "#DFDFDF", padding: "10px" }}>
+                                                    <Form.Check
+                                                        type='checkbox'
+                                                        id={index}
+                                                        checked={idSelectedAddress === item.id} onChange={() => handleChangeSelectedAddress(item.id)}
+                                                        label={item.street + " " + item.avenue + " " + item.street_number + ", N°" + item.apartment_number + ", " + item.neighborhood + " " + item.city + " " + item.state + " C.P: " + item.postal_code}
+                                                    />
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                    <div className="" style={{ padding: "20px", textAlign: "right" }}>
-                                        <a href='#formContent' className='btn row' style={{ color: "white", backgroundColor: "#E94E1B", borderColor: "#E94E1B" }} >Agregar Direccion</a>
-                                    </div>
+                                        </div>
+                                    ))}
 
-                                </Form>
+                                    {/* Show message to select an address */}
+                                    {showSelectAddress ? <SelectAddressMessage /> : null}
+
+                                </div>
+                                <div className="" style={{ padding: "20px", textAlign: "right" }}>
+                                    <a href='#formContent' className='btn row' style={{ color: "white", backgroundColor: "#E94E1B", borderColor: "#E94E1B" }} onClick={() => { methodAddDireccion() }}>Agregar Direccion</a>
+                                </div>
+
+
+                                <div name="formContent" id='formContent' className='container' style={{ display: "none", width: "90%", paddingTop: 50 }}>
+                                    <Form onSubmit={handleSubmitDireccion}>
+                                        <Row className="mb-3">
+                                            <Form.Group as={Col} controlId="">
+                                                <Form.Label>Calle</Form.Label>
+                                                <Form.Control style={{ backgroundColor: "#DFDFDF" }} required type="text" name="street" value={inputsDireccion.street} onChange={handleChange} />
+                                            </Form.Group>
+                                            <Form.Group as={Col} controlId="">
+                                                <Form.Label>Barrio/Colonia</Form.Label>
+                                                <Form.Control style={{ backgroundColor: "#DFDFDF" }} required type="text" name="neighborhood" value={inputsDireccion.neighborhood} onChange={handleChange} />
+                                            </Form.Group>
+
+                                        </Row>
+                                        <Row className="mb-3">
+                                            <Form.Group as={Col} controlId="">
+                                                <Form.Label>Avenida</Form.Label>
+                                                <Form.Control style={{ backgroundColor: "#DFDFDF" }} required type="text" name="avenue" value={inputsDireccion.avenue} onChange={handleChange} />
+                                            </Form.Group>
+                                        </Row>
+                                        <Row className="mb-3">
+                                            <Form.Group as={Col} controlId="">
+                                                <Form.Label>Numero de calle</Form.Label>
+                                                <Form.Control style={{ backgroundColor: "#DFDFDF" }} required type="number" name="street_number" value={inputsDireccion.street_number} onChange={handleChange} />
+                                            </Form.Group>
+                                            <Form.Group as={Col} controlId="">
+                                                <Form.Label>Numero de casa</Form.Label>
+                                                <Form.Control style={{ backgroundColor: "#DFDFDF" }} required type="number" name="apartment_number" value={inputsDireccion.apartment_number} onChange={handleChange} />
+                                            </Form.Group>
+                                        </Row>
+                                        <Row className="mb-3">
+                                            <Form.Group as={Col} controlId="">
+                                                <Form.Label>Codigo Postal (CP)</Form.Label>
+                                                <Form.Control style={{ backgroundColor: "#DFDFDF" }} required type="number" name="postal_code" value={inputsDireccion.postal_code} onChange={handleChange} />
+                                            </Form.Group>
+                                            <Form.Group as={Col} controlId="">
+                                                <Form.Label>Ciudad/Pueblo</Form.Label>
+                                                <Form.Control style={{ backgroundColor: "#DFDFDF" }} required type="text" name="city" value={inputsDireccion.city} onChange={handleChange} />
+                                            </Form.Group>
+                                        </Row>
+                                        <Row className="mb-3">
+                                            <Form.Group as={Col} controlId="">
+                                                <Form.Label>Estado</Form.Label>
+                                                <Form.Control style={{ backgroundColor: "#DFDFDF" }} required type="text" name="state" value={inputsDireccion.state} onChange={handleChange} />
+                                            </Form.Group>
+                                        </Row>
+                                        <Form.Group className="mb-3" controlId="">
+                                            <Form.Label>Informacion adicional</Form.Label>
+                                            <Form.Control style={{ backgroundColor: "#DFDFDF" }} as="textarea" required type="text" name="additional_data" value={inputsDireccion.additional_data} onChange={handleChange} />
+                                        </Form.Group>
+                                        <Button style={{ marginLeft: 10, float: "right", backgroundColor: "#E94E1B", borderColor: "#E94E1B" }} onClick={handleSubmitDireccion}>
+                                            Agregar
+                                        </Button>
+                                        <Button style={{ marginLeft: 10, float: "right", backgroundColor: "#E94E1B", borderColor: "#E94E1B" }} onClick={() => { cancelAddress() }}>
+                                            Cancelar
+                                        </Button>
+                                    </Form>
+                                </div><br></br><br></br>
+
                             </div>
 
-                            <div style={{ textAlign: "center", marginTop: "5%", marginBottom: "2%"}}>
+                            <div style={{ textAlign: "center", marginTop: "5%", marginBottom: "2%" }}>
                                 <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", margin: "2%", fontSize: "19px", width: "100px" }} onClick={() => { makeAnOrder() }}> Comprar </Button>
-                                <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", margin: "2%", fontSize: "19px", width: "100px" }}> Volver </Button>
+                                <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", margin: "2%", fontSize: "19px", width: "100px" }} onClick={() => { returnToPreviousView() }} > Volver </Button>
                             </div>
                             <hr style={{ height: "5px", backgroundColor: "#EB5929", opacity: 1 }}></hr>
 

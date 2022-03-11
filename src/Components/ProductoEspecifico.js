@@ -197,11 +197,11 @@ const ProductoEspecifico = () => {
         switch (opcion) {
             case 0:
                 // El producto no cuenta con especificaciones
-                window.location = '/confirmar/pedido/' + id;
+                window.location = '/confirmar/pedido';
                 break;
             case 1:
                 if (getColor !== "") {
-                    window.location = '/confirmar/pedido/' + id;
+                    window.location = '/confirmar/pedido';
                 } else {
                     setShow(true);
                 }
@@ -209,7 +209,7 @@ const ProductoEspecifico = () => {
 
             case 2:
                 if (getSize !== "") {
-                    window.location = '/confirmar/pedido/' + id;
+                    window.location = '/confirmar/pedido';
                 } else {
                     setShow(true);
                 }
@@ -217,7 +217,7 @@ const ProductoEspecifico = () => {
 
             case 3:
                 if (getFlavor !== "") {
-                    window.location = '/confirmar/pedido/' + id;
+                    window.location = '/confirmar/pedido';
                 } else {
                     setShow(true);
                 }
@@ -225,7 +225,7 @@ const ProductoEspecifico = () => {
 
             case 4:
                 if (getSize !== "" && getColor !== "") {
-                    window.location = '/confirmar/pedido/' + id;
+                    window.location = '/confirmar/pedido';
                 } else {
                     setShow(true);
                 }

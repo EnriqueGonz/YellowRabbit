@@ -65,7 +65,7 @@ function App() {
             <UserDirecciones></UserDirecciones>
         </Route>
 
-        <Route path="/confirmar/pedido/:idproducto">
+        <Route path="/confirmar/pedido">
             <ConfirmOrder></ConfirmOrder>
         </Route>
 
