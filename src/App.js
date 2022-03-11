@@ -15,6 +15,7 @@ import UserCarShop from './Components/UserCarShop';
 import UserDirecciones from './Components/UserDirecciones';
 
 import ConfirmOrder from './Components/ConfirmOrder';
+import RealizarPago from './Components/RealizarPago';
 
 function App() {
   return (
@@ -67,6 +68,10 @@ function App() {
 
         <Route path="/confirmar/pedido">
             <ConfirmOrder></ConfirmOrder>
+        </Route>
+
+        <Route path="/realizar/pago">
+            <RealizarPago></RealizarPago>
         </Route>
 
         </Switch>

@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Row, Col, Modal, Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Form, Button, Row, Col, Container, Modal } from 'react-bootstrap';
 import Appbar from './appbarClient';
 import Footer from './footer';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import { MdOutlineFavorite, MdAddShoppingCart, MdAdd, MdRemove } from "react-icons/md";
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import imgErrorOrder from '../images/icons/iconErrorOrder.svg';
 
 
 var token = localStorage.getItem('tokenClient');
@@ -27,7 +25,6 @@ var discountApplied = "0.0 %";
 var pricePlusShipping = undefined;
 
 
-
 const ConfirmOrder = () => {
     const [listProducto, setListProducto] = useState([]);
     const [orderSpecifications, setOrderSpecifications] = useState([]);
@@ -40,6 +37,8 @@ const ConfirmOrder = () => {
     const [showSelectPayment, setShowSelectPayment] = useState(false);
     // Show message to select an address
     const [showSelectAddress, setshowSelectAddress] = useState(false);
+    // Orders
+    const [showErrorOrder, setShowErrorOrder] = useState(false);
 
     // Id of the selected address
     const [idSelectedAddress, setIdSelectedAddress] = useState(false);
@@ -70,19 +69,15 @@ const ConfirmOrder = () => {
                 switch (parseInt(key)) {
 
                     case 0:
-                        //console.log('product: ', value);
                         setListProducto(value);
                         break;
                     case 1:
-                        //console.log('opcion ', value)
                         opcion = value;
                         break;
                     case 2:
-                        //console.log('product specification: ', value);
                         setProductSpecifications(value);
                         break;
                     case 3:
-                        //console.log('order: ', value);
                         setOrderSpecifications(value);
                         pricePlusShipping = value.total_price + shippingCost;
                         setTotalToPay(pricePlusShipping);
@@ -149,16 +144,11 @@ const ConfirmOrder = () => {
             city: inputsDireccion.city,
             state: inputsDireccion.state,
             additional_data: inputsDireccion.additional_data,
-        }, {
-            headers: {
-                "Authorization": "Token " + token
-            }
-        }
-        )
-            .then((response) => {
-                console.log(response);
-                setlistDirecciones(response.data);
-            })
+        }, { headers }
+        ).then((response) => {
+            console.log(response);
+            setlistDirecciones(response.data);
+        })
             .catch(err => console.log(err));
 
         cancelAddress();
@@ -223,7 +213,7 @@ const ConfirmOrder = () => {
     )
 
     // Validate address and payment method
-    function validateAddresPaymentM(){
+    function validateAddresPaymentM() {
         if (paymentMethod === "" || paymentMethod === undefined || paymentMethod === NaN || paymentMethod === null || paymentMethod === false || paymentMethod === 0) {
             setShowSelectPayment(true);
             return false;
@@ -243,32 +233,66 @@ const ConfirmOrder = () => {
         return true;
     }
 
+
     function makeAnOrder() {
+        let getcolor = productSpecifications.color;
+        let getsize = productSpecifications.size;
+        let getflavor = productSpecifications.flavor;
+
+        let setSize = "";
+        let setColor = "";
+        let setFlavor = "";
+
+        // size
+        if (getsize) {
+            setSize = "Talla: " + getsize + ", ";
+        }
+        // color
+        if (getcolor) {
+            setColor = getcolor = "Color: " + getcolor + ", ";
+        }
+        // Flavor
+        if (getflavor) {
+            setFlavor = "Sabor: " + getflavor + ", ";
+        }
+
+        let strSpecifications = setSize + "" + setColor + "" + setFlavor;
         let rowOrder = [];
-        console.log(validateAddresPaymentM());
 
         if (validateAddresPaymentM() === true) {
             let datasUserRow = {
-                "user": parseInt(idusuario),
-                "addresses": parseInt(idSelectedAddress),
-                "delivery_number": "",
-                "date_delivery": "",
-                "was_bought_coupon": false,
-                "status": "Pendiente"
+                user: parseInt(idusuario),
+                addresses: parseInt(idSelectedAddress),
+                delivery_number: "",
+                date_delivery: "",
+                status: "Pendiente"
             }
-    
+
             let datasOrderRow = {
-                "products": parseInt(listProducto.id),
-                "amount": parseInt(orderSpecifications.amount),
-                "unit_price":parseFloat(listProducto.price),
-                "total_price": parseFloat(totalToPay)
+                products: parseInt(listProducto.id),
+                amount: parseInt(orderSpecifications.amount),
+                unit_price: parseFloat(listProducto.price),
+                total_price: parseFloat(totalToPay),
+                specifications: strSpecifications
             }
 
-            rowOrder.push(datasUserRow);
-            rowOrder.push(datasOrderRow);
+            rowOrder.push([datasUserRow]);
+            rowOrder.push([datasOrderRow]);
 
-            console.log('datos para el pedido: ', rowOrder);
-            
+            try {
+                axios.post('https://yellowrabbit.herokuapp.com/orders/api/register/', { //http://127.0.0.1:8000/orders/api/register/
+                    orderO: rowOrder
+                }, { headers }
+                ).then((response) => {
+                    // Redireccionar a la vista de formas de Pago
+
+                    console.log(response);
+                }).catch((error) => {
+                    setShowErrorOrder(true);
+                });
+            } catch (error) {
+                setShowErrorOrder(true);
+            }
         } else {
             setShowSelectPayment(true);
             setshowSelectAddress(true);
@@ -279,6 +303,12 @@ const ConfirmOrder = () => {
     function returnToPreviousView() {
         window.location = '/article/details/' + listProducto.id;
     }
+
+    // close Orders error
+    const handleTryAgain = () => {
+        setShowErrorOrder(false);
+        setTimeout(() => {  makeAnOrder(); }, 3000); // sleep 3 seconds
+    };
 
 
     return (
@@ -480,6 +510,27 @@ const ConfirmOrder = () => {
                 </Container>
             </div>
             <div><br></br></div>
+
+            <Modal show={showErrorOrder} onHide={handleTryAgain}>
+                <Modal.Body>
+                    <div style={{ textAlign: "center", margin:"4%"}}>
+                    <img alt='error' src={imgErrorOrder} style={{ width: "12%", height: "12%" }}/>
+                    <h3>Ha habido un error</h3>
+                    </div>
+                    <p style={{ color: "#EB5929", textAlign: "center", fontSize:"17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
+                    error persiste, contáctanos y te ayudaremos con tu compra.</p>
+                    
+                    <div style={{ backgroundColor:"#0000", textAlign: "center" }}>
+                    <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin:"2%", fontSize:"17px" }} onClick={handleTryAgain}>
+                        Intentar de nuevo
+                    </Button>
+                    <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin:"2%", fontSize:"17px" }}>
+                        Ayuda
+                    </Button>
+                    </div>
+                </Modal.Body>
+            </Modal>
+
             <Footer></Footer>
         </>
     )
