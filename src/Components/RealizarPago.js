@@ -13,6 +13,10 @@ var token = localStorage.getItem('tokenClient');
 var idusuario = localStorage.getItem('userId');
 var username = localStorage.getItem('usernameClient');
 
+var dataToPayOrder = JSON.parse(localStorage.getItem('dataToPayOrder'));
+// Remocer estos datos al finalizar la compra
+localStorage.removeItem('dataToPayOrder');
+
 const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Token ${token}`
@@ -21,6 +25,7 @@ const headers = {
 
 
 const realizarPago = () => {
+    console.log(' - - ', dataToPayOrder);
 
     return(
         <>

@@ -90,9 +90,10 @@ const ProductoEspecifico = () => {
         try {
             axios.get('https://yellowrabbit.herokuapp.com/products/api/specific-product/' + idproduct + '/', { headers })
                 .then((response) => {
-                    console.log(response.data);
                     setListProducto(response.data[0][0]);
                     setProductDetails(response.data[1]);
+                    let datasProduct = response.data[0][0];
+                    calcularPrecioTotal(datasProduct.price, 1);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -105,9 +106,6 @@ const ProductoEspecifico = () => {
 
 
     function methodAddWishlist(id) {
-        console.log(id);
-        console.log(idusuario);
-
         try {
             axios.post('https://yellowrabbit.herokuapp.com/wishlist/api/add-wishlist/', {
                 user: idusuario,
@@ -132,9 +130,6 @@ const ProductoEspecifico = () => {
     }
 
     function methodAddCarshop(id) {
-        console.log(id);
-        console.log(idusuario);
-
         try {
             axios.post('https://yellowrabbit.herokuapp.com/shoppingcart/api/add/', {
                 user: idusuario,
@@ -163,29 +158,21 @@ const ProductoEspecifico = () => {
          *  - 4: Color & size
          */
 
-        console.log('id product: ', id);
-
         let getColor = jsonProductDetailList.color;
         let getSize = jsonProductDetailList.size;
         let getFlavor = jsonProductDetailList.flavor;
         // Products
         let precioUnitario = listProducto.price;
         let cantidadProducto = quantity.cantidad;
-        let precioTotal = parseFloat(precioUnitario) * parseInt(cantidadProducto);
-        // Total price with 2 de decimals
-        let totalPriceTDecimal = (Math.round(parseFloat(precioTotal) * 100) / 100);
-        setTotalCost(values => ({ ...values, ['totalcost']: totalPriceTDecimal }))
-
+        let totalPriceTDecimal = calcularPrecioTotal(precioUnitario, cantidadProducto)
 
         jsonOrderDetails['products'] = id;
         jsonOrderDetails['amount'] = parseInt(cantidadProducto);
         jsonOrderDetails['unit_price'] = parseFloat(precioUnitario);
         jsonOrderDetails['total_price'] = totalPriceTDecimal;
 
-
         let orderSpecifications = [];
         localStorage.removeItem('orderSpecifications');
-
 
         orderSpecifications.push(listProducto);
         orderSpecifications.push(parseInt(opcion));
@@ -245,6 +232,7 @@ const ProductoEspecifico = () => {
     function sumarCantidad() {
         let cantidadActual = quantity.cantidad;
         cantidadActual += 1;
+        calcularPrecioTotal(listProducto.price, cantidadActual);
         setQuantity(values => ({ ...values, ['cantidad']: cantidadActual }))
     }
 
@@ -256,8 +244,17 @@ const ProductoEspecifico = () => {
         }
         else {
             cantidadActual -= 1;
+            calcularPrecioTotal(listProducto.price, cantidadActual);
             setQuantity(values => ({ ...values, ['cantidad']: cantidadActual }))
         }
+    }
+
+    function calcularPrecioTotal(precioUnitario, cantidadProducto) {
+        let precioTotal = parseFloat(precioUnitario) * parseInt(cantidadProducto);
+        // Total price with 2 de decimals
+        let totalPriceTDecimal = (Math.round(parseFloat(precioTotal) * 100) / 100);
+        setTotalCost(values => ({ ...values, ['totalcost']: totalPriceTDecimal }))
+        return totalPriceTDecimal;
     }
 
 
@@ -329,7 +326,6 @@ const ProductoEspecifico = () => {
                                 <br></br>
 
                                 <div>
-
                                     <Form.Label style={{ width: "auto", textAlign: 'center', color: "#EB5929", fontWeight: "bold", fontSize: "18px" }} type="text" name="quantity"> Seleccionar Cantidad </Form.Label>
                                     <br></br>
                                     <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Menos</Tooltip>}>
@@ -350,6 +346,9 @@ const ProductoEspecifico = () => {
                                         )}
                                     </OverlayTrigger>
 
+                                    <div style={{ marginTop: "3%", fontSize: "19px", marginRight: "10px", fontWeight: "bold", backgroundColor:"#0000" }}>
+                                    <span><span style={{ color: "#EB5929", opacity: 1 }}>Total: </span> { totalCost.totalcost} </span>
+                                </div>
                                 </div>
                             </div>
                         </div>
@@ -362,12 +361,12 @@ const ProductoEspecifico = () => {
                 </div>
             </div>
 
-        
+
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Hola </Modal.Title>
                 </Modal.Header>
-                <Modal.Body style={{ fontSize: "19px" }}>¡Por favor! selecciona los detalles de tu producto.</Modal.Body>
+                <Modal.Body style={{ fontSize: "19px" }}>¡Por favor! seleccione los detalles de tu producto.</Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
                         Cerrar

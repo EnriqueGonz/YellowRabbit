@@ -95,7 +95,6 @@ const ConfirmOrder = () => {
             axios.get('https://yellowrabbit.herokuapp.com/addresses/api/my-addresses/' + username + "/", { headers })
                 .then((response) => {
                     setlistDirecciones(response.data);
-                    //console.log(response.data);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -117,7 +116,7 @@ const ConfirmOrder = () => {
                     var datasRC = response.data;
                     discountApplied = datasRC.discount_applied;
                     let totalPriceTD = (Math.round(parseFloat(datasRC.discounted_price) * 100) / 100);
-                    setTotalToPay(totalPriceTD); // values => ({ ...values, [name]: value }
+                    setTotalToPay(totalPriceTD);
                     setShow(false);
                 })
                 .catch((error) => {
@@ -146,7 +145,6 @@ const ConfirmOrder = () => {
             additional_data: inputsDireccion.additional_data,
         }, { headers }
         ).then((response) => {
-            console.log(response);
             setlistDirecciones(response.data);
         })
             .catch(err => console.log(err));
@@ -281,12 +279,14 @@ const ConfirmOrder = () => {
 
             try {
                 axios.post('https://yellowrabbit.herokuapp.com/orders/api/register/', { //http://127.0.0.1:8000/orders/api/register/
-                    orderO: rowOrder
+                    order: rowOrder 
                 }, { headers }
                 ).then((response) => {
                     // Redireccionar a la vista de formas de Pago
-
-                    console.log(response);
+                    rowOrder.push([paymentMethod]);
+                    // save the data to make the payment
+                    localStorage.setItem('dataToPayOrder', JSON.stringify(rowOrder));
+                    window.location = '/realizar/pago';
                 }).catch((error) => {
                     setShowErrorOrder(true);
                 });
@@ -294,8 +294,8 @@ const ConfirmOrder = () => {
                 setShowErrorOrder(true);
             }
         } else {
-            setShowSelectPayment(true);
-            setshowSelectAddress(true);
+            //setShowSelectPayment(true);
+            //setshowSelectAddress(true);
         }
     }
 
@@ -307,8 +307,13 @@ const ConfirmOrder = () => {
     // close Orders error
     const handleTryAgain = () => {
         setShowErrorOrder(false);
-        setTimeout(() => {  makeAnOrder(); }, 3000); // sleep 3 seconds
+        setTimeout(() => { makeAnOrder(); }, 2000); // sleep 2 seconds
     };
+
+    const handleCloseTryAgain = () => {
+        setShowErrorOrder(false);
+    };
+
 
 
     return (
@@ -511,22 +516,23 @@ const ConfirmOrder = () => {
             </div>
             <div><br></br></div>
 
-            <Modal show={showErrorOrder} onHide={handleTryAgain}>
+            <Modal show={showErrorOrder} onHide={handleCloseTryAgain}>
+            <Modal.Header closeButton style={{ borderBottom:"0" }}></Modal.Header>
                 <Modal.Body>
-                    <div style={{ textAlign: "center", margin:"4%"}}>
-                    <img alt='error' src={imgErrorOrder} style={{ width: "12%", height: "12%" }}/>
-                    <h3>Ha habido un error</h3>
+                    <div style={{ textAlign: "center", marginBottom: "3%" }}>
+                        <img alt='error' src={imgErrorOrder} style={{ width: "12%", height: "12%", marginBottom:"1%" }} />
+                        <h3>Ha habido un error</h3>
                     </div>
-                    <p style={{ color: "#EB5929", textAlign: "center", fontSize:"17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
-                    error persiste, contáctanos y te ayudaremos con tu compra.</p>
-                    
-                    <div style={{ backgroundColor:"#0000", textAlign: "center" }}>
-                    <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin:"2%", fontSize:"17px" }} onClick={handleTryAgain}>
-                        Intentar de nuevo
-                    </Button>
-                    <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin:"2%", fontSize:"17px" }}>
-                        Ayuda
-                    </Button>
+                    <p style={{ color: "#EB5929", textAlign: "center", fontSize: "17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
+                        error persiste, contáctanos y te ayudaremos con tu compra.</p>
+
+                    <div style={{ backgroundColor: "#0000", textAlign: "center" }}>
+                        <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }} onClick={handleTryAgain}>
+                            Intentar de nuevo
+                        </Button>
+                        <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }}>
+                            Ayuda
+                        </Button>
                     </div>
                 </Modal.Body>
             </Modal>
