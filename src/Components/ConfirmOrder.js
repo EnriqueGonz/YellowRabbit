@@ -31,6 +31,7 @@ const ConfirmOrder = () => {
     const [listDirecciones, setlistDirecciones] = useState([]);
     const [inputCoupon, setInputCoupon] = useState([]);
     const [totalToPay, setTotalToPay] = useState([]);
+    const [usedCoupon, setUsedCoupon] = useState(false);
     // Show invalid coupon message
     const [show, setShow] = useState(false);
     // Show message to select a payment method
@@ -117,9 +118,11 @@ const ConfirmOrder = () => {
                     discountApplied = datasRC.discount_applied;
                     let totalPriceTD = (Math.round(parseFloat(datasRC.discounted_price) * 100) / 100);
                     setTotalToPay(totalPriceTD);
+                    setUsedCoupon(true);
                     setShow(false);
                 })
                 .catch((error) => {
+                    setUsedCoupon(false);
                     // The coupon you are trying to access does not exist or is expired
                     if (error.response.status === 406) {
                         setShow(true);
@@ -283,7 +286,9 @@ const ConfirmOrder = () => {
                 }, { headers }
                 ).then((response) => {
                     // Redireccionar a la vista de formas de Pago
-                    rowOrder.push([paymentMethod]);
+                    rowOrder.push(listProducto);
+                    rowOrder.push(paymentMethod);
+                    rowOrder.push(usedCoupon);
                     // save the data to make the payment
                     localStorage.setItem('dataToPayOrder', JSON.stringify(rowOrder));
                     window.location = '/realizar/pago';
