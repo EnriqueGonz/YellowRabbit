@@ -1,33 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { Form, Button, Row, Col, Modal, Container, OverlayTrigger, Tooltip, InputGroup } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Form, Button, Row, Col, Modal, Container, InputGroup } from 'react-bootstrap';
 import Appbar from './appbarClient';
 import Footer from './footer';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import { MdOutlineFavorite, MdAddShoppingCart, MdAdd, MdRemove } from "react-icons/md";
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import imgOXXOPay from '../images/icons/iconOxxoPay.svg';
 import imgErrorOrder from '../images/icons/iconErrorOrder.svg';
+import imgFinishingPurchase from '../images/icons/iconFinishingPurchase.svg';
+import imgSuccessPurchase from '../images/icons/iconSuccessesOrder.svg';
+
 
 // Payment
 import { loadStripe } from '@stripe/stripe-js';
-import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
+import { useStripe } from '@stripe/react-stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
 
 var token = localStorage.getItem('tokenClient');
-var idusuario = localStorage.getItem('userId');
-var username = localStorage.getItem('usernameClient');
 
-// datas(4): user datas, datas order, product datas, payment method
-var dataToPayOrder = JSON.parse(localStorage.getItem('dataToPayOrder'));
-var orderData = dataToPayOrder[1];
-var productData = dataToPayOrder[2];
-var paymentMethod = dataToPayOrder[3];
-// Remocer estos datos al finalizar la compra
-//localStorage.removeItem('dataToPayOrder');
+try {
+    // datas(4): user datas, datas order, product datas, payment method
+    var dataToPayOrder = JSON.parse(localStorage.getItem('dataToPayOrder'));
+    var orderData = dataToPayOrder[1];
+    var productData = dataToPayOrder[2];
 
+} catch (error) {
+    //
+}
 
 const headers = {
     'Content-Type': 'application/json',
@@ -46,16 +45,21 @@ const PagarConOxxo = () => {
     const [validated, setValidated] = useState(false);
     const [errorMessage, setErrorMessage] = useState(false); // Backend Error Message
     const [finalizingPurchaseMsg, setFinalizingPurchaseMsg] = useState(false); // Finalizing purchase message 
+    const [successPurchase, setSuccessPurchase] = useState(false); //successful purchase message
     const stripe = useStripe();
 
     //Data of the product to pay
-    var dataProductPay = {
-        product_name: productData.product_name,
-        price: parseFloat(orderData[0].total_price), // Total price
-        currency: 'mxn',
-        quantity: parseInt(orderData[0].amount),  // Cantidad de productos. 
-    };
-
+    try {
+        var dataProductPay = {
+            product_name: productData.product_name,
+            price: parseFloat(orderData[0].total_price), // Total price
+            currency: 'mxn',
+            quantity: parseInt(orderData[0].amount),  // amount of productos
+        }
+    } catch (error) {
+        window.location = '/not/fount';
+        return;
+    }
 
     function handleChangeOXXO(evt) {
         const name = evt.target.name;
@@ -79,8 +83,8 @@ const PagarConOxxo = () => {
             * quantity y product_name: no son campos necesarios para el método de pago con OXXO
             * Lo mínimo a pagar deben ser $10.00 mxn.
             */
-            makeThePayment();
-
+            setFinalizingPurchaseMsg(true);
+            setTimeout(() => { makeThePayment(); }, 2000); // sleep 2 seconds
         } else {
             //
         }
@@ -89,20 +93,18 @@ const PagarConOxxo = () => {
 
 
     const makeThePayment = async () => {
-        console.log('Viene-oxxo-pay');
         setErrorMessage(false);
+        setSuccessPurchase(false);
 
-
-        /*
         // Create a payment intent on the server
         const { error: backendError, clientSecret } = await axios.post('https://yellowrabbit.herokuapp.com/payment/api/create-payment-intent-oxxo/', dataProductPay, { headers })
             .then(function (r) {
-                console.log('datas: ', r.data);
                 return r.data;
             })
 
         if (backendError) {
-            console.log('Este es el error del backend ', backendError.message);
+            setFinalizingPurchaseMsg(false);
+            setSuccessPurchase(false);
             setErrorMessage(true);
             return;
         }
@@ -112,24 +114,24 @@ const PagarConOxxo = () => {
             {
                 payment_method: {
                     billing_details: {
-                        name: 'Marcelo segunda compra',
-                        email: 'marcelo@example.com',
+                        name: inputsUser.fullName,
+                        email: inputsUser.email,
                     },
                 },
             }
         )
 
         if (error) {
-            console.log('Este es el error del front: ', error.message);
+            setFinalizingPurchaseMsg(false);
+            setSuccessPurchase(false);
             setErrorMessage(true);
             return;
         }
 
-        console.log('Es el status: ', paymentIntent.status);
+        localStorage.removeItem('dataToPayOrder');
         setErrorMessage(false);
-        // Redireccionarlo a la vista de pedido
-        */
-        
+        setFinalizingPurchaseMsg(false);
+        setSuccessPurchase(true);
     }
 
 
@@ -138,8 +140,6 @@ const PagarConOxxo = () => {
         setTimeout(() => { makeThePayment(); }, 2000); // sleep 2 seconds
     }
 
-    // close error message
-    const hideErrorMessage = () => setErrorMessage(false);
 
     function validateInputsUser() {
         let userFullName = inputsUser.fullName;
@@ -168,6 +168,19 @@ const PagarConOxxo = () => {
             <span style={{ color: "#FF5733" }}>El nombre ingresado no es aceptable</span>
         </div>
     )
+
+
+    // close error message
+    const hideErrorMessage = () => setErrorMessage(false);
+    const hideSuccessPurchase = () => setSuccessPurchase(false);
+
+    function goToDashboard() {
+        window.location = '/inicio';
+    }
+
+    function keetBuying() {
+        window.location = '/productos';
+    }
 
     return (
         <>
@@ -206,6 +219,8 @@ const PagarConOxxo = () => {
                                                 </Form.Control.Feedback>
                                             </InputGroup>
                                         </Form.Group>
+                                        {/* Error message */}
+                                        {showErrorOxxo ? <InputsUserMessage /> : null}
                                     </Row>
                                     <Row className="mb-3">
 
@@ -227,7 +242,6 @@ const PagarConOxxo = () => {
                                             </InputGroup>
                                         </Form.Group>
 
-                                        {showErrorOxxo ? <InputsUserMessage /> : null}
                                     </Row>
 
                                     <div style={{ margin: "auto", textAlign: "center" }}>
@@ -241,6 +255,7 @@ const PagarConOxxo = () => {
                         </Col>
                     </Row>
 
+                    {/** MODALS */}
                     <Modal show={errorMessage} onHide={hideErrorMessage}>
                         <Modal.Header closeButton style={{ borderBottom: "0" }}></Modal.Header>
                         <Modal.Body>
@@ -261,6 +276,40 @@ const PagarConOxxo = () => {
                             </div>
                         </Modal.Body>
                     </Modal>
+
+
+                    {/* Finishing Purchase  */}
+                    <Modal show={finalizingPurchaseMsg}>
+                        <Modal.Body>
+                            <div style={{ textAlign: "center", marginBottom: "3%" }}>
+                                <img alt='error' src={imgFinishingPurchase} style={{ width: "12%", height: "12%", marginBottom: "1%" }} />
+                                <h3>Finalizando compra</h3>
+                            </div>
+                            <p style={{ color: "#EB5929", textAlign: "center", fontSize: "17px" }}>Este proceso puede tardar unos instantes. no salgas de esta página</p>
+                        </Modal.Body>
+                    </Modal>
+
+
+                    {/* Successful purchase message */}
+                    <Modal show={successPurchase} onHide={hideSuccessPurchase}>
+                        <Modal.Body>
+                            <div style={{ textAlign: "center", marginBottom: "3%" }}>
+                                <img alt='error' src={imgSuccessPurchase} style={{ width: "12%", height: "12%", marginBottom: "1%" }} />
+                                <h3>Tu compra ha sido un éxito</h3>
+                            </div>
+                            <p style={{ color: "#EB5929", textAlign: "center", fontSize: "17px" }}>Gracias por comprar con nosotros, en breve recibirás un correo con los datos de tu compra y envío</p>
+                            <div style={{ backgroundColor: "#0000", textAlign: "center" }}>
+                                <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }} onClick={() => { keetBuying() }}>
+                                    Seguir comprando
+                                </Button>
+                                <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }} onClick={() => { goToDashboard() }}>
+                                    Ir a inicio
+                                </Button>
+                            </div>
+                        </Modal.Body>
+                    </Modal>
+
+
                 </Container>
             </div>
         </>
