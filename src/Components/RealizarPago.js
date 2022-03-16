@@ -28,13 +28,6 @@ var paymentMethod = dataToPayOrder[3];
 // Remocer estos datos al finalizar la compra
 //localStorage.removeItem('dataToPayOrder');
 
-// STRIPE
-var stripe;
-var fullName = undefined;
-var email = undefined;
-
-// CREDIT CARD
-
 
 const headers = {
     'Content-Type': 'application/json',
@@ -59,7 +52,6 @@ const RealizarPago = () => {
         currency: 'mxn',
         quantity: parseInt(orderData[0].amount),  // Cantidad de productos. 
     };
-
 
 
     function handleChangeOXXO(evt) {
@@ -91,6 +83,7 @@ const RealizarPago = () => {
             let publishableKey = "pk_test_51K0BPZH8UO4qsCfWtyXUkkwB0qV9Mb0aUYbAC2SGvVdmRIuvTxM58A1tYtriviDsUq0eHEoBTNnI58E8SJP7I5Rv00wCXdhNDJ"
 
             payWithOxxo(publishableKey, clientSecret, intentId);
+            
         } else {
             //
             console.log('Xamos NO válidos');

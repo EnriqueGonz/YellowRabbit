@@ -16,7 +16,6 @@ import UserDirecciones from './Components/UserDirecciones';
 
 import ConfirmOrder from './Components/ConfirmOrder';
 import RealizarPago from './Components/RealizarPago';
-import PayWithCreditCard from './Components/PayWithCreditCard';
 
 
 function App() {
@@ -75,11 +74,6 @@ function App() {
         <Route path="/pagar/con/oxxo">
             <RealizarPago></RealizarPago>
         </Route>
-
-        <Route path="/pagar/con/targeta">
-            <PayWithCreditCard></PayWithCreditCard>
-        </Route>
-
 
         </Switch>
       </Router>

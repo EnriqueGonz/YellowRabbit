@@ -5,6 +5,7 @@ import Footer from './footer';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import imgErrorOrder from '../images/icons/iconErrorOrder.svg';
+import PaymentMethods from "./PaymentMethods.js";
 
 
 var token = localStorage.getItem('tokenClient');
@@ -278,21 +279,34 @@ const ConfirmOrder = () => {
                 specifications: strSpecifications
             }
 
-            rowOrder.push([datasUserRow]);
-            rowOrder.push([datasOrderRow]);
+
+            // Data of the product to pay
+            let dataProductPay = {
+                product_name: listProducto.product_name,
+                price: totalToPay, // Total price
+                currency: 'mxn',
+                quantity: parseInt(orderSpecifications.amount),  // Cantidad de productos. 
+            };
+
+            //rowOrder.push([datasUserRow]);
+            //rowOrder.push([datasOrderRow]);
+
+            makeThePayment(paymentMethod, dataProductPay);
+
+            /*
 
             try {
-                axios.post('https://yellowrabbit.herokuapp.com/orders/api/register/', { //http://127.0.0.1:8000/orders/api/register/
+                axios.post('https://yellowrabbit.herokuapp.com/orders/api/register/', {
                     order: rowOrder 
                 }, { headers }
                 ).then((response) => {
                     let listDataOrder = response.data;
-                    rowOrder.push(listProducto);
-                    rowOrder.push(paymentMethod);
+                    //rowOrder.push(listProducto);
+                    //rowOrder.push(paymentMethod);
                     // save the data to make the payment
                     localStorage.setItem('dataToPayOrder', JSON.stringify(rowOrder));
                     notifyCouponRedemption(listDataOrder.id);
-                    setTimeout(() => { window.location = '/pagar/con/oxxo'; }, 1000); // sleep 1 second
+                    makeThePayment();
 
                 }).catch((error) => {
                     setShowErrorOrder(true);
@@ -300,17 +314,43 @@ const ConfirmOrder = () => {
             } catch (error) {
                 setShowErrorOrder(true);
             }
+            */
         } else {
             //setShowSelectPayment(true);
             //setshowSelectAddress(true);
         }
     }
 
-    
-    function notifyCouponRedemption(idOrder){
-        if(parseInt(idCoupon)===0){
+
+    function makeThePayment(key, dataProductPay) {
+        switch (key) {
+            case 'creditCardPayment':
+                PaymentMethods.payWithCreditCard(dataProductPay);
+                break;
+
+            case 'oxxoPayment':
+                window.location = '/pagar/con/oxxo';
+                //PaymentMethods.payWithOXXO(dataProductPay);
+                break;
+
+            case 'payPalPayment':
+                console.log(' paypal ', key);
+                break;
+
+            case 'transferPayment':
+                console.log(' transfer ', key);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+
+    function notifyCouponRedemption(idOrder) {
+        if (parseInt(idCoupon) === 0) {
             //
-        }else{
+        } else {
             try {
                 axios.post('https://yellowrabbit.herokuapp.com/redeemedcoupons/api/redeem/', {
                     user: idusuario,
@@ -546,10 +586,10 @@ const ConfirmOrder = () => {
             <div><br></br></div>
 
             <Modal show={showErrorOrder} onHide={handleCloseTryAgain}>
-            <Modal.Header closeButton style={{ borderBottom:"0" }}></Modal.Header>
+                <Modal.Header closeButton style={{ borderBottom: "0" }}></Modal.Header>
                 <Modal.Body>
                     <div style={{ textAlign: "center", marginBottom: "3%" }}>
-                        <img alt='error' src={imgErrorOrder} style={{ width: "12%", height: "12%", marginBottom:"1%" }} />
+                        <img alt='error' src={imgErrorOrder} style={{ width: "12%", height: "12%", marginBottom: "1%" }} />
                         <h3>Ha habido un error</h3>
                     </div>
                     <p style={{ color: "#EB5929", textAlign: "center", fontSize: "17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
