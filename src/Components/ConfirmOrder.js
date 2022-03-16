@@ -197,7 +197,7 @@ const ConfirmOrder = () => {
     // Invalid coupon
     const InvalidCoupon = () => (
         <div style={{ marginTop: "1%" }}>
-            <span style={{ color: "#FF5733" }}>Código de cupón no válido</span>
+            <span style={{ color: "#FF5733" }}>Cupón no válido o expirado, verifica que se haya introducido correctamente e intentalo de nuevo</span>
         </div>
     )
 
