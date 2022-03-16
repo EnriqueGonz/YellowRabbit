@@ -9,6 +9,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import imgOXXOPay from '../images/icons/iconOxxoPay.svg';
 
+// Payment
+import { loadStripe } from '@stripe/stripe-js';
+import {useStripe, useElements, PaymentElement} from '@stripe/react-stripe-js';
+import {Elements} from '@stripe/react-stripe-js';
+
+
 
 var token = localStorage.getItem('tokenClient');
 var idusuario = localStorage.getItem('userId');
@@ -19,7 +25,6 @@ var dataToPayOrder = JSON.parse(localStorage.getItem('dataToPayOrder'));
 var orderData = dataToPayOrder[1];
 var productData = dataToPayOrder[2];
 var paymentMethod = dataToPayOrder[3];
-var usedCoupon = dataToPayOrder[4];
 // Remocer estos datos al finalizar la compra
 //localStorage.removeItem('dataToPayOrder');
 
@@ -60,7 +65,6 @@ const RealizarPago = () => {
     function handleChangeOXXO(evt) {
         const name = evt.target.name;
         const value = evt.target.value;
-        console.log(name + value);
         setInputsUser(values => ({ ...values, [name]: value }))
     }
 
@@ -75,9 +79,103 @@ const RealizarPago = () => {
 
         setValidated(true);
 
-        console.log(' - - - ', validateInputsUser());
+        if (validateInputsUser() === true) {
+            /*
+            * NOTA: OXXO sólo acepta pesos mexicanos en el pago "MXN" por lo tanto en el currency debe de ir 'mxn'
+            * quantity y product_name: no son campos necesarios para el método de pago con OXXO
+            * Lo mínimo a pagar deben ser $10.00 mxn.
+            */
+            //createPaymentIntent();
+            let clientSecret = "pi_3Kdd7zH8UO4qsCfW0L2FGmw7_secret_PQvz52vzXevh9pisTw8SxDsZq"
+            let intentId = "pi_3Kdd7zH8UO4qsCfW0L2FGmw7"
+            let publishableKey = "pk_test_51K0BPZH8UO4qsCfWtyXUkkwB0qV9Mb0aUYbAC2SGvVdmRIuvTxM58A1tYtriviDsUq0eHEoBTNnI58E8SJP7I5Rv00wCXdhNDJ"
+
+            payWithOxxo(publishableKey, clientSecret, intentId);
+        } else {
+            //
+            console.log('Xamos NO válidos');
+        }
         // Validar campos
     }
+
+    /*
+    // OXXO
+    function createPaymentIntent() {
+        try {
+            axios.post('http://127.0.0.1:8000/payment/api/create-payment-intent-oxxo/', productDataPay, { headers })
+                .then(function (result) {
+                    console.log('datas: ', result.data)
+                    return result.data;
+                })
+                .then(function (data) {
+                    return setupElements(data);
+                })
+                .then(function ({ stripe, clientSecret, intentId }) {
+                    payWithOxxo(stripe, clientSecret, intentId);
+                });
+        } catch (error) {
+            console.log('Error: ', error);
+        }
+    }
+
+
+    // Set up Stripe.js and Elements to use in checkout form
+    var setupElements = function (data) {
+        stripe = loadStripe(data.publishableKey);
+        return {
+            stripe: stripe,
+            clientSecret: data.clientSecret,
+            intentId: data.intentId
+        };
+    };
+    */
+
+
+    // Initiate the payment.
+    function payWithOxxo (stripe, clientSecret, intentId) {
+
+        const paymentIntent = stripe.confirmOxxoPayment(
+            clientSecret,
+            {
+              payment_method: {
+                billing_details: {
+                  name: 'Fulano de Tal',
+                  email: 'fulano@example.com',
+                },
+              },
+            }
+          );
+            /*
+        console.log('stripe: ', stripe)
+        console.log('Este dato se almacena en el backend: ', intentId);
+        // confirmOxxoPayment will create an OXXO voucher and return display details
+        //stripe.confirmOxxoPayment(
+        stripe.confirmOxxoPayment( 
+            clientSecret,
+            {
+                payment_method: {
+                    billing_details: {
+                        name: inputsUser.fullName,
+                        email: inputsUser.email
+                    }
+                }
+            }
+        )
+            .then(function (result) {
+                if (result.error) {
+                    //Mostrar el error en algún Modal
+                    console.log('Error: ', result.error.message);
+                }
+            });
+            */
+    };
+    // END OXXO
+
+
+
+
+
+
 
     function validateInputsUser() {
         let userFullName = inputsUser.fullName;
@@ -106,6 +204,8 @@ const RealizarPago = () => {
             <span style={{ color: "#FF5733" }}>El nombre ingresado no es aceptable</span>
         </div>
     )
+
+
 
 
 
