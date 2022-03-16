@@ -44,5 +44,5 @@ class PaymentOptions {
     // End - Pay with credit card
 }
 
-const PaymentMethods = new PaymentOptions();
-export default PaymentMethods
+const PayWithCreditCard = new PaymentOptions();
+export default PayWithCreditCard

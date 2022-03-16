@@ -15,7 +15,7 @@ import UserCarShop from './Components/UserCarShop';
 import UserDirecciones from './Components/UserDirecciones';
 
 import ConfirmOrder from './Components/ConfirmOrder';
-import RealizarPago from './Components/RealizarPago';
+import PayWithOxxo from './Components/PayWithOxxo';
 import PageNotFound from './Components/PageNotFound';
 
 
@@ -73,7 +73,7 @@ function App() {
                     </Route>
 
                     <Route path="/pagar/con/oxxo">
-                        <RealizarPago></RealizarPago>
+                        <PayWithOxxo></PayWithOxxo>
                     </Route>
                     <Route path="/not/fount">
                         <PageNotFound></PageNotFound>

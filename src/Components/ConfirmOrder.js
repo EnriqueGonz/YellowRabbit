@@ -5,7 +5,7 @@ import Footer from './footer';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import imgErrorOrder from '../images/icons/iconErrorOrder.svg';
-import PaymentMethods from "./PaymentMethods.js";
+import PayWithCreditCard from "./PayWithCreditCard.js";
 
 
 var token = localStorage.getItem('tokenClient');
@@ -197,7 +197,7 @@ const ConfirmOrder = () => {
     // Invalid coupon
     const InvalidCoupon = () => (
         <div style={{ marginTop: "1%" }}>
-            <span style={{ color: "#FF5733" }}>Cupón no válido o expirado, verifica que se haya introducido correctamente e intentalo de nuevo</span>
+            <span style={{ color: "#FF5733" }}>Cupón no válido o expirado.</span>
         </div>
     )
 
@@ -319,7 +319,7 @@ const ConfirmOrder = () => {
     function makeThePayment(key, dataProductPay) {
         switch (key) {
             case 'creditCardPayment':
-                let pagarConCard = PaymentMethods.payWithCreditCard(dataProductPay);
+                let pagarConCard = PayWithCreditCard.payWithCreditCard(dataProductPay);
                 try {
                     if (pagarConCard === false) {
                         setShowErrorPayAgain(true);
