@@ -170,7 +170,7 @@ const PagarConOxxo = () => {
     )
 
 
-    // close error message
+    // Close error message
     const hideErrorMessage = () => setErrorMessage(false);
     const hideSuccessPurchase = () => setSuccessPurchase(false);
 
@@ -256,6 +256,7 @@ const PagarConOxxo = () => {
                     </Row>
 
                     {/** MODALS */}
+                    {/* Message-error */}
                     <Modal show={errorMessage} onHide={hideErrorMessage}>
                         <Modal.Header closeButton style={{ borderBottom: "0" }}></Modal.Header>
                         <Modal.Body>

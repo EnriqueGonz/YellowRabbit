@@ -8,8 +8,6 @@ import axios from "axios";
 */
 
 var token = localStorage.getItem('tokenClient');
-var idusuario = localStorage.getItem('userId');
-var username = localStorage.getItem('usernameClient');
 
 const headers = {
     'Content-Type': 'application/json',
@@ -20,29 +18,30 @@ const headers = {
 class PaymentOptions {
     // Start -Pay with credit card
     payWithCreditCard(dataProductPay) {
-        console.log('- card -', dataProductPay);
-        /*
-        // Create and get Checkout Session ID - card
-        axios.post('https://yellowrabbit.herokuapp.com/payment/api/create-payment-intent-card/', dataProductPay, { headers })
-            .then((result) => { return result.data; })
-            .then((data) => {
-                // Redirect to Stripe Checkout
-                window.location.href = data.sessionURL;
-                //return stripe.redirectToCheckout({ sessionId: data.sessionId })
-                return true;
-            })
-            .then((res) => {
-                console.log(res);
-            });
-            */
+        try {
+            // Create and get Checkout Session ID - card
+            axios.post('https://yellowrabbit.herokuapp.com/payment/api/create-payment-intent-card/', dataProductPay, { headers })
+                .then((result) => { return result.data; })
+                .then((data) => {
+                    // Redirect to Stripe Checkout
+                    window.location.href = data.sessionURL;
+                    //return stripe.redirectToCheckout({ sessionId: data.sessionId })
+                    return true;
+                })
+                .then((res) => {
+                    console.log(res);
+                })
+                .catch((error) => {
+                    return false;
+                });
+
+        } catch (error) {
+            return false;
+        }
+        return false
+
     };
     // End - Pay with credit card
-
-    // Start - Pay with OXXO
-    payWithOXXO(dataProductPay){
-        console.log('- OXXO - ', dataProductPay);
-    };
-
 }
 
 const PaymentMethods = new PaymentOptions();

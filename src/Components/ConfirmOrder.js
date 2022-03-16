@@ -39,8 +39,10 @@ const ConfirmOrder = () => {
     const [showSelectPayment, setShowSelectPayment] = useState(false);
     // Show message to select an address
     const [showSelectAddress, setshowSelectAddress] = useState(false);
-    // Orders
+    // Try ordering again
     const [showErrorOrder, setShowErrorOrder] = useState(false);
+    // Try to pay again
+    const [showErrorPayAgain, setShowErrorPayAgain] = useState(false);
 
     // Id of the selected address
     const [idSelectedAddress, setIdSelectedAddress] = useState(false);
@@ -62,7 +64,6 @@ const ConfirmOrder = () => {
     })
 
     const [productSpecifications, setProductSpecifications] = useState([]);
-    const [datasMakeOrder, setDatasMakeOrder] = useState([]);
 
 
     useEffect(() => {
@@ -173,7 +174,6 @@ const ConfirmOrder = () => {
     function handleChange(evt) {
         const name = evt.target.name;
         const value = evt.target.value;
-        console.log(name + value)
         setinputsDireccion(values => ({ ...values, [name]: value }))
     }
 
@@ -288,12 +288,8 @@ const ConfirmOrder = () => {
                 quantity: parseInt(orderSpecifications.amount),  // Cantidad de productos. 
             };
 
-            //rowOrder.push([datasUserRow]);
-            //rowOrder.push([datasOrderRow]);
-
-            makeThePayment(paymentMethod, dataProductPay);
-
-            /*
+            rowOrder.push([datasUserRow]);
+            rowOrder.push([datasOrderRow]);
 
             try {
                 axios.post('https://yellowrabbit.herokuapp.com/orders/api/register/', {
@@ -301,12 +297,11 @@ const ConfirmOrder = () => {
                 }, { headers }
                 ).then((response) => {
                     let listDataOrder = response.data;
-                    //rowOrder.push(listProducto);
-                    //rowOrder.push(paymentMethod);
+                    rowOrder.push(listProducto);
                     // save the data to make the payment
                     localStorage.setItem('dataToPayOrder', JSON.stringify(rowOrder));
                     notifyCouponRedemption(listDataOrder.id);
-                    makeThePayment();
+                    makeThePayment(paymentMethod, dataProductPay);
 
                 }).catch((error) => {
                     setShowErrorOrder(true);
@@ -314,7 +309,6 @@ const ConfirmOrder = () => {
             } catch (error) {
                 setShowErrorOrder(true);
             }
-            */
         } else {
             //setShowSelectPayment(true);
             //setshowSelectAddress(true);
@@ -325,12 +319,22 @@ const ConfirmOrder = () => {
     function makeThePayment(key, dataProductPay) {
         switch (key) {
             case 'creditCardPayment':
-                PaymentMethods.payWithCreditCard(dataProductPay);
+                let pagarConCard = PaymentMethods.payWithCreditCard(dataProductPay);
+                try {
+                    if (pagarConCard === false) {
+                        setShowErrorPayAgain(true);
+                    }
+                    else {
+                        setShowErrorPayAgain(false);
+                    }
+                } catch (error) {
+                    //
+                }
+
                 break;
 
             case 'oxxoPayment':
                 window.location = '/pagar/con/oxxo';
-                //PaymentMethods.payWithOXXO(dataProductPay);
                 break;
 
             case 'payPalPayment':
@@ -373,16 +377,32 @@ const ConfirmOrder = () => {
         window.location = '/article/details/' + listProducto.id;
     }
 
-    // close Orders error
+    // Try ordering again
     const handleTryAgain = () => {
         setShowErrorOrder(false);
         setTimeout(() => { makeAnOrder(); }, 2000); // sleep 2 seconds
     };
 
-    const handleCloseTryAgain = () => {
-        setShowErrorOrder(false);
+    // Try to pay again
+    const handleTryPayAgain = () => {
+        setShowErrorPayAgain(false);
+
+        // Data of the product to pay
+        let dataProductPay = {
+            product_name: listProducto.product_name,
+            price: totalToPay, // Total price
+            currency: 'mxn',
+            quantity: parseInt(orderSpecifications.amount),  // Cantidad de productos. 
+        };
+
+        setTimeout(() => { makeThePayment(paymentMethod, dataProductPay); }, 2000); // sleep 2 seconds
     };
 
+    // Close
+    // Try ordering again
+    const handleCloseTryAgain = () => setShowErrorOrder(false);
+    // Try to pay again
+    const handleCloseTryPayAgain = () => setShowErrorPayAgain(false);
 
 
     return (
@@ -585,6 +605,8 @@ const ConfirmOrder = () => {
             </div>
             <div><br></br></div>
 
+            {/* MODALS */}
+            {/* Make an order again */}
             <Modal show={showErrorOrder} onHide={handleCloseTryAgain}>
                 <Modal.Header closeButton style={{ borderBottom: "0" }}></Modal.Header>
                 <Modal.Body>
@@ -597,6 +619,29 @@ const ConfirmOrder = () => {
 
                     <div style={{ backgroundColor: "#0000", textAlign: "center" }}>
                         <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }} onClick={handleTryAgain}>
+                            Intentar de nuevo
+                        </Button>
+                        <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }}>
+                            Ayuda
+                        </Button>
+                    </div>
+                </Modal.Body>
+            </Modal>
+
+
+            {/* Try pay again */}
+            <Modal show={showErrorPayAgain} onHide={handleCloseTryPayAgain}>
+                <Modal.Header closeButton style={{ borderBottom: "0" }}></Modal.Header>
+                <Modal.Body>
+                    <div style={{ textAlign: "center", marginBottom: "3%" }}>
+                        <img alt='error' src={imgErrorOrder} style={{ width: "12%", height: "12%", marginBottom: "1%" }} />
+                        <h3>Ha habido un error</h3>
+                    </div>
+                    <p style={{ color: "#EB5929", textAlign: "center", fontSize: "17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
+                        error persiste, contáctanos y te ayudaremos con tu compra.</p>
+
+                    <div style={{ backgroundColor: "#0000", textAlign: "center" }}>
+                        <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }} onClick={handleTryPayAgain}>
                             Intentar de nuevo
                         </Button>
                         <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }}>
