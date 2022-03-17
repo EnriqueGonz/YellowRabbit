@@ -33,6 +33,7 @@ const ConfirmOrder = () => {
     const [inputCoupon, setInputCoupon] = useState([]);
     const [totalToPay, setTotalToPay] = useState([]);
     const [idCoupon, setIdCoupon] = useState(0);
+    const [newIdOrder, setNewIdOrder] = useState(0);
     // Show invalid coupon message
     const [show, setShow] = useState(false);
     // Show message to select a payment method
@@ -279,35 +280,40 @@ const ConfirmOrder = () => {
                 specifications: strSpecifications
             }
 
-
-            // Data of the product to pay
-            let dataProductPay = {
-                product_name: listProducto.product_name,
-                price: totalToPay, // Total price
-                currency: 'mxn',
-                quantity: parseInt(orderSpecifications.amount),  // Cantidad de productos. 
-            };
-
             rowOrder.push([datasUserRow]);
             rowOrder.push([datasOrderRow]);
 
             try {
                 axios.post('https://yellowrabbit.herokuapp.com/orders/api/register/', {
-                    order: rowOrder 
+                    order: rowOrder
                 }, { headers }
                 ).then((response) => {
                     let listDataOrder = response.data;
+                    setNewIdOrder(listDataOrder.id); // save id order
                     rowOrder.push(listProducto);
+                    rowOrder.push(listDataOrder.id);
+                    notifyCouponRedemption(listDataOrder.id);
                     // save the data to make the payment
                     localStorage.setItem('dataToPayOrder', JSON.stringify(rowOrder));
-                    notifyCouponRedemption(listDataOrder.id);
+                    // Data of the product to pay
+                    let dataProductPay = {
+                        user_id: idusuario,
+                        order_id: parseInt(listDataOrder.id),
+                        product_name: listProducto.product_name,
+                        price: totalToPay, // Total price
+                        currency: 'mxn',
+                        quantity: parseInt(orderSpecifications.amount),  // Cantidad de productos. 
+                    }
+ 
                     makeThePayment(paymentMethod, dataProductPay);
 
                 }).catch((error) => {
                     setShowErrorOrder(true);
+                    setNewIdOrder(0);
                 });
             } catch (error) {
                 setShowErrorOrder(true);
+                setNewIdOrder(0);
             }
         } else {
             //setShowSelectPayment(true);
@@ -386,9 +392,10 @@ const ConfirmOrder = () => {
     // Try to pay again
     const handleTryPayAgain = () => {
         setShowErrorPayAgain(false);
-
         // Data of the product to pay
         let dataProductPay = {
+            user_id: idusuario,
+            order_id: parseInt(newIdOrder),
             product_name: listProducto.product_name,
             price: totalToPay, // Total price
             currency: 'mxn',

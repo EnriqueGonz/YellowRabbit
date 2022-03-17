@@ -26,7 +26,7 @@ class PaymentOptions {
                     // Redirect to Stripe Checkout
                     window.location.href = data.sessionURL;
                     //return stripe.redirectToCheckout({ sessionId: data.sessionId })
-                    return true;
+                    //return true;
                 })
                 .then((res) => {
                     console.log(res);
@@ -38,8 +38,6 @@ class PaymentOptions {
         } catch (error) {
             return false;
         }
-        return false
-
     };
     // End - Pay with credit card
 }

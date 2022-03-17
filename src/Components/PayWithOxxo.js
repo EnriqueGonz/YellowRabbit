@@ -17,12 +17,16 @@ import { Elements } from '@stripe/react-stripe-js';
 
 
 var token = localStorage.getItem('tokenClient');
+var idusuario = localStorage.getItem('userId');
 
 try {
-    // datas(4): user datas, datas order, product datas, payment method
+    // datas(4): user datas, datas order, product datas, payment method, 
     var dataToPayOrder = JSON.parse(localStorage.getItem('dataToPayOrder'));
     var orderData = dataToPayOrder[1];
     var productData = dataToPayOrder[2];
+    var getOrderId = dataToPayOrder[3];
+
+    console.log('order_id: ', getOrderId);
 
 } catch (error) {
     //
@@ -48,9 +52,12 @@ const PagarConOxxo = () => {
     const [successPurchase, setSuccessPurchase] = useState(false); //successful purchase message
     const stripe = useStripe();
 
+
     //Data of the product to pay
     try {
         var dataProductPay = {
+            user_id: idusuario,
+            order_id: parseInt(getOrderId),
             product_name: productData.product_name,
             price: parseFloat(orderData[0].total_price), // Total price
             currency: 'mxn',
@@ -128,7 +135,7 @@ const PagarConOxxo = () => {
             return;
         }
 
-        localStorage.removeItem('dataToPayOrder');
+        //localStorage.removeItem('dataToPayOrder');
         setErrorMessage(false);
         setFinalizingPurchaseMsg(false);
         setSuccessPurchase(true);
@@ -327,9 +334,11 @@ const RealizarPago = () => {
                     <PagarConOxxo></PagarConOxxo>
                 </Elements>
             </div>
+            {/**
             <div style={{ position: "absolute", left: "0", bottom: "0", right: "0" }}>
                 <Footer></Footer>
             </div>
+            */}
         </>
     )
 }
