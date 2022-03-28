@@ -26,7 +26,6 @@ class PaymentOptions {
                     // Redirect to Stripe Checkout
                     window.location.href = data.sessionURL;
                     //return stripe.redirectToCheckout({ sessionId: data.sessionId })
-                    //return true;
                 })
                 .then((res) => {
                     console.log(res);

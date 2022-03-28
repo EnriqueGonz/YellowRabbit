@@ -284,7 +284,7 @@ const ConfirmOrder = () => {
             rowOrder.push([datasOrderRow]);
 
             try {
-                axios.post('https://yellowrabbit.herokuapp.com/orders/api/register/', {
+                axios.post('https://yellowrabbit.herokuapp.com/orders/api/register/', { //https://yellowrabbit.herokuapp.com/orders/api/register/
                     order: rowOrder
                 }, { headers }
                 ).then((response) => {
@@ -300,9 +300,9 @@ const ConfirmOrder = () => {
                         user_id: idusuario,
                         order_id: parseInt(listDataOrder.id),
                         product_name: listProducto.product_name,
-                        price: totalToPay, // Total price
+                        price: totalToPay, //Total price // listProducto.price,
                         currency: 'mxn',
-                        quantity: parseInt(orderSpecifications.amount),  // Cantidad de productos. 
+                        quantity: 1 //parseInt(orderSpecifications.amount),  // Cantidad de productos. 
                     }
  
                     makeThePayment(paymentMethod, dataProductPay);
@@ -399,7 +399,7 @@ const ConfirmOrder = () => {
             product_name: listProducto.product_name,
             price: totalToPay, // Total price
             currency: 'mxn',
-            quantity: parseInt(orderSpecifications.amount),  // Cantidad de productos. 
+            quantity: 1 //parseInt(orderSpecifications.amount),  // Cantidad de productos. 
         };
 
         setTimeout(() => { makeThePayment(paymentMethod, dataProductPay); }, 2000); // sleep 2 seconds
