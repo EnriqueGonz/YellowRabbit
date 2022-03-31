@@ -75,6 +75,7 @@ function App() {
                     <Route path="/pagar/con/oxxo">
                         <PayWithOxxo></PayWithOxxo>
                     </Route>
+
                     <Route path="/not/fount">
                         <PageNotFound></PageNotFound>
                     </Route>

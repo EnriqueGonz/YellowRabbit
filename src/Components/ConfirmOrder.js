@@ -22,7 +22,7 @@ const headers = {
 var arrOrderSpecification = JSON.parse(localStorage.getItem('orderSpecifications'));
 var opcion = undefined;
 var shippingCost = 200.00;
-var discountApplied = "0.0 %";
+var discountApplied = 0;
 var pricePlusShipping = undefined;
 
 
@@ -111,22 +111,28 @@ const ConfirmOrder = () => {
 
 
     function redeemCoupon() {
+        setTotalToPay(pricePlusShipping);
         try {
             axios.post('https://yellowrabbit.herokuapp.com/redeemedcoupons/api/get-discount/' + username + "/", {
                 coupon_key: inputCoupon,
                 total_price: parseFloat(pricePlusShipping)
-            }, { headers }) // LIOSEJ174678
+            }, { headers }) // LIOSEJ174678 // BYOOZO160661
                 .then((response) => {
-                    var datasRC = response.data;
-                    discountApplied = datasRC.discount_applied;
-                    let totalPriceTD = (Math.round(parseFloat(datasRC.discounted_price) * 100) / 100);
-                    setTotalToPay(totalPriceTD);
-                    setIdCoupon(datasRC.id);
-                    setShow(false);
+                    var datasRC = response.data;                    
+                    if (datasRC.discounted_price){
+                        let totalPriceTD = (Math.round(parseFloat(datasRC.discounted_price) * 100) / 100);
+                        discountApplied = (Math.round(parseFloat(datasRC.discounted_amount) * 100) / 100); //datasRC.discount_applied;
+                        setTotalToPay(totalPriceTD);
+                        setIdCoupon(datasRC.id);
+                        setShow(false);
+                    }else{
+                        setShow(true);
+                        setIdCoupon(0);
+                    }
                 })
                 .catch((error) => {
                     // The coupon you are trying to access does not exist or is expired
-                    if (error.response.status === 406) {
+                    if (error.response.status === 404 | error.response.status === 208) {
                         setShow(true);
                         setIdCoupon(0);
                     }
@@ -316,8 +322,7 @@ const ConfirmOrder = () => {
                 setNewIdOrder(0);
             }
         } else {
-            //setShowSelectPayment(true);
-            //setshowSelectAddress(true);
+            //
         }
     }
 
@@ -442,7 +447,6 @@ const ConfirmOrder = () => {
                                         {/* Show invalid coupon message */}
                                         {show ? <InvalidCoupon /> : null}
 
-
                                     </Col>
                                     <Col><Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B" }} onClick={() => { redeemCoupon() }}>Canjear</Button></Col>
                                 </Row>
@@ -451,14 +455,18 @@ const ConfirmOrder = () => {
 
                             <div className='container'>
                                 <Row>
+                                                                
                                     <Col style={{ textAlign: "right", fontSize: "18px" }}>
-                                        <p>Precio por producto: <span style={{ fontWeight: "bold" }}>${listProducto.price}</span> </p>
-                                        <p>Precio total: <span style={{ fontWeight: "bold" }}>${orderSpecifications.total_price}</span></p>
-                                        <p>Total de productos: <span style={{ fontWeight: "bold" }}> {orderSpecifications.amount}</span></p>
-                                        <p>Descuento: <span style={{ fontWeight: "bold" }}> {discountApplied}</span></p>
-                                        <p>Costo de envío: <span style={{ fontWeight: "bold" }}>${shippingCost}</span></p>
-                                        <p>Total a pagar: <span style={{ fontWeight: "bold" }}>${totalToPay}</span></p>
+                                        <div>
+                                            <p>Precio por producto: <span style={{ fontWeight: "bold" }}>${listProducto.price}</span> </p>
+                                            <p>Total de productos: <span style={{ fontWeight: "bold" }}> {orderSpecifications.amount}</span></p>
+                                            <p>Costo de envío: <span style={{ fontWeight: "bold" }}>${shippingCost}</span></p>
+                                            <p>Descuento aplicado: <span style={{ fontWeight: "bold" }}>${discountApplied}</span></p>
+                                            <p>Total sin descuento: <span style={{ fontWeight: "bold" }}>${orderSpecifications.total_price}</span></p>
+                                            <p>Total a pagar: <span style={{ fontWeight: "bold" }}>${totalToPay}</span></p>
+                                        </div>
                                     </Col>
+                                    
                                     <Col></Col>
                                     {/*
                                     <Col style={{ textAlign: "left", borderLeft: "5px solid #C4C4C4", fontSize: "18px" }}>
