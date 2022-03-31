@@ -76,7 +76,7 @@ function App() {
                         <PayWithOxxo></PayWithOxxo>
                     </Route>
 
-                    <Route path="/not/fount">
+                    <Route path="/not/found">
                         <PageNotFound></PageNotFound>
                     </Route>
 

@@ -5,8 +5,8 @@ import Footer from './footer';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import imgOXXOPay from '../images/icons/iconOxxoPay.svg';
-import imgErrorOrder from '../images/icons/iconErrorOrder.svg';
-import imgFinishingPurchase from '../images/icons/iconFinishingPurchase.svg';
+import imgErrorOrSuccessOrder from '../images/icons/iconErrorOrder.svg';
+import imgFinishingPurchase from '../images/icons/iconFinishingPurchase.gif';
 import imgSuccessPurchase from '../images/icons/iconSuccessesOrder.svg';
 
 
@@ -25,8 +25,6 @@ try {
     var orderData = dataToPayOrder[1];
     var productData = dataToPayOrder[2];
     var getOrderId = dataToPayOrder[3];
-
-    console.log('order_id: ', getOrderId);
 
 } catch (error) {
     //
@@ -64,7 +62,7 @@ const PagarConOxxo = () => {
             quantity: parseInt(orderData[0].amount),  // amount of productos
         }
     } catch (error) {
-        window.location = '/not/fount';
+        window.location = '/not/found';
         return;
     }
 
@@ -267,18 +265,18 @@ const PagarConOxxo = () => {
                     <Modal show={errorMessage} onHide={hideErrorMessage}>
                         <Modal.Header closeButton style={{ borderBottom: "0" }}></Modal.Header>
                         <Modal.Body>
-                            <div style={{ textAlign: "center", marginBottom: "3%" }}>
-                                <img alt='error' src={imgErrorOrder} style={{ width: "12%", height: "12%", marginBottom: "1%" }} />
+                            <div style={{ textAlign: "center" }}>
+                                <img alt='error' src={imgErrorOrSuccessOrder} style={{ width: "13%", height: "13%", marginBottom: "3%" }} />
                                 <h3>Ha habido un error</h3>
                             </div>
-                            <p style={{ color: "#EB5929", textAlign: "center", fontSize: "17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
+                            <p style={{ color: "#E94E1B", textAlign: "center", fontSize: "17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
                                 error persiste, contáctanos y te ayudaremos con tu compra.</p>
 
                             <div style={{ backgroundColor: "#0000", textAlign: "center" }}>
-                                <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }} onClick={handleTryAgain}>
+                                <Button style={{ backgroundColor: "#E94E1B", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight:"600" }} onClick={handleTryAgain}>
                                     Intentar de nuevo
                                 </Button>
-                                <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }}>
+                                <Button style={{ backgroundColor: "#F7C169", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight:"600" }}>
                                     Ayuda
                                 </Button>
                             </div>
@@ -290,10 +288,10 @@ const PagarConOxxo = () => {
                     <Modal show={finalizingPurchaseMsg}>
                         <Modal.Body>
                             <div style={{ textAlign: "center", marginBottom: "3%" }}>
-                                <img alt='error' src={imgFinishingPurchase} style={{ width: "12%", height: "12%", marginBottom: "1%" }} />
+                                <img alt='error' src={imgFinishingPurchase} style={{ width: "13%", height: "13%", marginBottom: "3%" }} />
                                 <h3>Finalizando compra</h3>
                             </div>
-                            <p style={{ color: "#EB5929", textAlign: "center", fontSize: "17px" }}>Este proceso puede tardar unos instantes. no salgas de esta página</p>
+                            <p style={{ color: "#E94E1B", textAlign: "center", fontSize: "17px" }}>Este proceso puede tardar unos instantes. no salgas de esta página</p>
                         </Modal.Body>
                     </Modal>
 
@@ -302,7 +300,7 @@ const PagarConOxxo = () => {
                     <Modal show={successPurchase} onHide={hideSuccessPurchase}>
                         <Modal.Body>
                             <div style={{ textAlign: "center", marginBottom: "3%" }}>
-                                <img alt='error' src={imgSuccessPurchase} style={{ width: "12%", height: "12%", marginBottom: "1%" }} />
+                                <img alt='error' src={imgErrorOrSuccessOrder} style={{ width: "12%", height: "12%", marginBottom: "1%" }} />
                                 <h3>Tu compra ha sido un éxito</h3>
                             </div>
                             <p style={{ color: "#EB5929", textAlign: "center", fontSize: "17px" }}>Gracias por comprar con nosotros, en breve recibirás un correo con los datos de tu compra y envío</p>

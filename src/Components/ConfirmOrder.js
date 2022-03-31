@@ -18,6 +18,10 @@ const headers = {
     'Authorization': `Token ${token}`
 };
 
+const headersCosto = {
+    'Authorization': 'Bearer e41beebfc9fa4a0e05231638cb9abf2f0009872ec9de73ed58e41f81ae293b9c'
+};
+
 
 var arrOrderSpecification = JSON.parse(localStorage.getItem('orderSpecifications'));
 var opcion = undefined;
@@ -27,7 +31,13 @@ var pricePlusShipping = undefined;
 
 
 const ConfirmOrder = () => {
+
+    const [showCalEnvio, setshowCalEnvio] = useState(false);
+    const handleCloseCalEnvio = () => setshowCalEnvio(false);
+    const handleShowCalEnvio = () => setshowCalEnvio(true);
+
     const [listProducto, setListProducto] = useState([]);
+    const [listDataUser, setlistDataUser] = useState([]);
     const [orderSpecifications, setOrderSpecifications] = useState([]);
     const [listDirecciones, setlistDirecciones] = useState([]);
     const [inputCoupon, setInputCoupon] = useState([]);
@@ -107,6 +117,23 @@ const ConfirmOrder = () => {
             console.log(' . ', error);
         }
     }, [setListProducto])
+
+    useEffect(() => {
+        try {
+            axios.get('https://yellowrabbit.herokuapp.com/users/api/my-account/' + username + "/", { headers })
+                .then((response) => {
+                    setlistDataUser(response.data);
+                    console.log(response.data)
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        } catch (error) {
+            console.log(error)
+            
+        }
+
+    },[setlistDataUser])
 
 
 
@@ -384,6 +411,52 @@ const ConfirmOrder = () => {
     }
 
 
+    
+
+    function methodCalEnvio() {
+        console.log(document.getElementById('selectPaqueteria').value)
+        console.log(document.getElementById('municipio').value)
+        console.log(document.getElementById('state').value)
+        console.log(parseInt(document.getElementById('codigo-potal').value))
+        console.log(listDataUser.first_name)
+        console.log(listDataUser.email)
+        console.log(listDataUser.phone)
+        try {
+            axios.post('http://127.0.0.1:8000/parcelservice/api/quote-shipment/', { // https://yellowrabbit.herokuapp.com/parcelservice/api/quote-shipment/
+                carrier:document.getElementById('selectPaqueteria').value,
+                customer_name:listDataUser.first_name,
+                company:"Ninguno",
+                email:listDataUser.email,
+                phone:parseInt(listDataUser.phone),
+                street:"2 norte",
+                number:"123",
+                district:"otros",
+                city:document.getElementById('municipio').value,
+                state:document.getElementById('state').value,
+                country:"MX",
+                postal_code: document.getElementById('codigo-potal').value,
+                reference:"Ninguno",
+                content:"Zapatos",
+                amount:1,
+                type:"box",
+                weight:1,
+                dimensions_length:12,
+                dimensions_width:15,
+                dimensions_height:20,
+
+            }, { headersCosto }
+            ).then((response) => {
+                console.log(response);
+                //
+            }).catch((error) => {
+                console.log(error);
+                //
+            });
+        } catch (error) {
+            //
+        }
+    }
+
     function returnToPreviousView() {
         window.location = '/article/details/' + listProducto.id;
     }
@@ -433,6 +506,7 @@ const ConfirmOrder = () => {
                             <div className='col-md'>
                                 <div className='container' style={{ marginTop: "10%" }}>
                                     <h2 style={{ color: "#E94E1B" }}>{listProducto.product_name}</h2>
+                                    <button style={{backgroundColor:"#E94E1B",color:"white"}} className="btn" onClick = {() => { handleShowCalEnvio()} } >Cotizar costo envio</button>
                                 </div>
                             </div>
 
@@ -625,18 +699,18 @@ const ConfirmOrder = () => {
             <Modal show={showErrorOrder} onHide={handleCloseTryAgain}>
                 <Modal.Header closeButton style={{ borderBottom: "0" }}></Modal.Header>
                 <Modal.Body>
-                    <div style={{ textAlign: "center", marginBottom: "3%" }}>
-                        <img alt='error' src={imgErrorOrder} style={{ width: "12%", height: "12%", marginBottom: "1%" }} />
+                    <div style={{ textAlign: "center" }}>
+                        <img alt='error' src={imgErrorOrder} style={{ width: "13%", height: "13%", marginBottom: "3%" }} />
                         <h3>Ha habido un error</h3>
                     </div>
-                    <p style={{ color: "#EB5929", textAlign: "center", fontSize: "17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
+                    <p style={{ color: "#E94E1B", textAlign: "center", fontSize: "17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
                         error persiste, contáctanos y te ayudaremos con tu compra.</p>
 
                     <div style={{ backgroundColor: "#0000", textAlign: "center" }}>
-                        <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }} onClick={handleTryAgain}>
+                        <Button style={{ backgroundColor: "#E94E1B", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight:"600" }} onClick={handleTryAgain}>
                             Intentar de nuevo
                         </Button>
-                        <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }}>
+                        <Button style={{ backgroundColor: "#F7C169", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight:"600" }}>
                             Ayuda
                         </Button>
                     </div>
@@ -646,25 +720,95 @@ const ConfirmOrder = () => {
 
             {/* Try pay again */}
             <Modal show={showErrorPayAgain} onHide={handleCloseTryPayAgain}>
-                <Modal.Header closeButton style={{ borderBottom: "0" }}></Modal.Header>
                 <Modal.Body>
-                    <div style={{ textAlign: "center", marginBottom: "3%" }}>
-                        <img alt='error' src={imgErrorOrder} style={{ width: "12%", height: "12%", marginBottom: "1%" }} />
+                    <div style={{ textAlign: "center" }}>
+                        <img alt='error' src={imgErrorOrder} style={{ width: "13%", height: "13%", marginBottom: "3%" }} />
                         <h3>Ha habido un error</h3>
                     </div>
-                    <p style={{ color: "#EB5929", textAlign: "center", fontSize: "17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
+                    <p style={{ color: "#E94E1B", textAlign: "center", fontSize: "17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
                         error persiste, contáctanos y te ayudaremos con tu compra.</p>
 
                     <div style={{ backgroundColor: "#0000", textAlign: "center" }}>
-                        <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }} onClick={handleTryPayAgain}>
+                        <Button style={{ backgroundColor: "#E94E1B", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight:"600" }} onClick={handleTryPayAgain}>
                             Intentar de nuevo
                         </Button>
-                        <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }}>
+                        <Button style={{ backgroundColor: "#F7C169", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight:"600" }}>
                             Ayuda
                         </Button>
                     </div>
                 </Modal.Body>
             </Modal>
+
+            <Modal  show={showCalEnvio} size="md" onHide={handleCloseCalEnvio} >
+            <Modal.Body style={{margin:20}}>
+            <div style={{borderWidth:5,padding:25}}>
+                <Form.Label>Paqueteria / Mensajeria:</Form.Label>
+                <Form.Select style={{backgroundColor:"#BFBFBF",borderRadius:20}} aria-label="Default select example" id='selectPaqueteria'>
+                    <option value='dhl'>DHL</option>
+                    <option value='estafeta'>Estafeta</option>
+                    <option value='fedex'>Fedex</option>
+                </Form.Select>
+                <Form.Label>Pais:</Form.Label>
+                <Form.Select style={{backgroundColor:"#BFBFBF",borderRadius:20}} aria-label="Default select example">
+                    <option value='MX'>México</option>
+                </Form.Select>
+
+                <Form.Label>Estado:</Form.Label>
+                <Form.Select style={{backgroundColor:"#BFBFBF",borderRadius:20}} aria-label="Default select example" id="state">
+                <option value="no">Seleccione uno...</option>
+                <option value="AG">Aguascalientes</option>
+                <option value="BC">Baja California</option>
+                <option value="BS">Baja California Sur</option>
+                <option value="CM">Campeche</option>
+                <option value="CS">Chiapas</option>
+                <option value="CH">Chihuahua</option>
+                <option value="CX">Ciudad de México</option>
+                <option value="CO">Coahuila</option>
+                <option value="CL">Colima</option>
+                <option value="DG">Durango</option>
+                <option value="EM">Estado de México</option>
+                <option value="GT">Guanajuato</option>
+                <option value="GR">Guerrero</option>
+                <option value="HG">Hidalgo</option>
+                <option value="JC">Jalisco</option>
+                <option value="MI">Michoacán</option>
+                <option value="MO">Morelos</option>
+                <option value="NA">Nayarit</option>
+                <option value="NL">Nuevo León</option>
+                <option value="OA">Oaxaca</option>
+                <option value="PU">Puebla</option>
+                <option value="QT">Querétaro</option>
+                <option value="QR">Quintana Roo</option>
+                <option value="SL">San Luis Potosí</option>
+                <option value="SI">Sinaloa</option>
+                <option value="SO">Sonora</option>
+                <option value="TB">Tabasco</option>
+                <option value="TM">Tamaulipas</option>
+                <option value="TL">Tlaxcala</option>
+                <option value="VE">Veracruz</option>
+                <option value="YU">Yucatán</option>
+                <option value="ZA">Zacatecas</option>
+                </Form.Select>
+
+                <Form.Group as={Col}>
+                <Form.Control placeholder='Municipio' required type="text" name="Municipio" id="municipio" />
+                </Form.Group>
+
+                <Form.Group as={Col}>
+                <Form.Control placeholder='Codigo postal: ' required type="text" name="Codigo postal:" id="codigo-potal"/>
+                </Form.Group>
+
+                <Button style={{marginLeft:10,float:"right",backgroundColor:"#E94E1B",borderColor:"#E94E1B"}} onClick = {handleCloseCalEnvio}>
+                    Volver
+                </Button>
+                <Button style={{marginLeft:10,float:"right",backgroundColor:"#E94E1B",borderColor:"#E94E1B" }} onClick = {() => { methodCalEnvio()} } >
+                    Confirmar
+                </Button>
+                
+                
+            </div>
+            </Modal.Body>
+        </Modal>
 
             <Footer></Footer>
         </>
