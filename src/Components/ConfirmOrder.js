@@ -25,7 +25,7 @@ const headersCosto = {
 
 var arrOrderSpecification = JSON.parse(localStorage.getItem('orderSpecifications'));
 var opcion = undefined;
-var shippingCost = 200.00;
+var shippingCost = 0;
 var discountApplied = 0;
 var pricePlusShipping = undefined;
 
@@ -42,6 +42,9 @@ const ConfirmOrder = () => {
     const [listDirecciones, setlistDirecciones] = useState([]);
     const [inputCoupon, setInputCoupon] = useState([]);
     const [totalToPay, setTotalToPay] = useState([]);
+    // shipping price
+    const [quotedShippingPrice, setQuotedShippingPrice] = useState([]);
+    //
     const [idCoupon, setIdCoupon] = useState(0);
     const [newIdOrder, setNewIdOrder] = useState(0);
     // Show invalid coupon message
@@ -316,8 +319,9 @@ const ConfirmOrder = () => {
             rowOrder.push([datasUserRow]);
             rowOrder.push([datasOrderRow]);
 
+
             try {
-                axios.post('https://yellowrabbit.herokuapp.com/orders/api/register/', { //https://yellowrabbit.herokuapp.com/orders/api/register/
+                axios.post('https://yellowrabbit.herokuapp.com/orders/api/register/', {
                     order: rowOrder
                 }, { headers }
                 ).then((response) => {
@@ -414,6 +418,7 @@ const ConfirmOrder = () => {
     
 
     function methodCalEnvio() {
+        /*
         console.log(document.getElementById('selectPaqueteria').value)
         console.log(document.getElementById('municipio').value)
         console.log(document.getElementById('state').value)
@@ -421,22 +426,18 @@ const ConfirmOrder = () => {
         console.log(listDataUser.first_name)
         console.log(listDataUser.email)
         console.log(listDataUser.phone)
+        */
         try {
-            axios.post('http://127.0.0.1:8000/parcelservice/api/quote-shipment/', { // https://yellowrabbit.herokuapp.com/parcelservice/api/quote-shipment/
+            axios.post('https://yellowrabbit.herokuapp.com/parcelservice/api/quote-shipment/', {
                 carrier:document.getElementById('selectPaqueteria').value,
                 customer_name:listDataUser.first_name,
-                company:"Ninguno",
                 email:listDataUser.email,
                 phone:parseInt(listDataUser.phone),
-                street:"2 norte",
-                number:"123",
-                district:"otros",
                 city:document.getElementById('municipio').value,
                 state:document.getElementById('state').value,
                 country:"MX",
                 postal_code: document.getElementById('codigo-potal').value,
-                reference:"Ninguno",
-                content:"Zapatos",
+                content: listProducto.product_name,
                 amount:1,
                 type:"box",
                 weight:1,
@@ -446,7 +447,8 @@ const ConfirmOrder = () => {
 
             }, { headersCosto }
             ).then((response) => {
-                console.log(response);
+                console.log('----------------------------', response.data);
+                validateQuote(response.data);
                 //
             }).catch((error) => {
                 console.log(error);
@@ -456,6 +458,25 @@ const ConfirmOrder = () => {
             //
         }
     }
+
+
+    function validateQuote(isRate){
+        let isMetaError = isRate.meta
+        console.log('meta: ', isMetaError);
+
+        if (isMetaError === 'error'){
+            console.log('Es error xd')
+        }else{
+            if (isMetaError === 'rate'){
+                console.log('Se puede cotizar');
+                console.log('datos: ', isRate.data);
+                setQuotedShippingPrice(isRate.data[0]['totalPrice']);
+                // recorrer el array.
+            }
+        }
+    }
+
+
 
     function returnToPreviousView() {
         window.location = '/article/details/' + listProducto.id;
@@ -534,7 +555,7 @@ const ConfirmOrder = () => {
                                         <div>
                                             <p>Precio por producto: <span style={{ fontWeight: "bold" }}>${listProducto.price}</span> </p>
                                             <p>Total de productos: <span style={{ fontWeight: "bold" }}> {orderSpecifications.amount}</span></p>
-                                            <p>Costo de envío: <span style={{ fontWeight: "bold" }}>${shippingCost}</span></p>
+                                            <p>Costo de envío: <span style={{ fontWeight: "bold" }}>${quotedShippingPrice}</span></p>
                                             <p>Descuento aplicado: <span style={{ fontWeight: "bold" }}>${discountApplied}</span></p>
                                             <p>Total sin descuento: <span style={{ fontWeight: "bold" }}>${orderSpecifications.total_price}</span></p>
                                             <p>Total a pagar: <span style={{ fontWeight: "bold" }}>${totalToPay}</span></p>

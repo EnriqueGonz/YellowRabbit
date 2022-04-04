@@ -17,6 +17,10 @@ import UserDirecciones from './Components/UserDirecciones';
 import ConfirmOrder from './Components/ConfirmOrder';
 import PayWithOxxo from './Components/PayWithOxxo';
 import PageNotFound from './Components/PageNotFound';
+//Payment with credit card
+import SuccessPaymentCard from './Components/SuccessPaymentCard';
+import FailedCardPayment from './Components/FailedCardPayment';
+
 
 
 function App() {
@@ -75,6 +79,15 @@ function App() {
                     <Route path="/pagar/con/oxxo">
                         <PayWithOxxo></PayWithOxxo>
                     </Route>
+
+                    <Route path="/success:session_id">
+                        <SuccessPaymentCard></SuccessPaymentCard>
+                    </Route>
+
+                    <Route path="/cancelled">
+                        <FailedCardPayment></FailedCardPayment>
+                    </Route>
+
 
                     <Route path="/not/found">
                         <PageNotFound></PageNotFound>
