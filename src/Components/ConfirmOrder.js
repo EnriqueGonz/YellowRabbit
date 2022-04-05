@@ -24,8 +24,6 @@ const headersCosto = {
 
 
 var arrOrderSpecification = JSON.parse(localStorage.getItem('orderSpecifications'));
-var opcion = undefined;
-var shippingCost = 0;
 var discountApplied = 0;
 var pricePlusShipping = undefined;
 
@@ -57,6 +55,8 @@ const ConfirmOrder = () => {
     const [showErrorOrder, setShowErrorOrder] = useState(false);
     // Try to pay again
     const [showErrorPayAgain, setShowErrorPayAgain] = useState(false);
+    // Show quote message
+    const [quoteMessage, setQuoteMessage] = useState(true);
 
     // Id of the selected address
     const [idSelectedAddress, setIdSelectedAddress] = useState(false);
@@ -88,15 +88,12 @@ const ConfirmOrder = () => {
                     case 0:
                         setListProducto(value);
                         break;
-                    case 1:
-                        opcion = value;
-                        break;
                     case 2:
                         setProductSpecifications(value);
                         break;
                     case 3:
                         setOrderSpecifications(value);
-                        pricePlusShipping = value.total_price + shippingCost;
+                        pricePlusShipping = value.total_price;
                         setTotalToPay(pricePlusShipping);
 
                     default:
@@ -250,6 +247,13 @@ const ConfirmOrder = () => {
         <div style={{ marginTop: "1%" }}>
             <span style={{ color: "#FF5733" }}>Selecciona una dirección.</span>
         </div>
+    )
+
+
+    const QuoteMessageView = () => (
+        <div style={{ textAlign: "center", marginTop: "1%", marginBottom: "2%" }}> 
+        <span style={{ color: "#FF5733" }}>Por favor, cotiza el costo de envío.</span>
+    </div>
     )
 
     // Validate address and payment method
@@ -471,6 +475,8 @@ const ConfirmOrder = () => {
                 console.log('Se puede cotizar');
                 console.log('datos: ', isRate.data);
                 setQuotedShippingPrice(isRate.data[0]['totalPrice']);
+                let total = pricePlusShipping + parseFloat(isRate.data[0]['totalPrice']);
+                setTotalToPay(total);
                 // recorrer el array.
             }
         }
@@ -707,6 +713,8 @@ const ConfirmOrder = () => {
                                 <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", margin: "2%", fontSize: "19px", width: "100px" }} onClick={() => { makeAnOrder() }}> Comprar </Button>
                                 <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", margin: "2%", fontSize: "19px", width: "100px" }} onClick={() => { returnToPreviousView() }} > Volver </Button>
                             </div>
+                            
+                            {quoteMessage ? <QuoteMessageView /> : null}
                             <hr style={{ height: "5px", backgroundColor: "#EB5929", opacity: 1 }}></hr>
 
                         </Col>

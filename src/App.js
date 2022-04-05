@@ -20,6 +20,8 @@ import PageNotFound from './Components/PageNotFound';
 //Payment with credit card
 import SuccessPaymentCard from './Components/SuccessPaymentCard';
 import FailedCardPayment from './Components/FailedCardPayment';
+// PayPal
+import PayPal from './Components/PayPal';
 
 
 
@@ -86,6 +88,10 @@ function App() {
 
                     <Route path="/cancelled">
                         <FailedCardPayment></FailedCardPayment>
+                    </Route>
+
+                    <Route path="/pagar/con/paypal">
+                        <PayPal></PayPal>
                     </Route>
 
 
