@@ -10,7 +10,7 @@ const Footer = () =>{
 
     return(    
         <>
-        <footer style={{backgroundColor:"#EB5929"}}>
+        <footer style={{backgroundColor:"#404345"}}>
         <div className="navbar navbar-expand-lg navbar-light" style={{justifyContent: "space-around"}}>
                   <div>
                       <div className="col">
