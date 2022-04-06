@@ -24,8 +24,6 @@ const headersCosto = {
 
 
 var arrOrderSpecification = JSON.parse(localStorage.getItem('orderSpecifications'));
-var opcion = undefined;
-var shippingCost = 200.00;
 var discountApplied = 0;
 var pricePlusShipping = undefined;
 
@@ -42,6 +40,9 @@ const ConfirmOrder = () => {
     const [listDirecciones, setlistDirecciones] = useState([]);
     const [inputCoupon, setInputCoupon] = useState([]);
     const [totalToPay, setTotalToPay] = useState([]);
+    // shipping price
+    const [quotedShippingPrice, setQuotedShippingPrice] = useState([]);
+    //
     const [idCoupon, setIdCoupon] = useState(0);
     const [newIdOrder, setNewIdOrder] = useState(0);
     // Show invalid coupon message
@@ -54,6 +55,8 @@ const ConfirmOrder = () => {
     const [showErrorOrder, setShowErrorOrder] = useState(false);
     // Try to pay again
     const [showErrorPayAgain, setShowErrorPayAgain] = useState(false);
+    // Show quote message
+    const [quoteMessage, setQuoteMessage] = useState(true);
 
     // Id of the selected address
     const [idSelectedAddress, setIdSelectedAddress] = useState(false);
@@ -85,15 +88,12 @@ const ConfirmOrder = () => {
                     case 0:
                         setListProducto(value);
                         break;
-                    case 1:
-                        opcion = value;
-                        break;
                     case 2:
                         setProductSpecifications(value);
                         break;
                     case 3:
                         setOrderSpecifications(value);
-                        pricePlusShipping = value.total_price + shippingCost;
+                        pricePlusShipping = value.total_price;
                         setTotalToPay(pricePlusShipping);
 
                     default:
@@ -249,6 +249,13 @@ const ConfirmOrder = () => {
         </div>
     )
 
+
+    const QuoteMessageView = () => (
+        <div style={{ textAlign: "center", marginTop: "1%", marginBottom: "2%" }}> 
+        <span style={{ color: "#FF5733" }}>Por favor, cotiza el costo de envío.</span>
+    </div>
+    )
+
     // Validate address and payment method
     function validateAddresPaymentM() {
         if (paymentMethod === "" || paymentMethod === undefined || paymentMethod === NaN || paymentMethod === null || paymentMethod === false || paymentMethod === 0) {
@@ -316,8 +323,9 @@ const ConfirmOrder = () => {
             rowOrder.push([datasUserRow]);
             rowOrder.push([datasOrderRow]);
 
+
             try {
-                axios.post('https://yellowrabbit.herokuapp.com/orders/api/register/', { //https://yellowrabbit.herokuapp.com/orders/api/register/
+                axios.post('https://yellowrabbit.herokuapp.com/orders/api/register/', {
                     order: rowOrder
                 }, { headers }
                 ).then((response) => {
@@ -437,6 +445,13 @@ const ConfirmOrder = () => {
                 postal_code:parseInt(document.getElementById('codigo-potal').value),
                 reference:"",
                 content:"Zapatos",
+                email:listDataUser.email,
+                phone:parseInt(listDataUser.phone),
+                city:document.getElementById('municipio').value,
+                state:document.getElementById('state').value,
+                country:"MX",
+                postal_code: document.getElementById('codigo-potal').value,
+                content: listProducto.product_name,
                 amount:1,
                 type:"box",
                 weight:1,
@@ -447,6 +462,8 @@ const ConfirmOrder = () => {
             }, { headersCosto }
             ).then((response) => {
                 console.log(response);
+                console.log('----------------------------', response.data);
+                validateQuote(response.data);
                 //
             }).catch((error) => {
                 console.log(error);
@@ -456,6 +473,26 @@ const ConfirmOrder = () => {
             //
         }
     }
+
+
+    function validateQuote(isRate){
+        let isMetaError = isRate.meta
+        console.log('meta: ', isMetaError);
+
+        if (isMetaError === 'error'){
+            console.log('Es error xd')
+        }else{
+            if (isMetaError === 'rate'){
+                console.log('Se puede cotizar');
+                console.log('datos: ', isRate.data);
+                setQuotedShippingPrice(isRate.data[0]['totalPrice']);
+                let total = pricePlusShipping + parseFloat(isRate.data[0]['totalPrice']);
+                setTotalToPay(total);
+                // recorrer el array.
+            }
+        }
+    }
+
 
     function returnToPreviousView() {
         window.location = '/article/details/' + listProducto.id;
@@ -534,7 +571,7 @@ const ConfirmOrder = () => {
                                         <div>
                                             <p>Precio por producto: <span style={{ fontWeight: "bold" }}>${listProducto.price}</span> </p>
                                             <p>Total de productos: <span style={{ fontWeight: "bold" }}> {orderSpecifications.amount}</span></p>
-                                            <p>Costo de envío: <span style={{ fontWeight: "bold" }}>${shippingCost}</span></p>
+                                            <p>Costo de envío: <span style={{ fontWeight: "bold" }}>${quotedShippingPrice}</span></p>
                                             <p>Descuento aplicado: <span style={{ fontWeight: "bold" }}>${discountApplied}</span></p>
                                             <p>Total sin descuento: <span style={{ fontWeight: "bold" }}>${orderSpecifications.total_price}</span></p>
                                             <p>Total a pagar: <span style={{ fontWeight: "bold" }}>${totalToPay}</span></p>
@@ -686,6 +723,8 @@ const ConfirmOrder = () => {
                                 <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", margin: "2%", fontSize: "19px", width: "100px" }} onClick={() => { makeAnOrder() }}> Comprar </Button>
                                 <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", margin: "2%", fontSize: "19px", width: "100px" }} onClick={() => { returnToPreviousView() }} > Volver </Button>
                             </div>
+                            
+                            {quoteMessage ? <QuoteMessageView /> : null}
                             <hr style={{ height: "5px", backgroundColor: "#EB5929", opacity: 1 }}></hr>
 
                         </Col>
@@ -699,18 +738,18 @@ const ConfirmOrder = () => {
             <Modal show={showErrorOrder} onHide={handleCloseTryAgain}>
                 <Modal.Header closeButton style={{ borderBottom: "0" }}></Modal.Header>
                 <Modal.Body>
-                    <div style={{ textAlign: "center", marginBottom: "3%" }}>
-                        <img alt='error' src={imgErrorOrder} style={{ width: "12%", height: "12%", marginBottom: "1%" }} />
+                    <div style={{ textAlign: "center" }}>
+                        <img alt='error' src={imgErrorOrder} style={{ width: "13%", height: "13%", marginBottom: "3%" }} />
                         <h3>Ha habido un error</h3>
                     </div>
-                    <p style={{ color: "#EB5929", textAlign: "center", fontSize: "17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
+                    <p style={{ color: "#E94E1B", textAlign: "center", fontSize: "17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
                         error persiste, contáctanos y te ayudaremos con tu compra.</p>
 
                     <div style={{ backgroundColor: "#0000", textAlign: "center" }}>
-                        <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }} onClick={handleTryAgain}>
+                        <Button style={{ backgroundColor: "#E94E1B", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight:"600" }} onClick={handleTryAgain}>
                             Intentar de nuevo
                         </Button>
-                        <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }}>
+                        <Button style={{ backgroundColor: "#F7C169", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight:"600" }}>
                             Ayuda
                         </Button>
                     </div>
@@ -720,20 +759,19 @@ const ConfirmOrder = () => {
 
             {/* Try pay again */}
             <Modal show={showErrorPayAgain} onHide={handleCloseTryPayAgain}>
-                <Modal.Header closeButton style={{ borderBottom: "0" }}></Modal.Header>
                 <Modal.Body>
-                    <div style={{ textAlign: "center", marginBottom: "3%" }}>
-                        <img alt='error' src={imgErrorOrder} style={{ width: "12%", height: "12%", marginBottom: "1%" }} />
+                    <div style={{ textAlign: "center" }}>
+                        <img alt='error' src={imgErrorOrder} style={{ width: "13%", height: "13%", marginBottom: "3%" }} />
                         <h3>Ha habido un error</h3>
                     </div>
-                    <p style={{ color: "#EB5929", textAlign: "center", fontSize: "17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
+                    <p style={{ color: "#E94E1B", textAlign: "center", fontSize: "17px" }}>Verifica tus datos, tu conexión e inténtalo de nuevo, si el
                         error persiste, contáctanos y te ayudaremos con tu compra.</p>
 
                     <div style={{ backgroundColor: "#0000", textAlign: "center" }}>
-                        <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }} onClick={handleTryPayAgain}>
+                        <Button style={{ backgroundColor: "#E94E1B", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight:"600" }} onClick={handleTryPayAgain}>
                             Intentar de nuevo
                         </Button>
-                        <Button style={{ backgroundColor: "#EB5929", borderStyle: "none", margin: "2%", fontSize: "17px" }}>
+                        <Button style={{ backgroundColor: "#F7C169", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight:"600" }}>
                             Ayuda
                         </Button>
                     </div>

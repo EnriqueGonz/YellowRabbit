@@ -26,7 +26,6 @@ const headers = {
 
 const UserCarShop = () => {
     const [list, setList] = React.useState([]);
-    const [initialCost, setInitialCost] = useState(null);
 
     const notify = () => {
         toast('Producto agregado a tu whitelist🔥', {
@@ -99,8 +98,7 @@ const UserCarShop = () => {
             axios.get('https://yellowrabbit.herokuapp.com/shoppingcart/api/my-shopping-cart/' + username + '/', { headers })
                 .then((response) => {
                     setList(response.data);
-                    var costoTotalInicio = calcularCostoTotal(response.data);
-                    setInitialCost(costoTotalInicio);
+                    console.log(response.data)
                 })
                 .catch((error) => {
                     console.log(error);
@@ -112,7 +110,6 @@ const UserCarShop = () => {
 
 
     }, [setList])
-
 
     if (!list.length) return <LoadingUserCarShop />;
 
@@ -146,10 +143,8 @@ const UserCarShop = () => {
                 .then((response) => {
                     if (response.status === 200) {
                         notifyShoppingCart();
-                        // sleep 3 seconds
-                        sleep(3000).then(r => {
-                            window.location.href = "/user/mi-carrito";
-                        })
+                        reloadList();
+                        
                     }
                 })
                 .catch((error) => {
@@ -163,94 +158,91 @@ const UserCarShop = () => {
     }
 
 
+    function updateCarShop(idCarShop,cantidad){
+        try {
+            axios.put('https://yellowrabbit.herokuapp.com/shoppingcart/api/update/'+idCarShop+'/',{
+                amount:cantidad
+            },{ headers })
+                .then((response) => {
+                    console.log(response)
+                    document.getElementById('btnSumar'+idCarShop).style.display="block"
+                    document.getElementById('loadingSuma'+idCarShop).style.display="none"
+                    document.getElementById('btnRestar'+idCarShop).style.display="block"
+                    document.getElementById('loading'+idCarShop).style.display="none"
+                    reloadList(idCarShop);
+                })
+                .catch((error) => {
+                    notifyerror();
+                });
 
-    function updateShoppingCart() {
-        var arrValores = list;
-        var arrShoppingCart = [];
-
-        // Only Shoppint cart
-        for (let i = 0; i < arrValores.length; i++) {
-            var element = arrValores[i];
-            arrShoppingCart.push(element[0])
+        } catch (error) {
+            console.log(' . ', error);
         }
+    }
 
-        // Shopping cart id & amount
-        for (let j = 0; j < arrShoppingCart.length; j++) {
-            var quantity = arrShoppingCart[j][0].amount;
-            var shoppingId = arrShoppingCart[j][0].id;
-            // Update
-            try {
-                axios.put('https://yellowrabbit.herokuapp.com/shoppingcart/api/update/' + parseInt(shoppingId) + '/', {
-                    amount: parseInt(quantity)
-                }, { headers })
-                    .then((response) => {
-                        console.log(response.status);
-                        if (response.status === 200) {
-                            // Do something
-                        }
-                    })
-                    .catch((error) => {
-                        notifyerror();
-                    });
+    let costo_total = 0;
+    let CantidadTotal = 0;
 
-            } catch (error) {
-                console.log(' . ', error);
+
+    list.map((item) =>(
+        costo_total += parseFloat(item[0][0]["total_price"]),
+        CantidadTotal += item[0][0]["amount"]
+    ))
+    costo_total = costo_total.toFixed(2);
+
+    function reloadList(idCarShop){
+        try {
+            axios.get('https://yellowrabbit.herokuapp.com/shoppingcart/api/my-shopping-cart/' + username + '/', { headers })
+                .then((response) => {
+                    setList(response.data);
+                    console.log(response.data)
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+        } catch (error) {
+            console.log(' . ', error);
+        }
+    }
+
+
+    function sumarCantidad(id) {
+        console.log(id)
+        var cantidadNow = 0;
+        document.getElementById('btnSumar'+id).style.display="none"
+        document.getElementById('loadingSuma'+id).style.display="block"
+        for (let num = 0; num < list.length; num++) {
+            if(id === list[num][0][0].id){
+                cantidadNow = list[num][0][0].amount + 1;
             }
         }
-        // sleep 2 seconds
-        notifyUpdateShoppingCart();
-        sleep(2000).then(r => {
-            window.location.href = "/user/mi-carrito";
-        })
-    }
-    // END Shopping cart
 
-    // Set sleep
-    function sleep(milliseconds) {
-        return new Promise(resolve => setTimeout(resolve, milliseconds))
+        updateCarShop(id,cantidadNow);
+
     }
 
 
-    function sumarCantidad(index) {
-        var arrActual = list;
-        var arrModificar = arrActual[index][0]
-        arrModificar[0].amount += 1;
-        // Empty the list before reassigning the new value.
-        setList([]);
-        setList(prevState => ([...prevState, ...arrActual]));
-        setInitialCost(calcularCostoTotal(list));
-    }
+    const restarCantidad = (id) => {
+        console.log(id)
+        var cantidadNow = 0;
+        document.getElementById('btnRestar'+id).style.display="none"
+        document.getElementById('loading'+id).style.display="block"
 
-
-    const restarCantidad = (index) => {
-        var arrActual = list;
-        var arrModificar = arrActual[index][0]
-        if (parseInt(arrModificar[0].amount) === 1) {
-            // Empty the list before reassigning the new value.
-            setList([]);
-            setList(prevState => ([...prevState, ...arrActual]));
-            setInitialCost(calcularCostoTotal(list));
+        for (let num = 0; num < list.length; num++) {
+            if(id === list[num][0][0].id){
+                cantidadNow = list[num][0][0].amount - 1;
+            }
         }
-        else {
-            arrModificar[0].amount -= 1;
-            // Empty the list before reassigning the new value.
-            setList([]);
-            setList(prevState => ([...prevState, ...arrActual]));
-            setInitialCost(calcularCostoTotal(list));
-        }
-    }
 
-
-    function calcularCostoTotal(costo) {
-        var precioTotal = 0
-        for (let index = 0; index < costo.length; index++) {
-            var element = costo[index];
-            var precioUnitario = element[0][0].unit_price;
-            precioTotal += (parseFloat(precioUnitario) * parseInt(element[0][0].amount));
+        if(cantidadNow > 0){
+            updateCarShop(id,cantidadNow);
+        }else{
+            document.getElementById('btnRestar'+id).style.display="block"
+            document.getElementById('loading'+id).style.display="none"
         }
-        // total price with 2 decimals
-        var totalPriceTDecimal = (Math.round(parseFloat(precioTotal) * 100) / 100);
-        return totalPriceTDecimal;
+        
+        
     }
 
 
@@ -258,8 +250,9 @@ const UserCarShop = () => {
         <>
             <Appbar></Appbar>
             <div style={{ backgroundImage: "url('" + imgindex1 + "')" }}>
-                <div className='container' style={{ backgroundColor: "white", width: "60%" }}>
-
+                <div className='row'>
+                <div className='col-8'>
+                    <div className='container' style={{ backgroundColor: "white", width: "90%" }}>
                     <div className='container' style={{ width: "90%" }}>
                         <br /><br />
                         <h3>Carrito de compras</h3>
@@ -270,39 +263,46 @@ const UserCarShop = () => {
 
                         <hr style={{ height: "5px", backgroundColor: "#EB5929", opacity: 1 }}></hr>
 
-                        <br></br>
-                        <div className='container' style={{ width: "90%"}}>
+                        <div className='container'>
+                        <div style={{ marginBottom: 10,borderBottom:"solid",borderWidth:1,borderColor:"#E6E6E6",textAlign:"right" }} className="col-sm-12">
+                            <p>Precio</p>
+                        </div>
 
                             {list.map((item, index) => (
-                                <div key={index} style={{ marginBottom: 10 }} className="col-sm-12">
+                                <div key={index} style={{ marginBottom: 10,borderBottom:"solid",borderWidth:1,borderColor:"#E6E6E6" }} className="col-sm-12">
 
-                                    <div style={{ backgroundColor: "#FFF", borderRadius: 20, height: "100%", textAlign: "start" }} className="card">
+                                    <div style={{ backgroundColor: "#FFF", height: "100%", textAlign: "start" }} className="">
 
-                                        <div className="card-body">
+                                        <div className="card-body" style={{padding:1}}>
                                             <div className='row'>
-                                                <div className='col-sm-3'>
-                                                    <img alt="Quitar de la wishlist" style={{ width: "100%", height: "100px" }} src={'https://yellowrabbitbucket.s3.amazonaws.com/' + item[1][0].image_one}></img>
+                                                <div className='col-sm-2' style={{textAlign:"center"}}>
+                                                    <img alt="" style={{ width:60, height: 60, borderRadius:30 }} src={'https://yellowrabbitbucket.s3.amazonaws.com/' + item[1][0].image_one}></img>
                                                 </div>
-                                                <div className='col-sm-9'>
-                                                    <a href={'/article/details/' + item[1][0].id} title='Ver producto' style={{ textDecorationLine: "none" }}><p style={{ fontFamily: "'Cairo', sans-serif", fontWeight: "bold", color: "#EB5929" }}>{item[1][0].product_name}</p></a>
-                                                    <p style={{ fontFamily: "'Cairo', sans-serif", fontWeight: 500 }}>{'$' + item[1][0].price}</p>
-                                                    <div style={{ position: "absolute", right: "2%", bottom: "2%" }} className="contianer">
+                                                <div className='col-sm-8'>
+                                                    <a href={'/article/details/' + item[1][0].id} title='Ver producto' style={{ textDecorationLine: "none" }}><p className='module line-clamp' style={{ fontFamily: "'Cairo', sans-serif", fontWeight: "bold", color: "black" }}>{item[1][0].product_name}</p></a>
+                                                    <div className="contianer" style={{display:"flex",alignItems:"center"}}>
 
-                                                        <Form.Label style={{ width: "auto", textAlign: 'center', color:"#EB5929", fontWeight:"bold" }} type="text" name="quantity"> Cantidad </Form.Label>
+                                                        <Form.Label style={{ width: "auto", textAlign: 'center', color:"#EB5929", fontWeight:"bold" }} type="text" name="quantity"> <p style={{ fontFamily: "'Cairo', sans-serif", fontWeight: "bold", color: "black"}}>Cantidad</p> </Form.Label>
                                                             <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Menos</Tooltip>}>
                                                                 {({ ref, ...triggerHandler }) => (
                                                                     <div variant="light" {...triggerHandler} className="d-inline-flex align-items-center">
-                                                                        <span ref={ref} className="ms-1"><MdRemove style={{ marginRight: "10px", fontSize: 25 }} className='btnFav' onClick={() => { restarCantidad(index) }}></MdRemove></span>
+                                                                        <div id={"loading"+item[0][0].id} className="spinner-border" style={{display:"none",width:20,height:20,marginLeft:7,marginRight:5}} role="status">
+                                                                        </div>
+                                                                        <span id={"btnRestar"+item[0][0].id} ref={ref} className="ms-1"><MdRemove style={{ marginRight: "10px", fontSize: 25 }} className='btnFav' onClick={() => { restarCantidad(item[0][0].id) }}></MdRemove></span>
                                                                     </div>
                                                                 )}
                                                             </OverlayTrigger>
+
+                                                            
 
                                                             <Form.Label style={{ backgroundColor: "#DFDFDF", width: "35px", textAlign: 'center' }} required type="text" name="quantity"> {item[0][0].amount} </Form.Label>
 
                                                             <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Más</Tooltip>}>
                                                                 {({ ref, ...triggerHandler }) => (
                                                                     <div variant="light" {...triggerHandler} className="d-inline-flex align-items-center">
-                                                                        <span ref={ref} className="ms-1"><MdAdd style={{ marginRight: "10px", fontSize: 25 }} className='btnFav' onClick={() => { sumarCantidad(index) }}></MdAdd></span>
+                                                                        <div id={"loadingSuma"+item[0][0].id} className="spinner-border" style={{display:"none",width:20,height:20,marginLeft:5}} role="status">
+                                                                        </div>
+                                                                        <span id={"btnSumar"+item[0][0].id} ref={ref} className="ms-1"><MdAdd style={{ marginRight: "10px", fontSize: 25 }} className='btnFav' onClick={() => { sumarCantidad(item[0][0].id) }}></MdAdd></span>
                                                                     </div>
                                                                 )}
                                                             </OverlayTrigger>
@@ -326,21 +326,39 @@ const UserCarShop = () => {
                                                         <ToastContainer></ToastContainer>
                                                     </div>
                                                 </div>
+                                                <div className='col-sm-2' style={{textAlign:"end",padding:0}}>
+                                                    <p style={{ fontFamily: "'Cairo', sans-serif", fontWeight: 500 }}>{'$' + item[1][0].price}</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             ))}
-                        </div><br></br><br></br>
-                        <div style={{ textAlign: "center", fontSize: "20px", marginBottom: "2%", fontWeight: "bold" }}>
-                            <p><span style={{ color: "#EB5929", opacity: 1 }}>Costo total: </span> {initialCost} </p>
-                            <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", fontSize: "18px" }} onClick={() => { updateShoppingCart(); }}> Guardar cambios </Button>
                         </div>
 
-                        <hr style={{ height: "5px", backgroundColor: "#EB5929", opacity: 1 }}></hr>
                         <br></br>
 
                     </div>
+                    </div>
+                </div>
+                <div className='col-4'>
+                    <div className='container' style={{ backgroundColor: "white", width: "90%" }}>
+                        <div className='container' style={{ width: "90%" }}>
+                        <br /><br />
+                        <h3>Comprar Carrito</h3>
+                        <hr style={{ height: "5px", backgroundColor: "#EB5929", opacity: 1 }}></hr>
+                        <br/><br/>
+                        <p>{"Subtotal: ("+CantidadTotal+" productos):"}</p>
+                        <p>{"$"+costo_total+" MXN"}</p>
+
+                        <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", fontSize: "14px" }} > Proceder al pago </Button>
+                        <br/><br/>
+                        
+                        </div>
+                    </div>
+                    
+                </div>
+
                 </div>
 
             </div>

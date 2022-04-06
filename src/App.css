@@ -195,3 +195,17 @@
     font-weight: 600;
 }
 
+.module {
+    margin: 0 0 5 0;
+    overflow: hidden;
+  }
+  
+  .module p {
+    margin: 0;
+  }
+  
+  .line-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }

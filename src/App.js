@@ -17,6 +17,12 @@ import UserDirecciones from './Components/UserDirecciones';
 import ConfirmOrder from './Components/ConfirmOrder';
 import PayWithOxxo from './Components/PayWithOxxo';
 import PageNotFound from './Components/PageNotFound';
+//Payment with credit card
+import SuccessPaymentCard from './Components/SuccessPaymentCard';
+import FailedCardPayment from './Components/FailedCardPayment';
+// PayPal
+import PayPal from './Components/PayPal';
+
 
 
 function App() {
@@ -24,6 +30,10 @@ function App() {
         <div className="App" style={{ width: "100%", height: "100vh" }}>
             <Router>
                 <Switch>
+
+                <Route exact path="/">
+                        <IndexClient></IndexClient>
+                    </Route>
 
                     <Route path="/inicio">
                         <IndexClient></IndexClient>
@@ -76,7 +86,20 @@ function App() {
                         <PayWithOxxo></PayWithOxxo>
                     </Route>
 
-                    <Route path="/not/fount">
+                    <Route path="/success:session_id">
+                        <SuccessPaymentCard></SuccessPaymentCard>
+                    </Route>
+
+                    <Route path="/cancelled">
+                        <FailedCardPayment></FailedCardPayment>
+                    </Route>
+
+                    <Route path="/pagar/con/paypal">
+                        <PayPal></PayPal>
+                    </Route>
+
+
+                    <Route path="/not/found">
                         <PageNotFound></PageNotFound>
                     </Route>
 

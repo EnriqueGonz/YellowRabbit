@@ -24,8 +24,11 @@ class PaymentOptions {
                 .then((result) => { return result.data; })
                 .then((data) => {
                     // Redirect to Stripe Checkout
-                    window.location.href = data.sessionURL;
-                    //return stripe.redirectToCheckout({ sessionId: data.sessionId })
+                    if (data.sessionURL === undefined | data.sessionURL === null | data.sessionURL === ''){
+                        return false;
+                    }else{
+                        window.location.href = data.sessionURL;
+                    }
                 })
                 .then((res) => {
                     console.log(res);
