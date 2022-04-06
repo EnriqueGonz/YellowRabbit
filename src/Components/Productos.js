@@ -11,7 +11,10 @@ import axios from 'axios';
 import { MdOutlineFavorite,MdAddShoppingCart } from "react-icons/md";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import '../config';
 
+
+var baseUrl = global.config.yellow.rabbit.url;
 
 var token = localStorage.getItem('tokenClient');
 //var username = localStorage.getItem('usernameClient');
@@ -62,7 +65,7 @@ const Productos = () =>{
 
     useEffect(() =>{  
         try {
-          axios.post('https://yellowrabbit.herokuapp.com/products/api/all-products/',{
+          axios.post(baseUrl+'/products/api/all-products/',{
             product_name: "",
             category_name:""
           })
@@ -84,7 +87,7 @@ const Productos = () =>{
         console.log(idusuario);
 
         try {
-            axios.post('https://yellowrabbit.herokuapp.com/wishlist/api/add-wishlist/',{
+            axios.post(baseUrl+'/wishlist/api/add-wishlist/',{
             user: idusuario,
             products:id
             },{headers})
@@ -111,7 +114,7 @@ const Productos = () =>{
         console.log(idusuario);
 
         try {
-            axios.post('https://yellowrabbit.herokuapp.com/shoppingcart/api/add/',{
+            axios.post(baseUrl+'/shoppingcart/api/add/',{
             user: idusuario,
             products:id,
             amount: 1
@@ -170,14 +173,14 @@ const Productos = () =>{
                                 <div className="card" >
                                     <div className="card__content">
                                         <div className='row' style={{height:"50%"}}>
-                                            <img onClick = {() => { methodShowProduct(item[0][0]["id"]);} } alt={'Img'} style={{height:"100%"}} src={'https://yellowrabbitbucket.s3.amazonaws.com/'+item[0][0]["image_one"]}></img>    
+                                            <img onClick = {() => { methodShowProduct(item.id);} } alt={'Img'} style={{height:"100%"}} src={'https://yellowrabbitbucket.s3.amazonaws.com/'+item.image_one}></img>    
                                         </div>
                                         <div className='row' style={{height:"50%"}}>
-                                            <p onClick = {() => { methodShowProduct(item[0][0]["id"]);} } className="card__info" style={{marginBottom:0}}>{item[0][0]["product_name"]}</p>
-                                            <p className="card__info"><span className='simbol_price'>$</span>{item[0][0]["price"]} <span className='simbol_price'>+ envio</span></p>
+                                            <p onClick = {() => { methodShowProduct(item.id);} } className="card__info" style={{marginBottom:0}}>{item.product_name}</p>
+                                            <p className="card__info"><span className='simbol_price'>$</span>{item.price} <span className='simbol_price'>+ envio</span></p>
                                             <div className='container' style={{textAlign:"right"}}>
-                                                <MdOutlineFavorite style={{marginLeft:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodName(item[0][0]["id"]);} } ></MdOutlineFavorite>
-                                                <MdAddShoppingCart style={{marginLeft:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodAddCarshop(item[0][0]["id"]);} } ></MdAddShoppingCart>
+                                                <MdOutlineFavorite style={{marginLeft:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodName(item.id);} } ></MdOutlineFavorite>
+                                                <MdAddShoppingCart style={{marginLeft:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodAddCarshop(item.id);} } ></MdAddShoppingCart>
                                                 <ToastContainer></ToastContainer>
                                             </div>
                                         </div>

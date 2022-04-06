@@ -9,6 +9,10 @@ import Appbar from './appbarClient';
 import Footer from './footer';
 
 import { MdDelete,MdEdit } from "react-icons/md";
+import '../config';
+
+
+var baseUrl = global.config.yellow.rabbit.url;
 
 var token = localStorage.getItem('tokenClient');
 var username = localStorage.getItem('usernameClient');
@@ -46,7 +50,7 @@ const UserDirecciones = () =>{
 
     useEffect(() =>{
         try {
-          axios.get('https://yellowrabbit.herokuapp.com/addresses/api/my-addresses/'+username+"/",{ headers })
+          axios.get(baseUrl+'/addresses/api/my-addresses/'+username+"/",{ headers })
           .then((response) => {
             setlistDirecciones(response.data);
             console.log(response)
@@ -73,7 +77,7 @@ const UserDirecciones = () =>{
     }
 
     const handleSubmitDireccion = (event) => {
-        axios.post('https://yellowrabbit.herokuapp.com/addresses/api/register/', {
+        axios.post(baseUrl+'/addresses/api/register/', {
             user: idusuario,
             street: inputsDireccion.street,
             avenue: inputsDireccion.avenue,
@@ -106,7 +110,7 @@ const UserDirecciones = () =>{
     }
     function methodDelDireccion() {
         try {
-            axios.delete('https://yellowrabbit.herokuapp.com/addresses/api/delete/'+idDireccion+'/',{headers})
+            axios.delete(baseUrl+'/addresses/api/delete/'+idDireccion+'/',{headers})
             .then((response) => {
                 console.log(response.status);
                 window.location.href = "/user/mis-direcciones"
@@ -131,7 +135,7 @@ const UserDirecciones = () =>{
         idDireccion = id;
         handleShow2();
         try {
-            axios.get('https://yellowrabbit.herokuapp.com/addresses/api/specific-address/'+id+'/',{headers})
+            axios.get(baseUrl+'/addresses/api/specific-address/'+id+'/',{headers})
             .then((response) => {
                 //console.log(response.data);
                 setinputsDireccion(response.data)
@@ -147,7 +151,7 @@ const UserDirecciones = () =>{
 
     function methodUpdateDireccion() {
 
-        axios.put('https://yellowrabbit.herokuapp.com/addresses/api/update/'+idDireccion+'/',{
+        axios.put(baseUrl+'/addresses/api/update/'+idDireccion+'/',{
                 user: idusuario,
                 street: inputsDireccion.street,
                 avenue: inputsDireccion.avenue,

@@ -6,6 +6,10 @@ import imgindex1 from '../images/fondouser.png';
 import Appbar from './appbarClient';
 import Footer from './footer';
 import axios from 'axios';
+import '../config';
+
+
+var baseUrl = global.config.yellow.rabbit.url;
 
 var token = localStorage.getItem('tokenClient');
 var username = localStorage.getItem('usernameClient');
@@ -22,7 +26,7 @@ const UserOrders = () =>{
 
     useEffect(() =>{  
         try {
-          axios.get('https://yellowrabbit.herokuapp.com/orders/api/my-orders/'+username+'/',{headers})
+          axios.get(baseUrl+'/orders/api/my-orders/'+username+'/',{headers})
           .then((response) => {
             console.log(response);
             setListOrders(response.data);

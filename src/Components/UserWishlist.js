@@ -11,6 +11,10 @@ import { MdOutlineFavorite,MdAddShoppingCart } from "react-icons/md";
 import { OverlayTrigger,Tooltip } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import '../config';
+
+
+var baseUrl = global.config.yellow.rabbit.url;
 
 var token = localStorage.getItem('tokenClient');
 var username = localStorage.getItem('usernameClient');
@@ -60,7 +64,7 @@ const UserWishlist = () =>{
 
     useEffect(() =>{  
         try {
-          axios.post('https://yellowrabbit.herokuapp.com/wishlist/api/wishlist-customer/'+username+'/',{
+          axios.post(baseUrl+'/wishlist/api/wishlist-customer/'+username+'/',{
               product_name:""
           },{headers})
           .then((response) => {
@@ -83,7 +87,7 @@ const UserWishlist = () =>{
         console.log(idusuario);
 
         try {
-            axios.post('https://yellowrabbit.herokuapp.com/wishlist/api/add-wishlist/',{
+            axios.post(baseUrl+'/wishlist/api/add-wishlist/',{
             user: idusuario,
             products:id
             },{headers})
@@ -108,7 +112,7 @@ const UserWishlist = () =>{
     function methodName(id) {
         console.log(id);
         try {
-            axios.delete('https://yellowrabbit.herokuapp.com/wishlist/api/delete/'+id+'/',{headers})
+            axios.delete(baseUrl+'/wishlist/api/delete/'+id+'/',{headers})
             .then((response) => {
                 console.log(response.status);
                 window.location.href = "/user/mi-wishlist"

@@ -152,7 +152,7 @@
   @media (min-width: 768px) {
       .grid-container-productos{
         display: grid;
-        grid-template-columns: auto auto auto auto;
+        grid-template-columns: auto auto auto auto auto;
         grid-gap: 10px;
       }
     .possText1Img1{

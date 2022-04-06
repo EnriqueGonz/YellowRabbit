@@ -1,6 +1,9 @@
 import React from "react";
 import axios from "axios";
+import '../config';
 
+
+var baseUrl = global.config.yellow.rabbit.url;
 /** 
  * npm i @stripe/stripe-js
  * npm i stripe
@@ -20,7 +23,7 @@ class PaymentOptions {
     payWithCreditCard(dataProductPay) {
         try {
             // Create and get Checkout Session ID - card
-            axios.post('https://yellowrabbit.herokuapp.com/payment/api/create-payment-intent-card/', dataProductPay, { headers })
+            axios.post(baseUrl+'/payment/api/create-payment-intent-card/', dataProductPay, { headers })
                 .then((result) => { return result.data; })
                 .then((data) => {
                     // Redirect to Stripe Checkout

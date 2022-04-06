@@ -8,6 +8,10 @@ import axios from 'axios';
 
 import Appbar from './appbarClient';
 import Footer from './footer';
+import '../config';
+
+
+var baseUrl = global.config.yellow.rabbit.url;
 
 var token = localStorage.getItem('tokenClient');
 var username = localStorage.getItem('usernameClient');
@@ -40,7 +44,7 @@ const UserPerfil = () =>{
 
     useEffect(() =>{ 
         try {
-          axios.get('https://yellowrabbit.herokuapp.com/users/api/my-account/'+username+'/',{ headers })
+          axios.get(baseUrl+'/users/api/my-account/'+username+'/',{ headers })
           .then((response) => {
             //setInputs(response.data[0]);
             console.log(response.data);
@@ -73,7 +77,7 @@ const UserPerfil = () =>{
     console.log(formData.getAll('image'));
     
     try {
-        axios.post('https://yellowrabbit.herokuapp.com/users/api/update/profile-picture/'+username+'/', 
+        axios.post(baseUrl+'/users/api/update/profile-picture/'+username+'/', 
         formData    
         ,{headers})
         .then((response) => {
@@ -92,7 +96,7 @@ const UserPerfil = () =>{
 
 
       const handleSubmit = (event) => {
-        axios.put('https://yellowrabbit.herokuapp.com/users/api/update/email/'+username+'/', {
+        axios.put(baseUrl+'/users/api/update/email/'+username+'/', {
             first_name: inputs.first_name,
             email: inputs.email,
         },{
@@ -111,7 +115,7 @@ const UserPerfil = () =>{
     }
 
     const handleSubmitPerson = (event) => {
-        axios.put('https://yellowrabbit.herokuapp.com/users/api/update/personal-data/'+username+'/', {
+        axios.put(baseUrl+'/users/api/update/personal-data/'+username+'/', {
             age: inputs.age,
             identity: inputs.identity,
             phone: inputs.phone,

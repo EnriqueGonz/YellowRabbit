@@ -12,6 +12,10 @@ import { MdOutlineFavorite, MdRemoveShoppingCart, MdAdd, MdRemove } from "react-
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import '../config';
+
+
+var baseUrl = global.config.yellow.rabbit.url;
 
 var token = localStorage.getItem('tokenClient');
 var username = localStorage.getItem('usernameClient');
@@ -95,7 +99,7 @@ const UserCarShop = () => {
 
     React.useEffect(() => {
         try {
-            axios.get('https://yellowrabbit.herokuapp.com/shoppingcart/api/my-shopping-cart/' + username + '/', { headers })
+            axios.get(baseUrl+'/shoppingcart/api/my-shopping-cart/' + username + '/', { headers })
                 .then((response) => {
                     setList(response.data);
                     console.log(response.data)
@@ -115,7 +119,7 @@ const UserCarShop = () => {
 
     function methodName(id) {
         try {
-            axios.post('https://yellowrabbit.herokuapp.com/wishlist/api/add-wishlist/', {
+            axios.post(baseUrl+'/wishlist/api/add-wishlist/', {
                 user: idusuario,
                 products: id
             }, { headers })
@@ -139,7 +143,7 @@ const UserCarShop = () => {
     /* Shopping Cart */
     function methodRemoveShopCart(id) {
         try {
-            axios.delete('https://yellowrabbit.herokuapp.com/shoppingcart/api/delete/' + parseInt(id) + '/', { headers })
+            axios.delete(baseUrl+'/shoppingcart/api/delete/' + parseInt(id) + '/', { headers })
                 .then((response) => {
                     if (response.status === 200) {
                         notifyShoppingCart();
@@ -160,7 +164,7 @@ const UserCarShop = () => {
 
     function updateCarShop(idCarShop,cantidad){
         try {
-            axios.put('https://yellowrabbit.herokuapp.com/shoppingcart/api/update/'+idCarShop+'/',{
+            axios.put(baseUrl+'/shoppingcart/api/update/'+idCarShop+'/',{
                 amount:cantidad
             },{ headers })
                 .then((response) => {
@@ -192,7 +196,7 @@ const UserCarShop = () => {
 
     function reloadList(idCarShop){
         try {
-            axios.get('https://yellowrabbit.herokuapp.com/shoppingcart/api/my-shopping-cart/' + username + '/', { headers })
+            axios.get(baseUrl+'/shoppingcart/api/my-shopping-cart/' + username + '/', { headers })
                 .then((response) => {
                     setList(response.data);
                     console.log(response.data)
@@ -250,7 +254,7 @@ const UserCarShop = () => {
         <>
             <Appbar></Appbar>
             <div style={{ backgroundImage: "url('" + imgindex1 + "')" }}>
-                <div className='row'>
+                <div className='row' style={{width:"100%"}}>
                 <div className='col-8'>
                     <div className='container' style={{ backgroundColor: "white", width: "90%" }}>
                     <div className='container' style={{ width: "90%" }}>

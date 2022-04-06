@@ -9,7 +9,12 @@ import { ReactComponent as IconPerfil } from '../images/icons/IconPerfil.svg';
 import { Button,Modal,Tab,Tabs,Col,Form,Row } from 'react-bootstrap';
 import axios from 'axios';
 
-const urlLogin = "https://yellowrabbit.herokuapp.com/access/api/login/";
+import '../config';
+
+
+var baseUrl = global.config.yellow.rabbit.url;
+
+const urlLogin = baseUrl+"/access/api/login/";
 
 const Appbar = () =>{
     const [show, setShow] = useState(false);
@@ -71,7 +76,7 @@ const Appbar = () =>{
             if(inputs.passwordNew === inputs.passwordNew2){
                 if(document.getElementById('check').checked === true){
                     console.log(inputs.nombreRegistro+inputs.username+inputs.emailNew+inputs.passwordNew2);
-                    axios.post('https://yellowrabbit.herokuapp.com/users/api/register-customer/', {
+                    axios.post(baseUrl+'/users/api/register-customer/', {
                         first_name: inputs.nombreRegistro,
                         last_name:inputs.username,
                         email: inputs.emailNew,

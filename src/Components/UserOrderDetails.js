@@ -6,6 +6,10 @@ import Appbar from './appbarClient';
 import Footer from './footer';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import '../config';
+
+
+var baseUrl = global.config.yellow.rabbit.url;
 
 var token = localStorage.getItem('tokenClient');
 
@@ -22,7 +26,7 @@ const UserOrderDetails = () =>{
 
     useEffect(() =>{  
         try {
-          axios.get('https://yellowrabbit.herokuapp.com/orders/api/specific-order/'+idorder+'/',{ headers })
+          axios.get(baseUrl+'/orders/api/specific-order/'+idorder+'/',{ headers })
           .then((response) => {
             console.log(response.data);
             setListOrderDetalles(response.data[0][0])

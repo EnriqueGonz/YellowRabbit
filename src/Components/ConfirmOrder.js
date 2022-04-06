@@ -6,6 +6,10 @@ import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import imgErrorOrder from '../images/icons/iconErrorOrder.svg';
 import PayWithCreditCard from "./PayWithCreditCard.js";
+import '../config';
+
+
+var baseUrl = global.config.yellow.rabbit.url;
 
 
 var token = localStorage.getItem('tokenClient');
@@ -106,7 +110,7 @@ const ConfirmOrder = () => {
 
         // Addresses
         try {
-            axios.get('https://yellowrabbit.herokuapp.com/addresses/api/my-addresses/' + username + "/", { headers })
+            axios.get(+baseUrl+'/addresses/api/my-addresses/' + username + "/", { headers })
                 .then((response) => {
                     setlistDirecciones(response.data);
                 })
@@ -120,7 +124,7 @@ const ConfirmOrder = () => {
 
     useEffect(() => {
         try {
-            axios.get('https://yellowrabbit.herokuapp.com/users/api/my-account/' + username + "/", { headers })
+            axios.get(+baseUrl+'/users/api/my-account/' + username + "/", { headers })
                 .then((response) => {
                     setlistDataUser(response.data);
                     console.log(response.data)
@@ -140,7 +144,7 @@ const ConfirmOrder = () => {
     function redeemCoupon() {
         setTotalToPay(pricePlusShipping);
         try {
-            axios.post('https://yellowrabbit.herokuapp.com/redeemedcoupons/api/get-discount/' + username + "/", {
+            axios.post(baseUrl+'/redeemedcoupons/api/get-discount/' + username + "/", {
                 coupon_key: inputCoupon,
                 total_price: parseFloat(pricePlusShipping)
             }, { headers }) // LIOSEJ174678 // BYOOZO160661
@@ -172,7 +176,7 @@ const ConfirmOrder = () => {
 
 
     const handleSubmitDireccion = (event) => {
-        axios.post('https://yellowrabbit.herokuapp.com/addresses/api/register/', {
+        axios.post(baseUrl+'/addresses/api/register/', {
             user: idusuario,
             street: inputsDireccion.street,
             avenue: inputsDireccion.avenue,
@@ -325,7 +329,7 @@ const ConfirmOrder = () => {
 
 
             try {
-                axios.post('https://yellowrabbit.herokuapp.com/orders/api/register/', {
+                axios.post(baseUrl+'/orders/api/register/', {
                     order: rowOrder
                 }, { headers }
                 ).then((response) => {
@@ -402,7 +406,7 @@ const ConfirmOrder = () => {
             //
         } else {
             try {
-                axios.post('https://yellowrabbit.herokuapp.com/redeemedcoupons/api/redeem/', {
+                axios.post(baseUrl+'/redeemedcoupons/api/redeem/', {
                     user: idusuario,
                     shoppingcoupon: parseInt(idCoupon),
                     orders: parseInt(idOrder)
@@ -430,7 +434,7 @@ const ConfirmOrder = () => {
         console.log(listDataUser.email)
         console.log(listDataUser.phone)
         try {
-            axios.post('https://yellowrabbit.herokuapp.com/parcelservice/api/quote-shipment/', {
+            axios.post(baseUrl+'/parcelservice/api/quote-shipment/', {
                 carrier:document.getElementById('selectPaqueteria').value,
                 customer_name:listDataUser.first_name,
                 company:"",

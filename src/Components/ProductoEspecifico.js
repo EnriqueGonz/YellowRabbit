@@ -8,6 +8,10 @@ import { MdOutlineFavorite, MdAddShoppingCart, MdAdd, MdRemove } from "react-ico
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import '../config';
+
+
+var baseUrl = global.config.yellow.rabbit.url;
 
 
 var token = localStorage.getItem('tokenClient');
@@ -88,7 +92,7 @@ const ProductoEspecifico = () => {
 
     useEffect(() => {
         try {
-          axios.get('https://yellowrabbit.herokuapp.com/products/api/specific-product/'+idproduct+'/')
+          axios.get(baseUrl+'/products/api/specific-product/'+idproduct+'/')
           .then((response) => {
             console.log(response);
             setListProducto(response.data[0][0]);
@@ -98,7 +102,7 @@ const ProductoEspecifico = () => {
           });
     
 
-            axios.get('https://yellowrabbit.herokuapp.com/products/api/specific-product/' + idproduct + '/', { headers })
+            axios.get(baseUrl+'/products/api/specific-product/' + idproduct + '/', { headers })
                 .then((response) => {
                     setListProducto(response.data[0][0]);
                     setProductDetails(response.data[1]);
@@ -117,7 +121,7 @@ const ProductoEspecifico = () => {
 
     function methodAddWishlist(id) {
         try {
-            axios.post('https://yellowrabbit.herokuapp.com/wishlist/api/add-wishlist/', {
+            axios.post(baseUrl+'/wishlist/api/add-wishlist/', {
                 user: idusuario,
                 products: id
             }, { headers })
@@ -141,7 +145,7 @@ const ProductoEspecifico = () => {
 
     function methodAddCarshop(id) {
         try {
-            axios.post('https://yellowrabbit.herokuapp.com/shoppingcart/api/add/', {
+            axios.post(baseUrl+'/shoppingcart/api/add/', {
                 user: idusuario,
                 products: id,
                 amount: 1
