@@ -1,8 +1,8 @@
 import React,{ useEffect, useState } from 'react';
 
 import imgindex1 from '../images/fondouser.png';
-import { Tab,Tabs } from 'react-bootstrap';
-
+import { Tab,Tabs,Modal,Button, FormLabel,Form,Row,Col } from 'react-bootstrap';
+import { ReactComponent as IconWhatsapp} from '../images/icons/BtnWhatsapp.svg';
 import Appbar from './appbarClient';
 import Footer from './footer';
 import axios from 'axios';
@@ -13,6 +13,8 @@ var baseUrl = global.config.yellow.rabbit.url;
 
 var token = localStorage.getItem('tokenClient');
 var username = localStorage.getItem('usernameClient');
+var referencia = "";
+
 
 
 const headers = {
@@ -23,6 +25,22 @@ const headers = {
 
 const UserOrders = () =>{
     const [listOrders, setListOrders] = useState([]);
+
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);  
+
+    const [inputs, setInputs] = useState({
+        asunto: "",
+        mensaje: "",
+    })
+
+    function handleChange(evt) {
+        const name = evt.target.name;
+        const value = evt.target.value;
+        //console.log(name + value)
+        setInputs(values => ({ ...values, [name]: value }))
+    }
 
     useEffect(() =>{  
         try {
@@ -43,8 +61,23 @@ const UserOrders = () =>{
       function methodName(id) {
         console.log(id);
         window.location.href = "/detallesPedido/"+id;
-    }   
+    }  
     
+    function methodSendMsj(ref) {
+        referencia = ref;
+        console.log(referencia)
+        handleShow();
+    }  
+    
+    function SendMsj() {
+        var cadena;
+        console.log(inputs.asunto)
+        console.log(inputs.mensaje)
+        cadena = "https://api.whatsapp.com/send/?phone=529671551588&text=¡Hola!%20"+inputs.asunto+"%20"+inputs.mensaje+".%20Referencia%20de%20pedido:%20"+referencia;
+        window.location.href = cadena;
+        
+        
+    } 
 
     return(    
         <>
@@ -87,6 +120,7 @@ const UserOrders = () =>{
                                         ))}
                                         <tr>
                                             <td colSpan="4" style={{textAlign:"end"}}>
+                                                <button className='btn' style={{fontWeight:500,backgroundColor:"#404345",color:"white",marginRight:5}} onClick = {() => { methodSendMsj(item[0][0].delivery_number);} }><span>Dudas: <IconWhatsapp style={{width:20,height:20}}/> </span></button>
                                                 <button className='btn' style={{fontWeight:500,backgroundColor:"#E94E1B",color:"white"}} onClick = {() => { methodName(item[0][0].id);} }>Ver detalles</button>
                                             </td>
                                         </tr>
@@ -125,9 +159,12 @@ const UserOrders = () =>{
                                                 </td>
                                             </tr>
                                         ))}
-                                            <td colSpan="4" style={{textAlign:"end"}}>
-                                                <button className='btn' style={{fontWeight:500,backgroundColor:"#E94E1B",color:"white"}} onClick = {() => { methodName(item[0][0].id);} }>Ver detalles</button>
-                                            </td>
+                                            <tr>
+                                                <td colSpan="4" style={{textAlign:"end"}}>
+                                                    <button className='btn' style={{fontWeight:500,backgroundColor:"#404345",color:"white",marginRight:5}} onClick = {() => { methodSendMsj(item[0][0].delivery_number);} }><span>Dudas: <IconWhatsapp style={{width:20,height:20}}/> </span></button>
+                                                    <button className='btn' style={{fontWeight:500,backgroundColor:"#E94E1B",color:"white"}} onClick = {() => { methodName(item[0][0].id);} }>Ver detalles</button>
+                                                </td>
+                                            </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -163,9 +200,12 @@ const UserOrders = () =>{
                                                 </td>
                                             </tr>
                                         ))}
-                                            <td colSpan="4" style={{textAlign:"end"}}>
-                                                <button className='btn' style={{fontWeight:500,backgroundColor:"#E94E1B",color:"white"}} onClick = {() => { methodName(item[0][0].id);} }>Ver detalles</button>
-                                            </td>
+                                            <tr>
+                                                <td colSpan="4" style={{textAlign:"end"}}>
+                                                    <button className='btn' style={{fontWeight:500,backgroundColor:"#404345",color:"white",marginRight:5}} onClick = {() => { methodSendMsj(item[0][0].delivery_number);} }><span>Dudas: <IconWhatsapp style={{width:20,height:20}}/> </span></button>
+                                                    <button className='btn' style={{fontWeight:500,backgroundColor:"#E94E1B",color:"white"}} onClick = {() => { methodName(item[0][0].id);} }>Ver detalles</button>
+                                                </td>
+                                            </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -182,6 +222,43 @@ const UserOrders = () =>{
 
         </div>
         <Footer></Footer>
+
+
+        <Modal  show={show} size="md" onHide={handleClose} >
+            <Modal.Body style={{margin:20}}>
+            <div style={{border:"solid",borderColor:"#E94E1B",borderWidth:5,padding:25}}>
+
+                <Row className="mb-3">
+                    <FormLabel>Referenciade pedido</FormLabel>
+                    <Form.Group as={Col}>
+                    <Form.Control placeholder='Referencia' defaultValue={referencia} disabled required type="text" />
+                    </Form.Group>
+                </Row>
+                <Row className="mb-3">
+                    <FormLabel>Asunto</FormLabel>
+                    <Form.Group as={Col}>
+                    <Form.Control placeholder='Asunto' required type="text" name="asunto" value={inputs.asunto} onChange={handleChange} />
+                    </Form.Group>
+                </Row>
+                <Row className="mb-3">
+                    <FormLabel>Mensaje</FormLabel>
+                    <Form.Group as={Col}>
+                    <Form.Control placeholder='Mensaje' required as="textarea" type="text" name="mensaje" value={inputs.mensaje} onChange={handleChange}  />
+                    </Form.Group>
+                </Row>
+                <Button style={{marginLeft:10,float:"right",backgroundColor:"#E94E1B",borderColor:"#E94E1B" }} onClick = {() => { SendMsj()} } >
+                    Enviar
+                </Button>
+                <Button style={{marginLeft:10,float:"right",backgroundColor:"#404345",borderColor:"#404345"}} onClick = {handleClose}>
+                    Volver
+                </Button>
+                
+                <br></br>
+                <br></br>
+                
+            </div>
+            </Modal.Body>
+        </Modal>
 
         </>
     )

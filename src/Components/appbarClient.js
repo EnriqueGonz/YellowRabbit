@@ -13,6 +13,7 @@ var baseUrl = global.config.yellow.rabbit.url;
 const urlLogin = baseUrl+"/access/api/login/";
 
 const Appbar = () =>{
+    const [userData, setuserData] = useState(false);
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);  
@@ -104,13 +105,20 @@ const Appbar = () =>{
     }
 
     useEffect(() =>{  
-        if(localStorage.getItem('tokenClient') !== null){
-            console.log('Tiene token');
-            document.getElementById('botonIniciarSesion').style.display="none";
-        }else{
-            document.getElementById('dropdown').style.display="none";
+        try {
+            if(localStorage.getItem('tokenClient') !== null){
+                console.log('Tiene token');
+                setuserData(true);
+                document.getElementById('botonIniciarSesion').style.display="none";
+            }else{
+                document.getElementById('dropdown').style.display="none";
+                console.log(userData);
+            }
+            
+        } catch (error) {
+            console.log(error)
         }
-    })
+    },[setuserData])
 
     
 

@@ -70,7 +70,7 @@ const Datos = () =>{
             </div>
         </div>
         <div className='container' style={{textAlign:"justify"}}>
-            <p style={{fontFamily:"'Cairo', sans-serif",fontSize:16}}>Una vez que se confirme tu pedido y embarquemos tu compra, nosotros te proporcionamos un número de rastreo del envío, para que puedas darle seguimiento a tu pedido.Si tienes problemas con la entrega de tu compra, puedes ponerte en contacto con nosotros para darle seguimiento oportuno a <p style={{color:"#EB5929",fontWeight:"bold"}}>contacto@yellowrabbit.com.mx</p></p>
+            <p style={{fontFamily:"'Cairo', sans-serif",fontSize:16}}>Una vez que se confirme tu pedido y embarquemos tu compra, nosotros te proporcionamos un número de rastreo del envío, para que puedas darle seguimiento a tu pedido.Si tienes problemas con la entrega de tu compra, puedes ponerte en contacto con nosotros para darle seguimiento oportuno a <span style={{color:"#EB5929",fontWeight:"bold"}}>contacto@yellowrabbit.com.mx</span></p>
             <br/>
         </div>
         <div className='container'>
