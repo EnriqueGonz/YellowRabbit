@@ -2,7 +2,7 @@ import React, {useState,useEffect} from 'react';
 
 import imgproducto from '../images/producto.png';
 
-import { Carousel} from 'react-bootstrap';
+import { Carousel,Pagination} from 'react-bootstrap';
 
 import Appbar from './appbar';
 import Footer from './footer';
@@ -12,6 +12,7 @@ import { MdOutlineFavorite,MdAddShoppingCart } from "react-icons/md";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../config';
+import { ReactComponent as IconCarShop} from '../images/icons/BtnWhatsapp.svg';
 
 
 var baseUrl = global.config.yellow.rabbit.url;
@@ -19,7 +20,7 @@ var baseUrl = global.config.yellow.rabbit.url;
 var token = localStorage.getItem('tokenClient');
 //var username = localStorage.getItem('usernameClient');
 var idusuario = localStorage.getItem('userId');
-
+var paginas = 0;
 
 
 const headers = {
@@ -32,6 +33,8 @@ const headers = {
 
 const Productos = () =>{
     const [listProductos, setListProductos] = useState([]);
+    const [array,setArray] = useState([]);
+
     const notify = () => 
     {toast('Producto agregado a tu whitelist🔥', {
         position: "bottom-center",
@@ -67,11 +70,17 @@ const Productos = () =>{
         try {
           axios.post(baseUrl+'/products/api/all-products/',{
             product_name: "",
-            category_name:""
+            category_name:"",
+            page:1
           })
           .then((response) => {
             console.log(response);
-            setListProductos(response.data);
+            paginas = response.data[0][0]["num_pages "];
+            setListProductos(response.data[1]);
+            for (let num = 0; num < array.length; num++) {
+                setArray([...array, num])
+                
+            }
           })
           .catch((error) => {
             console.log(error);
@@ -80,7 +89,7 @@ const Productos = () =>{
         } catch (error) {
           console.log(' . ', error);
         }// eslint-disable-next-line react-hooks/exhaustive-deps
-      },[setListProductos])
+      },[setListProductos],[setArray])
 
       function methodName(id) {
         console.log(id);
@@ -107,6 +116,21 @@ const Productos = () =>{
         } catch (error) {
             console.log(' . ', error);
         }
+    }
+
+    function methodLoadPage(number){
+        axios.post(baseUrl+'/products/api/all-products/',{
+            product_name: "",
+            category_name:"",
+            page:number
+        })
+        .then((response) => {
+        console.log(response);
+        setListProductos(response.data[1]);
+        })
+        .catch((error) => {
+        console.log(error);
+        });
     }
 
     function methodAddCarshop(id) {
@@ -136,8 +160,29 @@ const Productos = () =>{
 
     }
 
+    let items = [];
+    for (let number = 1; number <= paginas; number++) {
+    items.push(
+        <li className="page-item" key={number}><button className="page-link" onClick = {() => { methodLoadPage(number)} }>{number}</button></li>,
+    );
+    }
+
+    const paginationBasic = (
+        <div>
+          <Pagination style={{justifyContent:"center"}}>{items}</Pagination>
+          <br />
+        </div>
+      );
+
+      function methodShowWhatsapp(){
+        window.location.href ='https://api.whatsapp.com/send/?phone=529671551588&text=¡Hola!%20Necesito%20ayuda'
+    }
+
     return(    
-        <>
+        <div id='wrapper'>
+            <div id="sticky">
+                <button className='btn-flotante' onClick = {() => { methodShowWhatsapp()} }><IconCarShop style={{width:35,height:50}}/></button>
+            </div>
         <Appbar></Appbar>
         <div className='container'>
             <div style={{widows:"75%"}}>
@@ -166,41 +211,45 @@ const Productos = () =>{
             <center>
             <div style={{width:"100%",textAlign:"justify"}}>
                 <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:"bold",color:"#EB5929"}}>Catalogo de productos</p>
-                <div className="grid-container-productos">
-                    {listProductos.map((item,index) => (
-                        <div className="grid-item" key={index}>
-                            <div className="column" style={{height:"100%"}}>
-                                <div className="card" >
-                                    <div className="card__content">
-                                        <div className='row' style={{height:"50%"}}>
-                                            <img onClick = {() => { methodShowProduct(item.id);} } alt={'Img'} style={{height:"100%"}} src={'https://yellowrabbitbucket.s3.amazonaws.com/'+item.image_one}></img>    
-                                        </div>
-                                        <div className='row' style={{height:"50%"}}>
-                                            <p onClick = {() => { methodShowProduct(item.id);} } className="card__info" style={{marginBottom:0}}>{item.product_name}</p>
-                                            <p className="card__info"><span className='simbol_price'>$</span>{item.price} <span className='simbol_price'>+ envio</span></p>
-                                            <div className='container' style={{textAlign:"right"}}>
-                                                <MdOutlineFavorite style={{marginLeft:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodName(item.id);} } ></MdOutlineFavorite>
-                                                <MdAddShoppingCart style={{marginLeft:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodAddCarshop(item.id);} } ></MdAddShoppingCart>
-                                                <ToastContainer></ToastContainer>
-                                            </div>
-                                        </div>
-                                        
-                                    </div>
-                                </div>
+                <div className='row'>
+                {listProductos.map((item,index) => (
+                <div key={index} className='col-6 col-md-3' style={{paddingBottom:15}}>
+                    <div className="card" >
+                        <div className="card__content">
+                            <div className='row' style={{height:"50%",justifyContent:"center"}}>
+                                <img onClick = {() => { methodShowProduct(item.id);} } alt={'Img'} style={{width:150,height:150}} src={'https://yellowrabbitbucket.s3.amazonaws.com/'+item.image_one}></img>    
                             </div>
+                            <div className='module line-clamp'>
+                                <a href={'/article/details/'+item.id} style={{color:"black",textDecoration:"none"}}><p style={{fontWeight:"bold"}}>{item.product_name}</p></a>
+                            </div>
+                                <p className="card__info" style={{height:"fit-content"}}> <span className='simbol_price'>$</span>{item.price} <span className='simbol_price'>+ envio</span></p>
+                                <div className='container' style={{textAlign:"right",padding:0}}>
+                                    <MdOutlineFavorite style={{marginLeft:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodName(item.id);} } ></MdOutlineFavorite>
+                                    <MdAddShoppingCart style={{marginLeft:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodAddCarshop(item.id);} } ></MdAddShoppingCart>
+                                    <ToastContainer></ToastContainer>
+                                </div>
+                            
                         </div>
-                    ))}
+                    </div>
                 </div>
+                    
+                ))}
+
+                </div>
+                
                 
             </div>
             </center>
+        </div>
+        <div style={{paddingTop:20}}>
+            {paginationBasic}
         </div>
         <br></br>
 
 
         <Footer></Footer>
 
-        </>
+        </div>
     )
 
 }

@@ -28,7 +28,7 @@ const UserOrderDetails = () =>{
         try {
           axios.get(baseUrl+'/orders/api/specific-order/'+idorder+'/',{ headers })
           .then((response) => {
-            console.log(response.data);
+            console.log(response);
             setListOrderDetalles(response.data[0][0])
             setListOrderPago(response.data[1])
             setListOrderProductos(response.data[2])
@@ -57,39 +57,109 @@ ListOrderPago.map((item) =>(
         <Appbar></Appbar>
         <div style={{backgroundImage:"url('"+imgindex1+"')"}}>
 
-            <div className='container' style={{backgroundColor:"white",width:"60%"}}>
+            <div className='col-12 col-md-10 container' style={{backgroundColor:"white"}}>
 
-                <div className='container' style={{width:"90%"}}>
+                <div className='col-12 col-md-11 container'>
                     <br/><br/>
                     <h3>Detalles del pedido</h3>
-                    <div className='container' style={{width:"90%"}}>
-                        <h6>Productos:</h6>
-                        {ListOrderProductos.map((item,index) => (
-                            <div key={index} className='row'>
-                                <div className='col-sm-2'>
-                                    <img alt="" style={{width:"100%"}} src={ 'https://yellowrabbitbucket.s3.amazonaws.com/' + item[0].image_one}></img>
-                                </div>
-                                <div className='col-sm-10'>
-                                    <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:"bold",color:"#EB5929"}}>{ListOrderPago[index].amount +' * '+  item[0].product_name}</p>
-                                    <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>Precio: ({ListOrderPago[index].amount +' * ' +item[0].price} c/u) = {new Intl.NumberFormat().format(ListOrderPago[index].total_price)}</p>
+                    <div className='container'>
+                        <div className='card' style={{marginBottom:15}}>
+                            <table className="">
+                                <thead style={{borderBottom:"solid",borderBottomWidth:1,borderBottomColor:"#DFDFDF"}}>
+                                    <tr>
+                                        <th className="col" style={{width:"25%"}}></th>
+                                        <th className="col" style={{width:"25%"}}><b>Producto:</b></th>
+                                        <th className="col" style={{width:"25%"}}><b>Cantidad</b></th>
+                                        <th className="col" style={{width:"25%"}}><b>Precio</b></th>
+                                        <th className="col" style={{width:"25%"}}><b>Subtotal</b></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {ListOrderProductos.map((item,index) => (
+                                    <tr key={index}>
+                                        <td colSpan="1">
+                                            <img src={'https://yellowrabbitbucket.s3.amazonaws.com/'+item[0].image_one} alt="" style={{width:72,height:72,border:"solid",margin:5,borderWidth:1,borderColor:"#E7E7E7",borderRadius:5}}></img>
+                                        </td>
+                                        <td colSpan="1" style={{textAlign:"start"}}>
+                                            <a className='nodecorationa' href={'/article/details/'+item[0].id}><span>{item[0].product_name}</span><br></br></a>
+                                        </td>
+                                        <td colSpan="1">
+                                            <span>{ListOrderPago[index].amount}</span>
+                                        </td>
+                                        <td colSpan="1">
+                                            <span>{ListOrderPago[index].unit_price}</span>
+                                        </td>
+                                        <td colSpan="1">
+                                            <span>{ListOrderPago[index].total_price}</span>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        
+
+                        </div>
+                        
+                    </div>
+                    <div className='container'>
+                        <div className='row'>
+                            <div className='col-12 col-md-6'>
+                            </div>
+                            <div className='col-12 col-md-6'>
+                                <div className='card' style={{marginBottom:15}}>
+                                    <table className="">
+                                        <thead style={{borderBottom:"solid",borderBottomWidth:1,borderBottomColor:"#DFDFDF"}}>
+                                            <tr>
+                                                <th className="col" style={{fontWeight:300}}>Num de referencia:</th>
+                                                <th className="col" style={{fontWeight:300}}>{ListOrderDetalles.delivery_number}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"start"}}>
+                                                    <span>Status:</span>
+                                                </td>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"end"}}>
+                                                    <span>{ListOrderDetalles.status}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"start"}}>
+                                                    <span>Pedio realizado:</span>
+                                                </td>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"end"}}>
+                                                    <span>{ListOrderDetalles.order_date}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"start"}}>
+                                                    <span>Fecha de entrega::</span>
+                                                </td>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"end"}}>
+                                                    <span>{ListOrderDetalles.date_delivery}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"start"}}>
+                                                    <span>Envio:</span>
+                                                </td>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"end"}}>
+                                                    <span>{new Intl.NumberFormat().format(i)}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"start"}}>
+                                                    <span>Total</span>
+                                                </td>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"end"}}>
+                                                    <span>{new Intl.NumberFormat().format(i)}</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                
 
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                    <div className='container' style={{width:"90%"}}>
-                        <h6>Detalles generales:</h6>
-                        <div className='row'>
-                            <div className='col-sm-2'>
-                                
-                            </div>
-                            <div className='col-sm-10'>
-                                <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:"bold",color:"#EB5929"}}>Numero de entrega: {ListOrderDetalles.delivery_number}</p>
-                                <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>Pedido realizado: {ListOrderDetalles.order_date}</p>
-                                <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>Status del pedido: {ListOrderDetalles.status}</p>
-                                <br></br>
-                                <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>Costo total: {new Intl.NumberFormat().format(i)}</p>
-                                
 
                             </div>
                         </div>

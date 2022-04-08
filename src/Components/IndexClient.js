@@ -7,6 +7,7 @@ import imgQuien from '../images/imgQuien.jpg';
 
 import { ReactComponent as IconMision } from '../images/icons/IconMision.svg';
 import { ReactComponent as IconVision } from '../images/icons/IconVision.svg';
+import { ReactComponent as IconCarShop} from '../images/icons/BtnWhatsapp.svg';
 import { Carousel } from 'react-bootstrap';
 
 
@@ -15,24 +16,29 @@ import Footer from './footer';
 
 const IndexClient = () =>{
 
+    function methodShowWhatsapp(){
+        window.location.href ='https://api.whatsapp.com/send/?phone=529671551588&text=¡Hola!%20Necesito%20ayuda'
+    }
+
     
 
 
     return(    
-        <>
+        <div id='wrapper'>
+            <div id="sticky">
+                <button className='btn-flotante' onClick = {() => { methodShowWhatsapp()} }><IconCarShop style={{width:35,height:50}}/></button>
+            </div>
         <Appbar></Appbar>
         <div className='container'>
-            <div style={{widows:"75%"}}>
-            <div className="navbar navbar-expand-lg navbar-light" style={{backgroundColor:"#FFF",justifyContent: "space-around"}}>
-              <a className='aSelected' href='/inicio'>INICIO</a>
-              <a className='aNoSelected' href='/datos'>DATOS</a>
-              <a className='aNoSelected' href='/productos'>PRODUCTOS</a>
-              <a className='aNoSelected' href='/blog'>BLOG</a>
-              <a className='aNoSelected' href='/contacto'>CONTACTO</a>
+            <div>
+                <div className="navbar navbar-expand-lg navbar-light" style={{backgroundColor:"#FFF",justifyContent: "space-around"}}>
+                <a className='aSelected' href='/inicio'>INICIO</a>
+                <a className='aNoSelected' href='/datos'>DATOS</a>
+                <a className='aNoSelected' href='/productos'>PRODUCTOS</a>
+                <a className='aNoSelected' href='/blog'>BLOG</a>
+                <a className='aNoSelected' href='/contacto'>CONTACTO</a>
+                </div>
             </div>
-
-            </div>
-
         </div>
         <Carousel>
             <Carousel.Item className='contenedor'>
@@ -59,12 +65,14 @@ const IndexClient = () =>{
             
         </Carousel>
 
+        
+
         <div className="container" style={{paddingTop:50, paddingBottom:50}}>
             <div className="row">
-                <div className="col">
-                    <img alt='' src={imgQuien}></img>
+                <div className="col-12 col-md-6">
+                    <img alt='' style={{width:"100%"}} src={imgQuien}></img>
                 </div>
-                <div className="col">
+                <div className="col-12 col-md-6">
                     <div className="row">
                         <p style={{fontFamily:"'Quicksand', sans-serif",fontSize:40,fontWeight:"bold",color:"#E94E1B"}}>Nosotros</p>
                     </div>
@@ -116,7 +124,7 @@ const IndexClient = () =>{
         </div>
         <Footer></Footer>
 
-        </>
+        </div>
     )
 
 }

@@ -2,6 +2,7 @@ import React from 'react';
 
 import imgdatos from '../images/datos.png';
 import imgmetodospago from '../images/metodosPago.png';
+import { ReactComponent as IconCarShop} from '../images/icons/BtnWhatsapp.svg';
 
 import { Carousel} from 'react-bootstrap';
 
@@ -9,10 +10,16 @@ import Appbar from './appbar';
 import Footer from './footer';
 
 const Datos = () =>{
+    function methodShowWhatsapp(){
+        window.location.href ='https://api.whatsapp.com/send/?phone=529671551588&text=¡Hola!%20Necesito%20ayuda'
+    }
 
 
     return(    
-        <>
+        <div id='wrapper'>
+            <div id="sticky">
+                <button className='btn-flotante' onClick = {() => { methodShowWhatsapp()} }><IconCarShop style={{width:35,height:50}}/></button>
+            </div>
         <Appbar></Appbar>
         <div className='container'>
             <div style={{widows:"75%"}}>
@@ -50,7 +57,6 @@ const Datos = () =>{
                             <li>Tarjeta de credito, debíto VISA, Master Card</li>
                             <li>PayPal</li>
                             <li>Pago en OXXO</li>
-                            <li>Tranferencia electronica</li>
                             <p style={{fontFamily:"'Quicksand', sans-serif",fontWeight:500}}>Tenemos varias opciones de entrega:</p>
                             <li>Mismo dia en Ciudad de méxico</li>
                             <li>Siguiente dia en Ciudad de mexico y Area Metropolitana</li>
@@ -87,7 +93,7 @@ const Datos = () =>{
 
         <Footer></Footer>
 
-        </>
+        </div>
     )
 
 }

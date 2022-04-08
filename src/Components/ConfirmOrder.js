@@ -60,7 +60,7 @@ const ConfirmOrder = () => {
     // Try to pay again
     const [showErrorPayAgain, setShowErrorPayAgain] = useState(false);
     // Show quote message
-    const [quoteMessage, setQuoteMessage] = useState(true);
+    const [quoteMessage] = useState(true);
 
     // Id of the selected address
     const [idSelectedAddress, setIdSelectedAddress] = useState(false);
@@ -99,6 +99,7 @@ const ConfirmOrder = () => {
                         setOrderSpecifications(value);
                         pricePlusShipping = value.total_price;
                         setTotalToPay(pricePlusShipping);
+                        break;
 
                     default:
                         break;
@@ -216,7 +217,7 @@ const ConfirmOrder = () => {
     }
 
     function handleChangeCoupon(evt) {
-        const name = evt.target.name;
+        //const name = evt.target.name;
         const value = evt.target.value;
         setInputCoupon(value);
         evt.preventDefault();
@@ -262,7 +263,7 @@ const ConfirmOrder = () => {
 
     // Validate address and payment method
     function validateAddresPaymentM() {
-        if (paymentMethod === "" || paymentMethod === undefined || paymentMethod === NaN || paymentMethod === null || paymentMethod === false || paymentMethod === 0) {
+        if (paymentMethod === "" || paymentMethod === undefined || paymentMethod === isNaN || paymentMethod === null || paymentMethod === false || paymentMethod === 0) {
             setShowSelectPayment(true);
             return false;
         }
@@ -270,7 +271,7 @@ const ConfirmOrder = () => {
             setShowSelectPayment(false);
         }
 
-        if (idSelectedAddress === "" || idSelectedAddress === undefined || idSelectedAddress === NaN || idSelectedAddress === null || idSelectedAddress === false || idSelectedAddress === 0) {
+        if (idSelectedAddress === "" || idSelectedAddress === undefined || idSelectedAddress === isNaN || idSelectedAddress === null || idSelectedAddress === false || idSelectedAddress === 0) {
             setshowSelectAddress(true);
             return false;
         }
@@ -448,13 +449,6 @@ const ConfirmOrder = () => {
                 country:"MX",
                 postal_code:parseInt(document.getElementById('codigo-potal').value),
                 reference:"",
-                content:"Zapatos",
-                email:listDataUser.email,
-                phone:parseInt(listDataUser.phone),
-                city:document.getElementById('municipio').value,
-                state:document.getElementById('state').value,
-                country:"MX",
-                postal_code: document.getElementById('codigo-potal').value,
                 content: listProducto.product_name,
                 amount:1,
                 type:"box",

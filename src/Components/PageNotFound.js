@@ -1,7 +1,7 @@
 import React from "react";
 import Appbar from './appbarClient';
 import Footer from './footer';
-import { Form, Button, Row, Col, Modal, Container, InputGroup } from 'react-bootstrap';
+import { Button, Row, Col, Container } from 'react-bootstrap';
 import imgRabbit from '../images/icons/iconErrorOrder.svg';
 
 

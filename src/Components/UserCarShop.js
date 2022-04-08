@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Row, Col, Modal } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
 
 import imgindex1 from '../images/fondouser.png';
 import LoadingUserCarShop from './LoadingUserCarShop';
@@ -29,7 +29,7 @@ const headers = {
 
 
 const UserCarShop = () => {
-    const [list, setList] = React.useState([]);
+    const [list, setList] = useState([]);
 
     const notify = () => {
         toast('Producto agregado a tu whitelist🔥', {
@@ -42,32 +42,6 @@ const UserCarShop = () => {
             progress: undefined,
         })
     }
-
-    /* Shopping Cart */
-    const notifyShoppingCart = () => {
-        toast('Producto removido de tu carrito de compras.', {
-            position: "bottom-center",
-            autoClose: 1000,
-            hideProgressBar: true,
-            closeOnClick: false,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-        })
-    }
-
-    const notifyUpdateShoppingCart = () => {
-        toast('Se ha guardado los cambios.', {
-            position: "bottom-center",
-            autoClose: 1000,
-            hideProgressBar: true,
-            closeOnClick: false,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-        })
-    }
-
 
     // End notifyShoppingCart
 
@@ -97,7 +71,7 @@ const UserCarShop = () => {
     }
 
 
-    React.useEffect(() => {
+    useEffect(() => {
         try {
             axios.get(baseUrl+'/shoppingcart/api/my-shopping-cart/' + username + '/', { headers })
                 .then((response) => {
@@ -111,7 +85,6 @@ const UserCarShop = () => {
         } catch (error) {
             console.log(' . ', error);
         }// eslint-disable-next-line react-hooks/exhaustive-deps
-
 
     }, [setList])
 
@@ -146,7 +119,6 @@ const UserCarShop = () => {
             axios.delete(baseUrl+'/shoppingcart/api/delete/' + parseInt(id) + '/', { headers })
                 .then((response) => {
                     if (response.status === 200) {
-                        notifyShoppingCart();
                         reloadList();
                         
                     }
@@ -173,7 +145,7 @@ const UserCarShop = () => {
                     document.getElementById('loadingSuma'+idCarShop).style.display="none"
                     document.getElementById('btnRestar'+idCarShop).style.display="block"
                     document.getElementById('loading'+idCarShop).style.display="none"
-                    reloadList(idCarShop);
+                    reloadList();
                 })
                 .catch((error) => {
                     notifyerror();
@@ -189,12 +161,15 @@ const UserCarShop = () => {
 
 
     list.map((item) =>(
-        costo_total += parseFloat(item[0][0]["total_price"]),
-        CantidadTotal += item[0][0]["amount"]
+        costo_total += parseFloat(item[0][0]["total_price"])
     ))
     costo_total = costo_total.toFixed(2);
 
-    function reloadList(idCarShop){
+    list.map((item) =>(
+        CantidadTotal += item[0][0]["amount"]
+    ))
+
+    function reloadList(){
         try {
             axios.get(baseUrl+'/shoppingcart/api/my-shopping-cart/' + username + '/', { headers })
                 .then((response) => {
@@ -253,14 +228,15 @@ const UserCarShop = () => {
     return (
         <>
             <Appbar></Appbar>
+            
             <div style={{ backgroundImage: "url('" + imgindex1 + "')" }}>
                 <div className='row' style={{width:"100%"}}>
-                <div className='col-8'>
+                <div className='col-12 col-md-8'>
                     <div className='container' style={{ backgroundColor: "white", width: "90%" }}>
-                    <div className='container' style={{ width: "90%" }}>
+                    <div className='container' style={{ width: "100%" }}>
                         <br /><br />
                         <h3>Carrito de compras</h3>
-                        <div className='container' style={{ width: "90%" }}>
+                        <div className='container' style={{ width: "100%" }}>
 
 
                         </div>
@@ -345,7 +321,7 @@ const UserCarShop = () => {
                     </div>
                     </div>
                 </div>
-                <div className='col-4'>
+                <div className='col-12 col-md-4'>
                     <div className='container' style={{ backgroundColor: "white", width: "90%" }}>
                         <div className='container' style={{ width: "90%" }}>
                         <br /><br />

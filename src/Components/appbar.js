@@ -154,13 +154,13 @@ const Appbar = () =>{
                   <div>
                     <Button id="botonIniciarSesion" style={{padding:0, display:"block"}} variant="text" onClick = {() => { handleShow()} }><p style={{marginBottom:0}}><IconPerfil style={{width:30,height:"100%",marginRight:10}}/>Iniciar Sesión</p></Button>
                         <div className="dropdown" id="dropdown">
-                            <a className="nav-link active dropdown-toggle" aria-current="page" href="http://localhost:3000/#" data-bs-toggle="dropdown" aria-expanded="false"><IconPerfil style={{width:30,height:"100%",marginRight:10}}/>{localStorage.getItem('username')} </a>
+                            <a className="nav-link active dropdown-toggle" aria-current="page" href="/#" data-bs-toggle="dropdown" aria-expanded="false"><IconPerfil style={{width:30,height:"100%",marginRight:10}}/>{localStorage.getItem('username')} </a>
                             <ul className="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-perfil">Mi Perfil</a></li>
-                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mis-pedidos">Mis pedidos</a></li>
-                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-wishlist">Mi Wishlist</a></li>
-                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-carrito">Carrito de compras</a></li>
-                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mis-compras">Mis compras</a></li>
+                                <li><a  className="dropdown-item"  type="button" href="/user/mi-perfil">Mi Perfil</a></li>
+                                <li><a  className="dropdown-item"  type="button" href="/user/mis-pedidos">Mis pedidos</a></li>
+                                <li><a  className="dropdown-item"  type="button" href="/user/mi-wishlist">Mi Wishlist</a></li>
+                                <li><a  className="dropdown-item"  type="button" href="/user/mi-carrito">Carrito de compras</a></li>
+                                <li><a  className="dropdown-item"  type="button" href="/user/mis-compras">Mis compras</a></li>
                                 <hr style={{height:"2px",backgroundColor:"#EB5929",opacity:1}}></hr>
                                 <li><button  className="dropdown-item"  type="button" onClick = {handleShow2}>Cerrar sesion</button></li>
                             </ul>

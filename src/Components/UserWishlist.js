@@ -130,12 +130,12 @@ const UserWishlist = () =>{
         <>
         <Appbar></Appbar>
         <div style={{backgroundImage:"url('"+imgindex1+"')"}}>
-            <div className='container' style={{backgroundColor:"white",width:"60%"}}>
+            <div className='col-12 col-md-8 container' style={{backgroundColor:"white"}}>
 
-                <div className='container' style={{width:"90%"}}>
+                <div className='container'>
                     <br/><br/>
                     <h3>WISHLIST</h3>
-                    <div className='container' style={{width:"90%"}}>
+                    <div className='col-12 col-md-10 container'>
                         
 
                     </div>
@@ -144,21 +144,21 @@ const UserWishlist = () =>{
 
                     <h6>Mis productos</h6>
                     <br></br>
-                    <div className='container' style={{width:"90%"}}>
+                    <div className='col-12 col-md-10 container'>
                     {list.map((item,index) => (
-                        <div key={index} style={{marginBottom:10}} className="col-sm-12">
+                        <div key={index} style={{marginBottom:10}} className="col-12 col-md-12">
                             
-                            <div  style={{backgroundColor:"#FFF",borderRadius:20,height:"100%",textAlign:"start"}} className="card">
+                            <div  style={{backgroundColor:"#FFF",height:"100%",textAlign:"start",borderBottom:"solid",borderWidth:1,borderColor:"#E6E6E6"}}>
 
                             <div className="card-body">
                                 <div className='row'>
-                                    <div className='col-sm-3'>
-                                        <img alt="Quitar de la wishlist" style={{width:"100%",height:"100px"}} src={ 'https://yellowrabbitbucket.s3.amazonaws.com/'+item[1][0].image_one}></img>
+                                    <div className='col-3 col-md-2'>
+                                        <img alt="Quitar de la wishlist" style={{width:75,height:75,borderRadius:60}} src={ 'https://yellowrabbitbucket.s3.amazonaws.com/'+item[1][0].image_one}></img>
                                     </div>
-                                    <div className='col-sm-9'>
+                                    <div className='col-9 col-md-10'>
                                         <a href={'/article/details/'+item[1][0].id} title='Ver producto' style={{textDecorationLine:"none"}}><p style={{fontFamily:"'Cairo', sans-serif",fontWeight:"bold",color:"#EB5929"}}>{item[1][0].product_name}</p></a>
                                         <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>{'$'+item[1][0].price}</p>
-                                        <div style={{position:"absolute",right:"2%",bottom:"2%"}} className="contianer">
+                                        <div style={{float:"right"}} className="contianer">
                                             <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Agregar al carrito de compras</Tooltip>}>
                                                 {({ ref, ...triggerHandler }) => (
                                                 <div variant="light" {...triggerHandler} className="d-inline-flex align-items-center">

@@ -152,12 +152,12 @@ const UserPerfil = () =>{
         <>
         <Appbar></Appbar>
         <div style={{backgroundImage:"url('"+imgindex1+"')"}}>
-            <div className='container' style={{backgroundColor:"white",width:"60%"}}>
+            <div className='col-12 col-md-8 container' style={{backgroundColor:"white"}}>
 
                 <div className='container' style={{width:"90%"}}>
                     <br/><br/>
                     <h3>Datos de la cuenta</h3>
-                    <div className='container' style={{width:"90%"}}>
+                    <div className='col-12 col-md-11 container'>
                         <div className='row'>
                             <div className='col-sm-4'>
                                 <div style={{width:"100%",backgroundColor:"#DFDFDF"}}>

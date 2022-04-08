@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import { Form, Button, Row, Col, Modal, Container, InputGroup } from 'react-bootstrap';
 import Appbar from './appbarClient';
-import Footer from './footer';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import imgOXXOPay from '../images/icons/iconOxxoPay.svg';
 import imgErrorOrSuccessOrder from '../images/icons/iconErrorOrder.svg';
 import imgFinishingPurchase from '../images/icons/iconFinishingPurchase.gif';
-import imgSuccessPurchase from '../images/icons/iconSuccessesOrder.svg';
-
 
 // Payment
 import { loadStripe } from '@stripe/stripe-js';
@@ -114,7 +111,7 @@ const PagarConOxxo = () => {
             return;
         }
 
-        const { error, paymentIntent } = await stripe.confirmOxxoPayment(
+        const { error } = await stripe.confirmOxxoPayment(
             clientSecret,
             {
                 payment_method: {

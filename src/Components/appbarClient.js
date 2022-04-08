@@ -117,8 +117,8 @@ const Appbar = () =>{
     return(    
         <>
         <div>
-            <div>
-                <div className="navbar navbar-expand-lg navbar-light" style={{backgroundImage: `url(${fondo})`,justifyContent: "space-around"}}>
+            <div style={{backgroundImage: `url(${fondo})`}}>
+                <div className="navbar navbar-expand-lg navbar-light" style={{justifyContent: "space-around"}}>
                   <div>
                       <img alt='' style={{width:"35%"}} src={imgLogo}></img>
                   </div>
@@ -129,20 +129,27 @@ const Appbar = () =>{
                     <div>
                     <Button id="botonIniciarSesion" style={{padding:0, display:"block"}} variant="text" onClick = {() => { handleShow2()} }><p style={{marginBottom:0}}><IconPerfil style={{width:30,height:"100%",marginRight:10}}/>Iniciar Sesión</p></Button>
                         <div className="dropdown" id="dropdown">
-                            <a className="nav-link active dropdown-toggle" aria-current="page" href="http://localhost:3000/#" data-bs-toggle="dropdown" aria-expanded="false">{localStorage.getItem('username')} </a>
+                            <a className="nav-link active dropdown-toggle" aria-current="page" href="/#" data-bs-toggle="dropdown" aria-expanded="false">{localStorage.getItem('username')} </a>
                             <ul className="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/inicio">Volver al inicio</a></li>
-                                <hr style={{height:"2px",backgroundColor:"#EB5929",opacity:1}}></hr>
-                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-perfil">Mi Perfil</a></li>
-                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mis-pedidos">Mis pedidos</a></li>
-                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-wishlist">Mi Wishlist</a></li>
-                                <li><a  className="dropdown-item"  type="button" href="http://localhost:3000/user/mi-carrito">Carrito de compras</a></li>
+                                <li><a  className="dropdown-item"  type="button" href="/user/mi-perfil">Mi Perfil</a></li>
+                                <li><a  className="dropdown-item"  type="button" href="/user/mis-pedidos">Mis pedidos</a></li>
+                                <li><a  className="dropdown-item"  type="button" href="/user/mi-wishlist">Mi Wishlist</a></li>
+                                <li><a  className="dropdown-item"  type="button" href="/user/mi-carrito">Carrito de compras</a></li>
                                 <hr style={{height:"2px",backgroundColor:"#EB5929",opacity:1}}></hr>
                                 <li><button  className="dropdown-item"  type="button" onClick = {handleShow}>Cerrar sesion</button></li>
                             </ul>
                         </div>
                     </div>
                   </div>
+                </div>
+                <div>
+                    <div className="navbar navbar-expand-lg navbar-light" style={{justifyContent: "space-around"}}>
+                        <a className='aNoSelected' href='/inicio'>INICIO</a>
+                        <a className='aNoSelected' href='/datos'>DATOS</a>
+                        <a className='aNoSelected' href='/productos'>PRODUCTOS</a>
+                        <a className='aNoSelected' href='/blog'>BLOG</a>
+                        <a className='aNoSelected' href='/contacto'>CONTACTO</a>
+                    </div>
                 </div>
             </div>
         </div>
