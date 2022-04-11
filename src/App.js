@@ -24,6 +24,10 @@ import FailedCardPayment from './Components/FailedCardPayment';
 import PayPal from './Components/PayPal';
 
 
+//ADMIN
+import AdminProductosAgregar from './Components/AdminProductosAgregar';
+
+
 
 function App() {
     return (
@@ -98,11 +102,20 @@ function App() {
                         <PayPal></PayPal>
                     </Route>
 
-
                     <Route path="/not/found">
                         <PageNotFound></PageNotFound>
                     </Route>
 
+
+                    <Route path="/admin/inicio">
+                        <PageNotFound></PageNotFound>
+                    </Route>
+                    <Route path="/admin/productos">
+                        <PageNotFound></PageNotFound>
+                    </Route>
+                    <Route path="/admin/añadir">
+                        <AdminProductosAgregar></AdminProductosAgregar>
+                    </Route>
                 </Switch>
             </Router>
         </div>

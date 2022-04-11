@@ -57,12 +57,21 @@ const Appbar = () =>{
                 password: inputs.password
             })
             .then((response) => {
-                console.log(response);
-                localStorage.setItem('tokenClient', response.data.token);
-                localStorage.setItem('username', response.data.first_name);
-                localStorage.setItem('userId', response.data.pk);
-                localStorage.setItem('usernameClient', response.data.username);
-                window.location.href = "/inicio";
+                console.log(response.data);
+                if(response.data.is_admin === true){
+                    localStorage.setItem('tokenAdmin', response.data.token);
+                    localStorage.setItem('nameAdmin', response.data.first_name);
+                    localStorage.setItem('AdminId', response.data.pk);
+                    localStorage.setItem('usernameAdmin', response.data.username);
+                    //window.location.href = "/inicio";
+
+                }else{
+                    localStorage.setItem('tokenClient', response.data.token);
+                    localStorage.setItem('username', response.data.first_name);
+                    localStorage.setItem('userId', response.data.pk);
+                    localStorage.setItem('usernameClient', response.data.username);
+                    window.location.href = "/inicio";
+                }
             })
             .catch(err => console.log(err));
     }
