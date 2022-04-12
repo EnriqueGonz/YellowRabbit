@@ -13,6 +13,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../config';
 import { ReactComponent as IconCarShop} from '../images/icons/BtnWhatsapp.svg';
+import { ReactComponent as IconBtnCarshop } from '../images/icons/CarShopB.svg';
 
 
 var baseUrl = global.config.yellow.rabbit.url;
@@ -34,6 +35,7 @@ const headers = {
 const Productos = () =>{
     const [listProductos, setListProductos] = useState([]);
     const [array,setArray] = useState([]);
+    const [listCategoria,setlistCategoria] = useState([]);
 
     const notify = () => 
     {toast('Producto agregado a tu whitelist🔥', {
@@ -65,6 +67,24 @@ const Productos = () =>{
         draggable: true,
         progress: undefined,
     })}
+
+    useEffect(() =>{  
+        try {
+          axios.post(baseUrl+'/categories/api/all-categories/',{
+            category_name:"",
+          })
+          .then((response) => {
+            console.log(response);
+            setlistCategoria(response.data)
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    
+        } catch (error) {
+          console.log(' . ', error);
+        }// eslint-disable-next-line react-hooks/exhaustive-deps
+      },[setlistCategoria])
 
     useEffect(() =>{  
         try {
@@ -178,6 +198,32 @@ const Productos = () =>{
         window.location.href ='https://api.whatsapp.com/send/?phone=529671551588&text=¡Hola!%20Necesito%20ayuda'
     }
 
+    function methodtest(name){
+        console.log(name)
+        try {
+            axios.post(baseUrl+'/products/api/all-products/',{
+              product_name: "",
+              category_name:name,
+              page:1
+            })
+            .then((response) => {
+              console.log(response);
+              paginas = response.data[0][0]["num_pages "];
+              setListProductos(response.data[1]);
+              for (let num = 0; num < array.length; num++) {
+                  setArray([...array, num])
+                  
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+      
+          } catch (error) {
+            console.log(' . ', error);
+          }
+    }
+
     return(    
         <div id='wrapper'>
             <div id="sticky">
@@ -207,7 +253,40 @@ const Productos = () =>{
             </Carousel.Item>
         </Carousel>
 
-        <div className='container'>
+
+        <div className='row'>
+            <div className='col-12 col-md-2' style={{padding:0}} >
+                <div style={{width:"100%",backgroundColor:"#E94E1B"}}>
+                    <button className='btn'>
+                        <IconBtnCarshop style={{width:"40%",height:"auto"}}/><br></br>
+                        <span style={{color:"white",fontSize:12}}>Ir al carrito de compras</span>
+                    </button>
+                </div>
+                <div className='container' style={{width:"100%"}}>
+                    <br/>
+                    <span>Categoria</span>
+
+                    <div className="form-check" >
+                        <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onClick = {() => { methodtest("")} }/>
+                        <label className="form-check-label" htmlFor="flexRadioDefault1">
+                            Sin filtros
+                        </label>
+                        </div>
+                    {listCategoria.map((item,index) => (
+                        <div key={index} className="form-check" >
+                        <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onClick = {() => { methodtest(item.category_name)} }/>
+                        <label className="form-check-label" htmlFor="flexRadioDefault1">
+                            {item.category_name}
+                        </label>
+                        </div>
+
+                    ))}
+
+                </div>
+            
+            </div>
+            <div className='col-12 col-md-10' style={{borderLeft:"solid",borderColor:"#E94E1B"}}>
+            <div className='container'>
             <center>
             <div style={{width:"100%",textAlign:"justify"}}>
                 <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:"bold",color:"#EB5929"}}>Catalogo de productos</p>
@@ -244,6 +323,10 @@ const Productos = () =>{
         <div style={{paddingTop:20}}>
             {paginationBasic}
         </div>
+            </div>
+        </div>
+
+        
         <br></br>
 
 
