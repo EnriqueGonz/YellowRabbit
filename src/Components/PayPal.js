@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 
+
 const PayPal = () => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [error, setError] = useState(null);
@@ -13,7 +14,7 @@ const PayPal = () => {
     }
 
     if (isSuccess){
-        alert('El pago se hizo correctamente')
+        alert('El pago se hizo correctamente');
     }
 
     if(error){
@@ -23,9 +24,19 @@ const PayPal = () => {
 
     return (
         <><h4>Pagar con PAYPAL</h4>
-            <PayPalScriptProvider options={{ "client-id": "AYRxZOc3J0-sKXXANiw9nrPP82pnT0ppAEcG7_IRECmqLtYA1298e7CooUqvIkT_QSW6Nz4B-hB1i0h" }}>
+            <PayPalScriptProvider options={{ "client-id": "AaUpVv8WDVM5uezwsQo79K6YBKmqm3EeLSOx5TFTX4RM2_ephwW68aJ4_ASXYPjbI8OyuXchwgkQ7bRl", currency: "MXN" }}>
                 <PayPalButtons
                     style={{ color: "silver", layout: "horizontal", height: 48, tagline: false, shape: "pill" }}
+
+                    onClick = {(data, actions) => {
+                        const hasAlreadyBoughtItem = false; //
+                        if(hasAlreadyBoughtItem){
+                            setError("Ya ha comprado este artículo");
+                            return actions.reject()
+                        }else{
+                            return actions.resolve()
+                        }
+                    }}
 
                     createOrder={(data, actions) => {
                         return actions.order.create({
@@ -33,7 +44,6 @@ const PayPal = () => {
                                 {
                                     description: "Sunflower", // Nombre del producto
                                     amount: {
-                                        currency_code: "USD",
                                         value: 20, // Es el precio
                                     },
                                 },
@@ -46,7 +56,10 @@ const PayPal = () => {
                         console.log('order: ', order);
 
                         handleAprove(data.orderID);
+                    }}
 
+                    onCancel = {()=>{
+                        //display cancel message, or redirect to order details
                     }}
 
                     onError={(err) => {
