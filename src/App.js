@@ -26,6 +26,8 @@ import PayPal from './Components/PayPal';
 
 //ADMIN
 import AdminProductosAgregar from './Components/AdminProductosAgregar';
+import AdminPedidos from './Components/AdminPedidos';
+import AdminProductos from './Components/AdminProductos';
 
 
 
@@ -111,10 +113,13 @@ function App() {
                         <PageNotFound></PageNotFound>
                     </Route>
                     <Route path="/admin/productos">
-                        <PageNotFound></PageNotFound>
+                        <AdminProductos></AdminProductos>
                     </Route>
                     <Route path="/admin/añadir">
                         <AdminProductosAgregar></AdminProductosAgregar>
+                    </Route>
+                    <Route path="/admin/pedidos">
+                        <AdminPedidos></AdminPedidos>
                     </Route>
                 </Switch>
             </Router>

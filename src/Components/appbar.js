@@ -63,7 +63,7 @@ const Appbar = () =>{
                     localStorage.setItem('nameAdmin', response.data.first_name);
                     localStorage.setItem('AdminId', response.data.pk);
                     localStorage.setItem('usernameAdmin', response.data.username);
-                    //window.location.href = "/inicio";
+                    //window.location.href = "/admin/añadir";
 
                 }else{
                     localStorage.setItem('tokenClient', response.data.token);
