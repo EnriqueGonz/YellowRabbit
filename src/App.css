@@ -258,3 +258,25 @@
     position: -webkit-sticky;
     top: 70%;
   }
+
+  .botonProductosAdmin{
+    border: none;
+    padding: 5px;
+    color: white;
+    width: 100%;
+  }
+  .botonProductosAdmin:hover{
+    font-weight: bold;
+    transform: scale(1.5);
+    
+  }
+  .productoAgotado{
+    position: absolute;
+    transform: rotate(45deg);
+    right: 0;
+    background-color: #C90000;
+    color: white;
+    font-weight: 700;
+    padding-left: 5px;
+    padding-right: 5px;
+  }

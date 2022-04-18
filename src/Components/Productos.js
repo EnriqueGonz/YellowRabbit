@@ -95,7 +95,7 @@ const Productos = () =>{
           })
           .then((response) => {
             console.log(response);
-            paginas = response.data[0][0]["num_pages "];
+            paginas = response.data[0][0]["num_pages"];
             setListProductos(response.data[1]);
             for (let num = 0; num < array.length; num++) {
                 setArray([...array, num])
@@ -208,7 +208,7 @@ const Productos = () =>{
             })
             .then((response) => {
               console.log(response);
-              paginas = response.data[0][0]["num_pages "];
+              paginas = response.data[0][0]["num_pages"];
               setListProductos(response.data[1]);
               for (let num = 0; num < array.length; num++) {
                   setArray([...array, num])

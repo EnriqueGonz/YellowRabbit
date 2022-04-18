@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState} from 'react';
 import imgLogo from '../images/logo.png';
 
 import { ReactComponent as IconTelefono } from '../images/icons/IconTelefono.svg';
@@ -26,14 +26,7 @@ const AdminAppBar = () =>{
     }
 
 
-    useEffect(() =>{  
-        if(localStorage.getItem('tokenAdmin') !== null){
-            console.log('Tiene token');
-            //document.getElementById('botonIniciarSesion').style.display="none";
-        }else{
-            document.getElementById('dropdown').style.display="none";
-        }
-    })
+    
 
 
 
