@@ -28,7 +28,7 @@ import PayPal from './Components/PayPal';
 import AdminProductosAgregar from './Components/AdminProductosAgregar';
 import AdminPedidos from './Components/AdminPedidos';
 import AdminProductos from './Components/AdminProductos';
-import UpdateProduct from './Components/UpdateProduct';
+import AdminUpdateProduct from './Components/AdminUpdateProduct';
 
 
 
@@ -111,7 +111,7 @@ function App() {
 
 
                     <Route path="/admin/products/api/update/:id/">
-                        <UpdateProduct></UpdateProduct>
+                        <AdminUpdateProduct></AdminUpdateProduct>
                     </Route>
                     <Route path="/admin/productos">
                         <AdminProductos></AdminProductos>

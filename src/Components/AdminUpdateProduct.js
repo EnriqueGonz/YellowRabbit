@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import imgblog from '../images/Blog.png';
 import imgdefault2 from '../images/imgDefaultLoad2.png';
 import imgdefault1 from '../images/imgDefaultLoad1.png';
-import { Tab, Tabs, Form, Row, Button, Col } from 'react-bootstrap';
-import { Carousel } from 'react-bootstrap';
-//import axios from 'axios';
-import Appbar from './appbar';
+import { Form, Row, Button, Col } from 'react-bootstrap';
 import axios from 'axios';
 import '../config';
 import validator from 'validator';
@@ -14,8 +10,8 @@ import validator from 'validator';
 
 var baseUrl = global.config.yellow.rabbit.url;
 var token = localStorage.getItem('tokenAdmin');
-
-const  headers = {
+var categoriaName ="";
+const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Token ${token}`
 };
@@ -49,7 +45,6 @@ const UpdateProducts = (parametros) => {
     const [showErrAmount, setShowErrAmount] = useState(false);
     const [showErrDescription, setShowErrDescription] = useState(false);
     const [showErrShortDesc, setShowErrShortDesc] = useState(false);
-    const [showErrCategory, setShowErrCategory] = useState(false);
     const [showErrPeso, setShowErrPeso] = useState(false);
     const [showErrDimensionsL, SetShowErrDimensionsL] = useState(false);
     const [showErrDimensionsW, SetShowErrDimensionsW] = useState(false);
@@ -62,12 +57,31 @@ const UpdateProducts = (parametros) => {
         setInputs(values => ({ ...values, [name]: value }))
     }
 
+    useEffect(() =>{  
+        try {
+          axios.post(baseUrl+'/categories/api/all-categories/',{
+            category_name:"",
+          })
+          .then((response) => {
+            console.log(response);
+            setlistCategoria(response.data)
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    
+        } catch (error) {
+          console.log(' . ', error);
+        }// eslint-disable-next-line react-hooks/exhaustive-deps
+      },[setlistCategoria])
+
     useEffect(() => {
         try {
-            axios.get(baseUrl + '/products/api/specific-product/'+parametros.idProducto+'/')
+            axios.get(baseUrl + '/products/api/specific-product/' + parametros.idProducto + '/')
                 .then((response) => {
                     console.log(response);
                     setInputs(response.data[0][0])
+                    
                 })
                 .catch((error) => {
                     console.log(error);
@@ -77,6 +91,7 @@ const UpdateProducts = (parametros) => {
             console.log(' . ', error);
         }// eslint-disable-next-line react-hooks/exhaustive-deps
     }, [setInputs])
+
 
     const handleFileSelect = (event) => {
         setSelectedFile(event.target.files)
@@ -182,12 +197,15 @@ const UpdateProducts = (parametros) => {
         setShowErrAmount(false);
         setShowErrDescription(false);
         setShowErrShortDesc(false);
-        setShowErrCategory(false);
+        setShowErrPeso(false);
+        SetShowErrDimensionsL(false);
+        SetShowErrDimensionsW(false);
+        SetShowErrDimensionsH(false);
     }
 
     function validateInputs() {
         setFalseErrors();
-        let productName = inputs.product_name;
+
         let productPrice = inputs.price;
         let productAmount = inputs.amount;
         let productDescription = inputs.description;
@@ -196,59 +214,105 @@ const UpdateProducts = (parametros) => {
         let dimensionsLength = inputs.dimensions_length;
         let dimensionsWidth = inputs.dimensions_width;
         let dimensionsHeight = inputs.dimensions_height;
-        //let productCategory = document.getElementById('selectCategoria').value;
         let fieldsValid = true;
 
+
         // validate
-        if (validator.isEmpty(productName)) {
+        try {
+            if (validator.isEmpty(inputs.product_name)) {
+                setShowErrProductName(true);
+                fieldsValid = false;
+            }
+        } catch (error) {
+            fieldsValid = false;
             setShowErrProductName(true);
-            fieldsValid = false
         }
 
-        if (validator.isEmpty(productPrice)) {
+        try {
+            if (validator.isEmpty(productPrice)) {
+                setShowErrPrice(true);
+                fieldsValid = false;
+            }
+        } catch (error) {
             setShowErrPrice(true);
-            fieldsValid = false
+            fieldsValid = false;
         }
 
-        if (validator.isEmpty(productAmount)) {
-            setShowErrAmount(true);
-            fieldsValid = false
-        }
-
-        if (validator.isEmpty(productDescription)) {
+        try {
+            if (validator.isEmpty(productDescription)) {
+                setShowErrDescription(true);
+                fieldsValid = false;
+            }
+        } catch (error) {
             setShowErrDescription(true);
-            fieldsValid = false
+            fieldsValid = false;
         }
 
-        if (validator.isEmpty(productShortDesc)) {
+        try {
+            if (validator.isEmpty(productShortDesc)) {
+                setShowErrShortDesc(true);
+                fieldsValid = false;
+            }
+        } catch (error) {
             setShowErrShortDesc(true);
-            fieldsValid = false
+            fieldsValid = false;
         }
-        /* if (validator.isEmpty(productCategory)) {
-            setShowErrCategory(true);
-            fieldsValid = false
-        } */
-        if (validator.isEmpty(productPeso)) {
+        try {
+            if (validator.isEmpty(productAmount.toString())) {
+                setShowErrAmount(true);
+                fieldsValid = false;
+            }
+        } catch (error) {
+            setShowErrAmount(true);
+            fieldsValid = false;
+        }
+
+        try {
+            if (validator.isEmpty(productPeso)) {
+                setShowErrPeso(true);
+                fieldsValid = false;
+            }
+        } catch (error) {
             setShowErrPeso(true);
-            fieldsValid = false
+            fieldsValid = false;
         }
-        if (validator.isEmpty(dimensionsLength)) {
+
+        try {
+            if (validator.isEmpty(dimensionsLength)) {
+                SetShowErrDimensionsL(true);
+                fieldsValid = false;
+            }
+        } catch (error) {
             SetShowErrDimensionsL(true);
-            fieldsValid = false
+            fieldsValid = false;
         }
-        if (validator.isEmpty(dimensionsWidth)) {
+        try {
+            if (validator.isEmpty(dimensionsWidth)) {
+                SetShowErrDimensionsW(true);
+                fieldsValid = false;
+            }
+        } catch (error) {
             SetShowErrDimensionsW(true);
-            fieldsValid = false
+            fieldsValid = false;
         }
-        if (validator.isEmpty(dimensionsHeight)) {
+        try {
+            if (validator.isEmpty(dimensionsHeight)) {
+                SetShowErrDimensionsH(true);
+                fieldsValid = false;
+            }
+        }
+        catch (error) {
             SetShowErrDimensionsH(true);
-            fieldsValid = false
+            fieldsValid = false;
         }
 
         return fieldsValid;
     }
 
     const handleSubmit = (event) => {
+        console.log("categoria:" +document.getElementById('selectCategoria'));
+        console.log("categoria:" +document.getElementById('selectCategoria').value);
+        console.log("categoria:" +document.getElementById('selectCategoria').text);
         event.preventDefault();
 
         if (validateInputs() === true) {
@@ -256,39 +320,35 @@ const UpdateProducts = (parametros) => {
                 document.getElementById('errorimg').style.color = "red"
             } else if (selectedFile.length === 4) {
                 document.getElementById('errorimg').style.color = "black"
-                if (document.getElementById('selectCategoria').value === "") {
-                    document.getElementById('errorcategoria').style.color = "red"
-                } else {
-                    document.getElementById('errorcategoria').style.color = "black"
-                    let formData = new FormData();
-                    formData.append('categories', document.getElementById('selectCategoria').value)
-                    formData.append('product_name', inputs.product_name)
-                    formData.append('price', inputs.price)
-                    formData.append('amount', inputs.amount)
-                    // NOTA
-                    formData.append('quantities_sold', 0) //El valor de este campo debe enviarse de forma dinámica usando los datos retornados del producto.
-                    formData.append('description', inputs.descripcionLarga)
-                    formData.append('short_description', inputs.descripcionCorta)
-                    formData.append('peso', inputs.peso)
-                    formData.append('dimensions_length', inputs.dimensions_length)
-                    formData.append('dimensions_width', inputs.dimensions_width)
-                    formData.append('dimensions_height', inputs.dimensions_height)
-                    /* formData.append('image_one', selectedFile[0])
-                    formData.append('image_two', selectedFile[1])
-                    formData.append('image_three', selectedFile[2])
-                    formData.append('image_four', selectedFile[3]) */
+                let formData = new FormData();
+                formData.append('categories', document.getElementById('selectCategoria').value)
+                formData.append('product_name', inputs.product_name)
+                formData.append('price', inputs.price)
+                formData.append('amount', inputs.amount)
+                // NOTA
+                formData.append('quantities_sold', 0) //El valor de este campo debe enviarse de forma dinámica usando los datos retornados del producto.
+                formData.append('description', inputs.description)
+                formData.append('short_description', inputs.short_description)
+                formData.append('peso', inputs.peso)
+                formData.append('dimensions_length', inputs.dimensions_length)
+                formData.append('dimensions_width', inputs.dimensions_width)
+                formData.append('dimensions_height', inputs.dimensions_height)
+                formData.append('image_one', selectedFile[0])
+                formData.append('image_two', selectedFile[1])
+                formData.append('image_three', selectedFile[2])
+                formData.append('image_four', selectedFile[3])
 
-                    axios.put(baseUrl + '/products/api/update/'+parametros.idProducto+'/',
-                        formData
-                        , { headers })
-                        .then((response) => {
-                            console.log('Updated: ', response);
-                            setFalseErrors();
-                        })
-                        .catch(err => {
-                            console.log(err);
-                        });
-                }
+                axios.put(baseUrl + '/products/api/update/' + parametros.idProducto + '/',
+                    formData
+                    , { headers })
+                    .then((response) => {
+                        console.log('Updated: ', response);
+                        setFalseErrors();
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+
             } else {
                 document.getElementById('errorimg').style.color = "red"
             }
@@ -308,12 +368,6 @@ const UpdateProducts = (parametros) => {
     const MsgShortDescription = () => (
         <div style={{ marginTop: "1%" }}>
             <span style={{ color: "#FF5733" }}>Especifique los detalles.</span>
-        </div>
-    )
-
-    const MsgCategory = () => (
-        <div style={{ marginTop: "1%" }}>
-            <span style={{ color: "#FF5733" }}>Seleccione una categoria.</span>
         </div>
     )
 
@@ -359,6 +413,13 @@ const UpdateProducts = (parametros) => {
         </div>
     )
 
+    
+    listCategoria.map((item) =>(
+        (item.id === parametros.idCategoria)
+        ? categoriaName = item.category_name
+        : <></>
+    ))
+
 
 
     return (
@@ -400,47 +461,49 @@ const UpdateProducts = (parametros) => {
                                 <Row className="mb-3">
                                     <Form.Group controlId="validationCustom03">
                                         <Form.Label>Nombre del producto</Form.Label>
-                                        <Form.Control placeholder='nombre del producto' required type="text" name="nombre" style={{ backgroundColor: "#DFDFDF" }} value={inputs.product_name} onChange={handleChange} />
+                                        <Form.Control placeholder='nombre del producto' required type="text" name="product_name" style={{ backgroundColor: "#DFDFDF" }} value={inputs.product_name == null ? '' : inputs.product_name} onChange={handleChange} />
                                         {showErrProductName ? <MsgProductName /> : null}
                                     </Form.Group>
 
                                 </Row>
                                 <Row className="mb-3">
+
                                     <Form.Group>
-                                        <Form.Label id="errorcategoria" >Selecciona categoria</Form.Label>
-                                        <Form.Select id='selectCategoria' style={{ backgroundColor: "#DFDFDF" }} required>
-                                            <option value="">Selecciona categoria</option>
-                                            {listCategoria.map((item, index) => (
-                                                <option key={index} value={item.id} >{item.category_name}</option>
+                                        <Form.Label>Categoria</Form.Label>
+                                        <Form.Select id='selectCategoria' style={{ backgroundColor: "#DFDFDF" }}>
+                                            <option value={parametros.idCategoria}>{categoriaName}</option>
+                                            {listCategoria.map((item,index)=>(
+                                                    (item.id === parametros.idCategoria)
+                                                    ? null
+                                                    :< option key={index} value={item.id}>{item.id}</option>
                                             ))}
                                         </Form.Select>
-                                        {showErrCategory ? <MsgCategory /> : null}
                                     </Form.Group>
                                 </Row>
                                 <Row className="mb-3">
                                     <Form.Group>
                                         <Form.Label>Descripcion</Form.Label>
-                                        <Form.Control placeholder='Descripcion' as={"textarea"} required type="text" name="descripcionLarga" style={{ backgroundColor: "#DFDFDF" }} value={inputs.description} onChange={handleChange} />
+                                        <Form.Control placeholder='Descripcion' as={"textarea"} required type="text" name="description" style={{ backgroundColor: "#DFDFDF" }}  value={inputs.description == null ? '' : inputs.description} onChange={handleChange} />
                                         {showErrDescription ? <MsgDescription /> : null}
                                     </Form.Group>
                                 </Row>
                                 <Row className="mb-3">
                                     <Form.Group>
                                         <Form.Label>Especificaciones (color, talla, sabor, etc.)</Form.Label>
-                                        <Form.Control placeholder='Especificaciones' required as={"textarea"} type="text" name="descripcionCorta" style={{ backgroundColor: "#DFDFDF" }} value={inputs.short_description} onChange={handleChange} />
+                                        <Form.Control placeholder='Especificaciones' as={"textarea"} required type="text" name="short_description" style={{ backgroundColor: "#DFDFDF" }} value={inputs.short_description == null ? '' : inputs.short_description}  onChange={handleChange} />
                                         {showErrShortDesc ? <MsgShortDescription /> : null}
                                     </Form.Group>
                                 </Row>
                                 <Row className="mb-3">
                                     <Form.Group as={Col}>
                                         <Form.Label>Existencias</Form.Label>
-                                        <Form.Control placeholder='Existencias' min={1} required type="number" name="existencias" style={{ backgroundColor: "#DFDFDF" }} value={inputs.amount} onChange={handleChange} />
+                                        <Form.Control placeholder='Existencias' min={1} required type="number" name="amount" style={{ backgroundColor: "#DFDFDF" }} value={inputs.amount == null ? '' : inputs.amount} onChange={handleChange} />
                                         {showErrAmount ? <MsgQuantity /> : null}
                                     </Form.Group>
 
                                     <Form.Group as={Col}>
                                         <Form.Label>Precio</Form.Label>
-                                        <Form.Control placeholder='Precio' min={1} required type="number" name="precio" style={{ backgroundColor: "#DFDFDF" }} value={inputs.price} onChange={handleChange} />
+                                        <Form.Control placeholder='Precio' min={1} required type="number" name="price" style={{ backgroundColor: "#DFDFDF" }} value={inputs.price == null ? '' : inputs.price} onChange={handleChange} />
                                         {showErrPrice ? <MsgPrice /> : null}
                                     </Form.Group>
                                 </Row>
@@ -448,26 +511,26 @@ const UpdateProducts = (parametros) => {
                                 <Row className="mb-3">
                                     <Form.Group as={Col}>
                                         <Form.Label>Peso</Form.Label>
-                                        <Form.Control placeholder='Peso (Kg)' min={1} required type="number" name="peso" style={{ backgroundColor: "#DFDFDF" }} value={inputs.peso} onChange={handleChange} />
+                                        <Form.Control placeholder='Peso (Kg)' min={1} required type="number" name="peso" style={{ backgroundColor: "#DFDFDF" }} value={inputs.peso == null ? '' : inputs.peso} onChange={handleChange} />
                                         {showErrPeso ? <MsgPeso /> : null}
                                     </Form.Group>
 
                                     <Form.Group as={Col}>
                                         <Form.Label>Alto</Form.Label>
-                                        <Form.Control placeholder='Alto (cm)' min={1} required type="number" name="dimensions_height" style={{ backgroundColor: "#DFDFDF" }} value={inputs.dimensions_height} onChange={handleChange} />
+                                        <Form.Control placeholder='Alto (cm)' min={1} required type="number" name="dimensions_height" style={{ backgroundColor: "#DFDFDF" }} value={inputs.dimensions_height == null ? '' : inputs.dimensions_height} onChange={handleChange} />
                                         {showErrDimensionsH ? <MsgDimensionsHeight /> : null}
                                     </Form.Group>
                                 </Row>
                                 <Row className="mb-3">
                                     <Form.Group as={Col}>
                                         <Form.Label>Ancho</Form.Label>
-                                        <Form.Control placeholder='Ancho (cm)' min={1} required type="number" name="dimensions_width" style={{ backgroundColor: "#DFDFDF" }} value={inputs.dimensions_width} onChange={handleChange} />
+                                        <Form.Control placeholder='Ancho (cm)' min={1} required type="number" name="dimensions_width" style={{ backgroundColor: "#DFDFDF" }} value={inputs.dimensions_width == null ? '' : inputs.dimensions_width} onChange={handleChange} />
                                         {showErrDimensionsW ? <MsgDimensionsWidth /> : null}
                                     </Form.Group>
 
                                     <Form.Group as={Col}>
                                         <Form.Label>Largo</Form.Label>
-                                        <Form.Control placeholder='Largo (cm)' min={1} required type="number" name="dimensions_length" style={{ backgroundColor: "#DFDFDF" }} value={inputs.dimensions_length} onChange={handleChange} />
+                                        <Form.Control placeholder='Largo (cm)' min={1} required type="number" name="dimensions_length" style={{ backgroundColor: "#DFDFDF" }} value={inputs.dimensions_length == null ? '' : inputs.dimensions_length} onChange={handleChange} />
                                         {showErrDimensionsL ? <MsgDimensionsLength /> : null}
                                     </Form.Group>
                                 </Row>

@@ -10,7 +10,7 @@ import Footer from './footer';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import '../config';
-import UpdateProducts from './UpdateProduct';
+import AdminUpdateProduct from './AdminUpdateProduct';
 
 
 var baseUrl = global.config.yellow.rabbit.url;
@@ -20,6 +20,7 @@ var token = localStorage.getItem('tokenAdmin');
 //var idusuario = localStorage.getItem('userId');
 var paginas = 0;
 var idproducto =0;
+var idcategoria = 0;
 
 
 const headers = {
@@ -186,8 +187,9 @@ const AdminProductos = () =>{
     }
 
 
-    function methodModalUpdate(number){
+    function methodModalUpdate(number,categoria){
         idproducto = number;
+        idcategoria = categoria;
         handleShow3();
     }
 
@@ -234,7 +236,9 @@ const AdminProductos = () =>{
                             }
                             <div className="card__content">
                                 <div className='row' style={{height:"50%",justifyContent:"center"}}>
-                                    <img alt={'Img'} style={{width:150,height:150}} src={'https://yellowrabbitbucket.s3.amazonaws.com/'+item.image_one}></img>    
+                                    <a href={'/article/details/'+item.id} >
+                                        <img alt={'Img'} style={{width:150,height:150}} src={'https://yellowrabbitbucket.s3.amazonaws.com/'+item.image_one}></img>    
+                                    </a>
                                 </div>
                                 <div className='module line-clamp'>
                                     <a href={'/article/details/'+item.id} style={{color:"black",textDecoration:"none"}}><p style={{fontWeight:"bold"}}>{item.product_name}</p></a>
@@ -246,7 +250,7 @@ const AdminProductos = () =>{
                                             <button className='botonProductosAdmin' style={{margin:0,backgroundColor:"#F9B233"}} onClick = {() => { methodModalAgotado(item.id)} }>Agotado</button>
                                         </div>
                                         <div className='col-12 col-md-4' style={{margin:0,padding:0}}>
-                                            <button className='botonProductosAdmin' style={{margin:0,backgroundColor:"#E94E1B"}} onClick = {() => { methodModalUpdate(item.id)} }>Editar</button>
+                                            <button className='botonProductosAdmin' style={{margin:0,backgroundColor:"#E94E1B"}} onClick = {() => { methodModalUpdate(item.id,item.categories_id)} }>Editar</button>
                                         </div>
                                         <div className='col-12 col-md-4' style={{margin:0,padding:0}}>
                                             <button className='botonProductosAdmin' style={{margin:0,backgroundColor:"#C12C2C"}} onClick = {() => { methodDeleteProduct(item.id)} }>Eliminar</button>
@@ -310,7 +314,7 @@ const AdminProductos = () =>{
         <Modal  show={show3} size="lg" onHide={handleClose3} >
             <Modal.Body style={{margin:20}}>
             <div>
-                <UpdateProducts idProducto={idproducto}/>
+                <AdminUpdateProduct idProducto={idproducto} idCategoria={idcategoria}/>
             </div>
             </Modal.Body>
         </Modal>
