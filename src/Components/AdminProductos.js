@@ -10,6 +10,7 @@ import Footer from './footer';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import '../config';
+import UpdateProducts from './UpdateProduct';
 
 
 var baseUrl = global.config.yellow.rabbit.url;
@@ -40,6 +41,10 @@ const AdminProductos = () =>{
     const [show2, setShow2] = useState(false);
     const handleClose2 = () => setShow2(false);
     const handleShow2 = () => setShow2(true);
+
+    const [show3, setShow3] = useState(false);
+    const handleClose3 = () => setShow3(false);
+    const handleShow3 = () => setShow3(true);
 
     const [listCategoria,setlistCategoria] = useState([]);
 
@@ -180,6 +185,12 @@ const AdminProductos = () =>{
           }
     }
 
+
+    function methodModalUpdate(number){
+        idproducto = number;
+        handleShow3();
+    }
+
     return(    
         <div>
         <Appbar></Appbar>
@@ -235,7 +246,7 @@ const AdminProductos = () =>{
                                             <button className='botonProductosAdmin' style={{margin:0,backgroundColor:"#F9B233"}} onClick = {() => { methodModalAgotado(item.id)} }>Agotado</button>
                                         </div>
                                         <div className='col-12 col-md-4' style={{margin:0,padding:0}}>
-                                            <button className='botonProductosAdmin' style={{margin:0,backgroundColor:"#E94E1B"}}>Editar</button>
+                                            <button className='botonProductosAdmin' style={{margin:0,backgroundColor:"#E94E1B"}} onClick = {() => { methodModalUpdate(item.id)} }>Editar</button>
                                         </div>
                                         <div className='col-12 col-md-4' style={{margin:0,padding:0}}>
                                             <button className='botonProductosAdmin' style={{margin:0,backgroundColor:"#C12C2C"}} onClick = {() => { methodDeleteProduct(item.id)} }>Eliminar</button>
@@ -291,6 +302,15 @@ const AdminProductos = () =>{
                     Volver
                 </Button>
                 
+            </div>
+            </Modal.Body>
+        </Modal>
+
+
+        <Modal  show={show3} size="lg" onHide={handleClose3} >
+            <Modal.Body style={{margin:20}}>
+            <div>
+                <UpdateProducts idProducto={idproducto}/>
             </div>
             </Modal.Body>
         </Modal>

@@ -28,6 +28,7 @@ import PayPal from './Components/PayPal';
 import AdminProductosAgregar from './Components/AdminProductosAgregar';
 import AdminPedidos from './Components/AdminPedidos';
 import AdminProductos from './Components/AdminProductos';
+import UpdateProduct from './Components/UpdateProduct';
 
 
 
@@ -109,8 +110,8 @@ function App() {
                     </Route>
 
 
-                    <Route path="/admin/inicio">
-                        <PageNotFound></PageNotFound>
+                    <Route path="/admin/products/api/update/:id/">
+                        <UpdateProduct></UpdateProduct>
                     </Route>
                     <Route path="/admin/productos">
                         <AdminProductos></AdminProductos>
