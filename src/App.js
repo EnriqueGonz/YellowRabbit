@@ -110,7 +110,7 @@ function App() {
                     </Route>
 
 
-                    <Route path="/admin/products/api/update/:id/">
+                    <Route path="/admin/products/api/update/:idproduct/:idcategoria/">
                         <AdminUpdateProduct></AdminUpdateProduct>
                     </Route>
                     <Route path="/admin/productos">

@@ -1,26 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import imgdefault2 from '../images/imgDefaultLoad2.png';
-import imgdefault1 from '../images/imgDefaultLoad1.png';
 import { Form, Row, Button, Col } from 'react-bootstrap';
 import axios from 'axios';
 import '../config';
 import validator from 'validator';
-
+import { useParams } from 'react-router-dom';
+import Appbar from './AdminAppbar';
+import Footer from './footer';
 
 
 var baseUrl = global.config.yellow.rabbit.url;
 var token = localStorage.getItem('tokenAdmin');
-var categoriaName ="";
+var categoriaName = "";
+
 const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Token ${token}`
 };
 
 
-const UpdateProducts = (parametros) => {
+const UpdateProducts = () => {
+    var { idproduct,idcategoria } = useParams(); // params
     const [listCategoria, setlistCategoria] = useState([]);
+    const [listProduct, setlistProduct] = useState([]);
 
-    const [selectedFile, setSelectedFile] = useState()
+    const [selectedFile1, setSelectedFile1] = useState()
+    const [selectedFile2, setSelectedFile2] = useState()
+    const [selectedFile3, setSelectedFile3] = useState()
+    const [selectedFile4, setSelectedFile4] = useState()
+
+
     const [preview1, setPreview1] = useState()
     const [preview2, setPreview2] = useState()
     const [preview3, setPreview3] = useState()
@@ -37,6 +45,7 @@ const UpdateProducts = (parametros) => {
         dimensions_length: "",
         dimensions_width: "",
         dimensions_height: "",
+        quantities_sold: "",
     })
 
     // Error Message
@@ -63,7 +72,7 @@ const UpdateProducts = (parametros) => {
             category_name:"",
           })
           .then((response) => {
-            console.log(response);
+            //console.log(response);
             setlistCategoria(response.data)
           })
           .catch((error) => {
@@ -77,11 +86,11 @@ const UpdateProducts = (parametros) => {
 
     useEffect(() => {
         try {
-            axios.get(baseUrl + '/products/api/specific-product/' + parametros.idProducto + '/')
+            axios.get(baseUrl + '/products/api/specific-product/' + idproduct + '/')
                 .then((response) => {
                     console.log(response);
                     setInputs(response.data[0][0])
-                    
+                    setlistProduct(response.data[0][0])
                 })
                 .catch((error) => {
                     console.log(error);
@@ -90,103 +99,53 @@ const UpdateProducts = (parametros) => {
         } catch (error) {
             console.log(' . ', error);
         }// eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [setInputs])
+    }, [setInputs],[setlistProduct])
 
 
-    const handleFileSelect = (event) => {
-        setSelectedFile(event.target.files)
 
+    const handleFileSelect1 = (event) => {
+        setSelectedFile1(event.target.files[0])
+    }
+    const handleFileSelect2 = (event) => {
+        setSelectedFile2(event.target.files[0])
+    }
+    const handleFileSelect3 = (event) => {
+        setSelectedFile3(event.target.files[0])
+    }
+    const handleFileSelect4 = (event) => {
+        setSelectedFile4(event.target.files[0])
     }
 
 
     function showas() {
-        console.log(selectedFile);
         try {
-            if (selectedFile.length === 1) {
-                const objectUrl1 = URL.createObjectURL(selectedFile[0])
-                setPreview1(objectUrl1)
-                setPreview2("")
-                setPreview3("")
-                setPreview4("")
-
-                document.getElementById('img1').style.display = "none"
-                document.getElementById('img2').style.display = "block"
-                document.getElementById('img3').style.display = "block"
-                document.getElementById('img4').style.display = "block"
-            }
-            if (selectedFile.length === 2) {
-                const objectUrl1 = URL.createObjectURL(selectedFile[0])
-                setPreview1(objectUrl1)
-
-                const objectUrl2 = URL.createObjectURL(selectedFile[1])
-                setPreview2(objectUrl2)
-
-                setPreview3("")
-                setPreview4("")
-
-                document.getElementById('img1').style.display = "none"
-                document.getElementById('img2').style.display = "none"
-                document.getElementById('img3').style.display = "block"
-                document.getElementById('img4').style.display = "block"
-            }
-            if (selectedFile.length === 3) {
-                const objectUrl1 = URL.createObjectURL(selectedFile[0])
-                setPreview1(objectUrl1)
-
-                const objectUrl2 = URL.createObjectURL(selectedFile[1])
-                setPreview2(objectUrl2)
-
-                const objectUrl3 = URL.createObjectURL(selectedFile[2])
-                setPreview3(objectUrl3)
-
-
-                setPreview4("")
-
-                document.getElementById('img1').style.display = "none"
-                document.getElementById('img2').style.display = "none"
-                document.getElementById('img3').style.display = "none"
-                document.getElementById('img4').style.display = "block"
-            }
-
-            if (selectedFile.length === 4) {
-                const objectUrl1 = URL.createObjectURL(selectedFile[0])
-                setPreview1(objectUrl1)
-
-                const objectUrl2 = URL.createObjectURL(selectedFile[1])
-                setPreview2(objectUrl2)
-
-                const objectUrl3 = URL.createObjectURL(selectedFile[2])
-                setPreview3(objectUrl3)
-
-                const objectUrl4 = URL.createObjectURL(selectedFile[3])
-                setPreview4(objectUrl4)
-
-                document.getElementById('img1').style.display = "none"
-                document.getElementById('img2').style.display = "none"
-                document.getElementById('img3').style.display = "none"
-                document.getElementById('img4').style.display = "none"
-            }
-            if (selectedFile.length > 4) {
-                const objectUrl1 = URL.createObjectURL(selectedFile[0])
-                setPreview1(objectUrl1)
-
-                const objectUrl2 = URL.createObjectURL(selectedFile[1])
-                setPreview2(objectUrl2)
-
-                const objectUrl3 = URL.createObjectURL(selectedFile[2])
-                setPreview3(objectUrl3)
-
-                const objectUrl4 = URL.createObjectURL(selectedFile[3])
-                setPreview4(objectUrl4)
-
-                document.getElementById('img1').style.display = "none"
-                document.getElementById('img2').style.display = "none"
-                document.getElementById('img3').style.display = "none"
-                document.getElementById('img4').style.display = "none"
-
-            }
+            const objectUrl1 = URL.createObjectURL(selectedFile1)
+            setPreview1(objectUrl1)
+            document.getElementById('img1').style.display = "none"
         } catch (error) {
-            //
+            console.log('');
+        }
+        try {
+
+            const objectUrl2 = URL.createObjectURL(selectedFile2)
+            setPreview2(objectUrl2)
+            document.getElementById('img2').style.display = "none"
+        } catch (error) {
+            console.log('');
+        }
+        try {
+            const objectUrl3 = URL.createObjectURL(selectedFile3)
+            setPreview3(objectUrl3)
+            document.getElementById('img3').style.display = "none"
+        } catch (error) {
+            console.log('');
+        }
+        try {
+            const objectUrl4 = URL.createObjectURL(selectedFile4)
+            setPreview4(objectUrl4)
+            document.getElementById('img4').style.display = "none"
+        } catch (error) {
+            console.log('');
         }
     }
 
@@ -309,52 +268,48 @@ const UpdateProducts = (parametros) => {
         return fieldsValid;
     }
 
+
     const handleSubmit = (event) => {
-        console.log("categoria:" +document.getElementById('selectCategoria'));
-        console.log("categoria:" +document.getElementById('selectCategoria').value);
-        console.log("categoria:" +document.getElementById('selectCategoria').text);
+        console.log("categoria:" +document.getElementById('categorySelected').value);
         event.preventDefault();
+        console.log(selectedFile1);
+        console.log(selectedFile2);
+        console.log(selectedFile3);
+        console.log(selectedFile4);
 
-        if (validateInputs() === true) {
-            if (selectedFile === undefined) {
-                document.getElementById('errorimg').style.color = "red"
-            } else if (selectedFile.length === 4) {
-                document.getElementById('errorimg').style.color = "black"
-                let formData = new FormData();
-                formData.append('categories', document.getElementById('selectCategoria').value)
-                formData.append('product_name', inputs.product_name)
-                formData.append('price', inputs.price)
-                formData.append('amount', inputs.amount)
-                // NOTA
-                formData.append('quantities_sold', 0) //El valor de este campo debe enviarse de forma dinámica usando los datos retornados del producto.
-                formData.append('description', inputs.description)
-                formData.append('short_description', inputs.short_description)
-                formData.append('peso', inputs.peso)
-                formData.append('dimensions_length', inputs.dimensions_length)
-                formData.append('dimensions_width', inputs.dimensions_width)
-                formData.append('dimensions_height', inputs.dimensions_height)
-                formData.append('image_one', selectedFile[0])
-                formData.append('image_two', selectedFile[1])
-                formData.append('image_three', selectedFile[2])
-                formData.append('image_four', selectedFile[3])
+        if(validateInputs() === true) {
+            let formData = new FormData();
+            formData.append('categories', document.getElementById('categorySelected').value)
+            formData.append('product_name', inputs.product_name)
+            formData.append('price', inputs.price)
+            formData.append('amount', inputs.amount)
+            formData.append('unit_of_existence', inputs.amount)
+            // NOTA
+            formData.append('quantities_sold', parseInt(inputs.quantities_sold))
+            formData.append('description', inputs.description)
+            formData.append('short_description', inputs.short_description)
+            formData.append('peso', inputs.peso)
+            formData.append('dimensions_length', inputs.dimensions_length)
+            formData.append('dimensions_width', inputs.dimensions_width)
+            formData.append('dimensions_height', inputs.dimensions_height)
+            formData.append('image_one', selectedFile1)
+            formData.append('image_two', selectedFile2)
+            formData.append('image_three', selectedFile3)
+            formData.append('image_four', selectedFile4)
 
-                axios.put(baseUrl + '/products/api/update/' + parametros.idProducto + '/',
-                    formData
-                    , { headers })
-                    .then((response) => {
-                        console.log('Updated: ', response);
-                        setFalseErrors();
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
-
-            } else {
-                document.getElementById('errorimg').style.color = "red"
-            }
+            axios.put(baseUrl + '/products/api/update/' + idproduct + '/',
+                formData
+                , { headers })
+                .then((response) => {
+                    console.log('Updated: ', response);
+                    setFalseErrors();
+                })
+                .catch(err => {
+                    console.log(err);
+                });
 
         } else {
-            console.log('XXXXXXXXXXXXXXXX');
+            console.log('Validate false');
         }
     }
 
@@ -413,53 +368,54 @@ const UpdateProducts = (parametros) => {
         </div>
     )
 
-    
-    listCategoria.map((item) =>(
-        (item.id === parametros.idCategoria)
+    listCategoria.map((item) => (
+        (item.id === parseInt(idcategoria))
         ? categoriaName = item.category_name
         : <></>
     ))
 
 
-
     return (
         <>
+            <Appbar></Appbar>
             <div className='container' style={{ paddingTop: 30 }}>
                 <div className=''>
                     <h4>Editar productos</h4>
                     <hr />
                     <div className='row'>
-                        <div className='col-12' style={{ textAlign: "center" }}>
+                        <div className='col-12 col-md-6' style={{ textAlign: "center" }}>
                             <div className='col' style={{ marginBottom: 10, position: "relative" }}>
                                 <div className='row' style={{ marginBottom: 10, maxWidth: "100%" }}>
-                                    <p id="errorimg">Selecciona 4 imagenes *</p>
-                                    <Col><input type="file" multiple onChange={handleFileSelect} /></Col>
+                                    <Col><input type="file" onChange={handleFileSelect1} style={{position:"absolute",top:"50%"}}/></Col>
                                     <Col style={{ textAlign: "right" }}><div className='col'><button style={{ color: "white", backgroundColor: "#E94E1B", borderColor: "#E94E1B" }} className='btn' onClick={() => { showas() }}>Preview</button></div></Col>
                                 </div>
-                                <img alt='' id="img1" src={imgdefault1} style={{ width: "90%" }} />
+                                <img alt='' id="img1" src={'https://yellowrabbitbucket.s3.amazonaws.com/'+listProduct.image_one} style={{ width: "90%" }} />
                                 <img alt='' src={preview1} style={{ width: "90%" }} />
                             </div>
                             <div className='col'>
                                 <div className='row'>
-                                    <div className='col' style={{ marginBottom: 10, position: "relative" }}>
-                                        <img alt='' id="img2" src={imgdefault2} style={{ width: "90%" }} />
+                                    <div className='col' style={{ position: "relative" }}>
+                                        <input type="file" onChange={handleFileSelect2} style={{position:"absolute",top:"50%"}}/>
+                                        <img alt='' id="img2" src={'https://yellowrabbitbucket.s3.amazonaws.com/'+listProduct.image_two} style={{ width: "90%" }} />
                                         <img alt='' src={preview2} style={{ width: "90%" }} />
                                     </div>
-                                    <div className='col'>
-                                        <img alt='' id='img3' src={imgdefault2} style={{ width: "90%" }} />
+                                    <div className='col' style={{position:"relative"}}>
+                                        <input type="file" onChange={handleFileSelect3} style={{position:"absolute",top:"50%"}}/>
+                                        <img alt='' id='img3' src={'https://yellowrabbitbucket.s3.amazonaws.com/'+listProduct.image_three} style={{ width: "90%" }} />
                                         <img alt='' src={preview3} style={{ width: "90%" }} />
                                     </div>
-                                    <div className='col'>
-                                        <img alt='' id='img4' src={imgdefault2} style={{ width: "90%" }} />
+                                    <div className='col' style={{position:"relative"}}>
+                                        <input type="file" onChange={handleFileSelect4} style={{position:"absolute",top:"50%"}}/>
+                                        <img alt='' id='img4' src={'https://yellowrabbitbucket.s3.amazonaws.com/'+listProduct.image_four} style={{ width: "90%" }} />
                                         <img alt='' src={preview4} style={{ width: "90%" }} />
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className='col-12'>
+                        <div className='col-12 col-md-6'>
                             <Form>
                                 <Row className="mb-3">
-                                    <Form.Group controlId="validationCustom03">
+                                    <Form.Group >
                                         <Form.Label>Nombre del producto</Form.Label>
                                         <Form.Control placeholder='nombre del producto' required type="text" name="product_name" style={{ backgroundColor: "#DFDFDF" }} value={inputs.product_name == null ? '' : inputs.product_name} onChange={handleChange} />
                                         {showErrProductName ? <MsgProductName /> : null}
@@ -467,18 +423,20 @@ const UpdateProducts = (parametros) => {
 
                                 </Row>
                                 <Row className="mb-3">
+                                <div className="form-group">
+                                        <label htmlFor="categorySelected" style={{ paddingBottom: "5px" }}>Categoria</label>
+                                        <select id='categorySelected' style={{ backgroundColor: "#DFDFDF" }} className="form-control" required>
+                                            <option value={idcategoria}>{categoriaName}</option>
 
-                                    <Form.Group>
-                                        <Form.Label>Categoria</Form.Label>
-                                        <Form.Select id='selectCategoria' style={{ backgroundColor: "#DFDFDF" }}>
-                                            <option value={parametros.idCategoria}>{categoriaName}</option>
-                                            {listCategoria.map((item,index)=>(
-                                                    (item.id === parametros.idCategoria)
+                                            {listCategoria.map((item, index) => (
+                                                (item.id === parseInt(idcategoria))
                                                     ? null
-                                                    :< option key={index} value={item.id}>{item.id}</option>
+                                                    : < option key={index} value={item.id}>{item.category_name}</option>
                                             ))}
-                                        </Form.Select>
-                                    </Form.Group>
+
+                                        </select>
+
+                                    </div>
                                 </Row>
                                 <Row className="mb-3">
                                     <Form.Group>
@@ -547,6 +505,7 @@ const UpdateProducts = (parametros) => {
                     <hr />
                 </div>
             </div>
+            <Footer></Footer>
         </>
     )
 

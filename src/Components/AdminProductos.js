@@ -10,7 +10,6 @@ import Footer from './footer';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import '../config';
-import AdminUpdateProduct from './AdminUpdateProduct';
 
 
 var baseUrl = global.config.yellow.rabbit.url;
@@ -20,7 +19,6 @@ var token = localStorage.getItem('tokenAdmin');
 //var idusuario = localStorage.getItem('userId');
 var paginas = 0;
 var idproducto =0;
-var idcategoria = 0;
 
 
 const headers = {
@@ -43,9 +41,6 @@ const AdminProductos = () =>{
     const handleClose2 = () => setShow2(false);
     const handleShow2 = () => setShow2(true);
 
-    const [show3, setShow3] = useState(false);
-    const handleClose3 = () => setShow3(false);
-    const handleShow3 = () => setShow3(true);
 
     const [listCategoria,setlistCategoria] = useState([]);
 
@@ -187,10 +182,8 @@ const AdminProductos = () =>{
     }
 
 
-    function methodModalUpdate(number,categoria){
-        idproducto = number;
-        idcategoria = categoria;
-        handleShow3();
+    function methodModalUpdate(number,categoriaProducto){
+        window.location.href = '/admin/products/api/update/'+number+'/'+categoriaProducto+'/'
     }
 
     return(    
@@ -306,15 +299,6 @@ const AdminProductos = () =>{
                     Volver
                 </Button>
                 
-            </div>
-            </Modal.Body>
-        </Modal>
-
-
-        <Modal  show={show3} size="lg" onHide={handleClose3} >
-            <Modal.Body style={{margin:20}}>
-            <div>
-                <AdminUpdateProduct idProducto={idproducto} idCategoria={idcategoria}/>
             </div>
             </Modal.Body>
         </Modal>
