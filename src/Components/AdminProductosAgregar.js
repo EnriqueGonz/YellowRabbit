@@ -39,18 +39,32 @@ const AdminProductosAgregar = () => {
         category: "",
     })
 
-    // Error Message
-    const [showErrProductName, setShowErrProductName] = useState(false);
-    const [showErrPrice, setShowErrPrice] = useState(false);
-    const [showErrAmount, setShowErrAmount] = useState(false);
-    const [showErrDescription, setShowErrDescription] = useState(false);
-    const [showErrShortDesc, setShowErrShortDesc] = useState(false);
-    const [showErrCategory, setShowErrCategory] = useState(false);
+
+    // Errors
+    const [showErrors, setShowErrors] = useState({
+        errProductName: false,
+        errPrice: false,
+        errAmount: false,
+        errDescription: false,
+        errShortDesc: false,
+        errCategory: false,
+    });
+
+
+    /* Messages */
+    const [warnings, setWarnings] = useState({
+        msgProductName: "Ingrese el nombre del producto.",
+        msgShortDescription: "Especifique los detalles.",
+        msgDescription: "Ingrese la descripción.",
+        msgAmount: "Ingrese la cantidad en existencia.",
+        msgPrice: "Ingrese el precio.",
+        msgCategory: "Seleccione una categoria.",
+    })
+
 
     function handleChange(evt) {
         const name = evt.target.name;
         const value = evt.target.value;
-        //console.log(name + value)
         setInputs(values => ({ ...values, [name]: value }))
     }
 
@@ -198,12 +212,12 @@ const AdminProductosAgregar = () => {
     }
 
     function setFalseErrors() {
-        setShowErrProductName(false);
-        setShowErrPrice(false);
-        setShowErrAmount(false);
-        setShowErrDescription(false);
-        setShowErrShortDesc(false);
-        setShowErrCategory(false);
+        setShowErrors(values => ({ ...values, "errProductName": false }));
+        setShowErrors(values => ({ ...values, "errPrice": false }));
+        setShowErrors(values => ({ ...values, "errAmount": false }));
+        setShowErrors(values => ({ ...values, "errDescription": false }));
+        setShowErrors(values => ({ ...values, "errShortDesc": false }));
+        setShowErrors(values => ({ ...values, "errCategory": false }));
     }
 
     function validateInputs() {
@@ -218,31 +232,31 @@ const AdminProductosAgregar = () => {
 
         // validate
         if (validator.isEmpty(productName)) {
-            setShowErrProductName(true);
+            setShowErrors(values => ({ ...values, ['errProductName']: true }));
             fieldsValid = false
         }
 
         if (validator.isEmpty(productPrice)) {
-            setShowErrPrice(true);
+            setShowErrors(values => ({ ...values, ['errPrice']: true }));
             fieldsValid = false
         }
 
         if (validator.isEmpty(productAmount)) {
-            setShowErrAmount(true);
+            setShowErrors(values => ({ ...values, ['errAmount']: true }));
             fieldsValid = false
         }
 
         if (validator.isEmpty(productDescription)) {
-            setShowErrDescription(true);
+            setShowErrors(values => ({ ...values, ['errDescription']: true }));
             fieldsValid = false
         }
 
         if (validator.isEmpty(productShortDesc)) {
-            setShowErrShortDesc(true);
+            setShowErrors(values => ({ ...values, ['errShortDesc']: true }));
             fieldsValid = false
         }
         if (validator.isEmpty(productCategory)) {
-            setShowErrCategory(true);
+            setShowErrors(values => ({ ...values, ['errCategory']: true }));
             fieldsValid = false
         }
 
@@ -295,44 +309,6 @@ const AdminProductosAgregar = () => {
         }
     }
 
-    /* Messages */
-    const MsgProductName = () => (
-        <div style={{ marginTop: "1%" }}>
-            <span style={{ color: "#FF5733" }}>Por favor, ingrese el nombre del producto.</span>
-        </div>
-    )
-
-    const MsgShortDescription = () => (
-        <div style={{ marginTop: "1%" }}>
-            <span style={{ color: "#FF5733" }}>Por favor, ingrese una descripción corta.</span>
-        </div>
-    )
-
-    const MsgCategory = () => (
-        <div style={{ marginTop: "1%" }}>
-            <span style={{ color: "#FF5733" }}>Por favor, seleccione una categoria.</span>
-        </div>
-    )
-
-    const MsgDescription = () => (
-        <div style={{ marginTop: "1%" }}>
-            <span style={{ color: "#FF5733" }}>Por favor, ingrese la descripción.</span>
-        </div>
-    )
-
-    const MsgQuantity = () => (
-        <div style={{ marginTop: "1%" }}>
-            <span style={{ color: "#FF5733" }}>Por favor, ingrese la cantidad en existencia.</span>
-        </div>
-    )
-
-    const MsgPrice = () => (
-        <div style={{ marginTop: "1%" }}>
-            <span style={{ color: "#FF5733" }}>Por favor, ingrese el precio.</span>
-        </div>
-    )
-
-
 
     function methodEliminarCategoria() {
 
@@ -349,17 +325,14 @@ const AdminProductosAgregar = () => {
                     })
                     .catch((error) => {
                     });
-
             }
         }
-
-
     }
+
 
     return (
         <>
             <Appbar></Appbar>
-            
             <Carousel>
                 <Carousel.Item className='contenedor'>
                     <img alt='' src={imgblog} style={{ width: "100%" }} />
@@ -412,15 +385,9 @@ const AdminProductosAgregar = () => {
                                             <Form.Group controlId="validationCustom03">
                                                 <Form.Label>Nombre del producto</Form.Label>
                                                 <Form.Control placeholder='nombre del producto' required type="text" name="nombre" value={inputs.nombre} onChange={handleChange} />
-                                                {showErrProductName ? <MsgProductName /> : null}
-                                            </Form.Group>
-
-                                        </Row>
-                                        <Row className="mb-3">
-                                            <Form.Group>
-                                                <Form.Label>Descripcion corta</Form.Label>
-                                                <Form.Control placeholder='Descripcion corta' required type="text" name="descripcionCorta" value={inputs.descripcionCorta} onChange={handleChange} />
-                                                {showErrShortDesc ? <MsgShortDescription /> : null}
+                                                <div>
+                                                    <span style={{ color: "#FF5733" }}>{showErrors.errProductName ? warnings.msgProductName : null}</span>
+                                                </div>
                                             </Form.Group>
 
                                         </Row>
@@ -433,47 +400,56 @@ const AdminProductosAgregar = () => {
                                                         <option key={index} value={item.id} >{item.category_name}</option>
                                                     ))}
                                                 </Form.Select>
-                                                {showErrCategory ? <MsgCategory /> : null}
+                                                <div>
+                                                    <span style={{ color: "#FF5733" }}>{showErrors.errCategory ? warnings.msgCategory : null}</span>
+                                                </div>
                                             </Form.Group>
 
                                         </Row>
                                         <Row className="mb-3">
                                             <Form.Group>
-                                                <Form.Label>Descripcion detallada</Form.Label>
-                                                <Form.Control placeholder='Descripcion detallada' as={"textarea"} required type="text" name="descripcionLarga" value={inputs.descripcionLarga} onChange={handleChange} />
-                                                {showErrDescription ? <MsgDescription /> : null}
+                                                <Form.Label>Especificaciones (color, talla, sabor, etc.)</Form.Label>
+                                                <Form.Control placeholder='Especificaciones' required type="text" name="descripcionCorta" value={inputs.descripcionCorta} onChange={handleChange} />
+                                                <div>
+                                                    <span style={{ color: "#FF5733" }}>{showErrors.errShortDesc ? warnings.msgShortDescription : null}</span>
+                                                </div>
                                             </Form.Group>
+                                        </Row>
 
+                                        <Row className="mb-3">
+                                            <Form.Group>
+                                                <Form.Label>Descripción</Form.Label>
+                                                <Form.Control placeholder='Descripcion' as={"textarea"} required type="text" name="descripcionLarga" value={inputs.descripcionLarga} onChange={handleChange} />
+                                                <div>
+                                                    <span style={{ color: "#FF5733" }}>{showErrors.errDescription ? warnings.msgDescription : null}</span>
+                                                </div>
+                                            </Form.Group>
                                         </Row>
                                         <Row className="mb-3">
                                             <Form.Group as={Col}>
                                                 <Form.Label>Existencias</Form.Label>
                                                 <Form.Control placeholder='Existencias' min={1} required type="number" name="existencias" value={inputs.existencias} onChange={handleChange} />
-                                                {showErrAmount ? <MsgQuantity /> : null}
+                                                <div>
+                                                    <span style={{ color: "#FF5733" }}>{showErrors.errAmount ? warnings.msgAmount : null}</span>
+                                                </div>
                                             </Form.Group>
 
                                             <Form.Group as={Col}>
                                                 <Form.Label>Precio</Form.Label>
                                                 <Form.Control placeholder='Precio' min={1} required type="number" name="precio" value={inputs.precio} onChange={handleChange} />
-                                                {showErrPrice ? <MsgPrice /> : null}
+                                                <div>
+                                                    <span style={{ color: "#FF5733" }}>{showErrors.errPrice ? warnings.msgPrice : null}</span>
+                                                </div>
                                             </Form.Group>
-
-
                                         </Row>
                                         <Button style={{ marginLeft: 10, float: "right", backgroundColor: "#E94E1B", borderColor: "#E94E1B" }} onClick={handleSubmit}>
                                             Registrar
                                         </Button>
-
                                     </Form>
-
                                 </div>
-
                             </div>
-
                             <hr />
-
                         </div>
-
 
                     </Tab>
                     <Tab eventKey="addcategoria" title="Añadir categoria">
@@ -520,23 +496,16 @@ const AdminProductosAgregar = () => {
                                                         </Button>
                                                     </div>
                                                 </Row>
-
                                             </Form>
-
                                         </div>
-
                                     </div>
-
                                 </div>
-
                             </div>
                         </div>
-
                     </Tab>
                 </Tabs>
 
             </div>
-
 
 
             <footer style={{ backgroundColor: "#EB5929" }}>
