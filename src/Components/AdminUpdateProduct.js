@@ -63,7 +63,11 @@ const UpdateProducts = () => {
 
 
     /* Messages */
+<<<<<<< HEAD
     const [warnings] = useState({
+=======
+    const [warnings, setWarnings] = useState({
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
         msgProductName: "Ingrese el nombre del producto.",
         msgShortDescription: "Especifique los detalles.",
         msgDescription: "Ingrese la descripción.",
@@ -192,89 +196,161 @@ const UpdateProducts = () => {
         // validate
         try {
             if (validator.isEmpty(inputs.product_name)) {
+<<<<<<< HEAD
                 setShowErrors(values => ({ ...values, "errProductName": true }));
+=======
+                setShowErrors(values => ({ ...values, ['errProductName']: true }));
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
                 fieldsValid = false;
             }
         } catch (error) {
             fieldsValid = false;
+<<<<<<< HEAD
             setShowErrors(values => ({ ...values, "errProductName": true }));
+=======
+            setShowErrors(values => ({ ...values, ['errProductName']: true }));
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
         }
 
         try {
             if (validator.isEmpty(productPrice)) {
+<<<<<<< HEAD
                 setShowErrors(values => ({ ...values, "errPrice": true }));
                 fieldsValid = false;
             }
         } catch (error) {
             setShowErrors(values => ({ ...values, "errPrice": true }));
+=======
+                setShowErrors(values => ({ ...values, ['errPrice']: true }));
+                fieldsValid = false;
+            }
+        } catch (error) {
+            setShowErrors(values => ({ ...values, ['errPrice']: true }));
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
             fieldsValid = false;
         }
 
         try {
             if (validator.isEmpty(productDescription)) {
+<<<<<<< HEAD
                 setShowErrors(values => ({ ...values, "errDescription": true }));
                 fieldsValid = false;
             }
         } catch (error) {
             setShowErrors(values => ({ ...values, "errDescription": true }));
+=======
+                setShowErrors(values => ({ ...values, ['errDescription']: true }));
+                fieldsValid = false;
+            }
+        } catch (error) {
+            setShowErrors(values => ({ ...values, ['errDescription']: true }));
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
             fieldsValid = false;
         }
 
         try {
             if (validator.isEmpty(productShortDesc)) {
+<<<<<<< HEAD
                 setShowErrors(values => ({ ...values, "errShortDesc": true }));
                 fieldsValid = false;
             }
         } catch (error) {
             setShowErrors(values => ({ ...values, "errShortDesc": true }));
+=======
+                setShowErrors(values => ({ ...values, ['errShortDesc']: true }));
+                fieldsValid = false;
+            }
+        } catch (error) {
+            setShowErrors(values => ({ ...values, ['errShortDesc']: true }));
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
             fieldsValid = false;
         }
         try {
             if (validator.isEmpty(productAmount.toString())) {
+<<<<<<< HEAD
                 setShowErrors(values => ({ ...values, "errAmount": true }));
                 fieldsValid = false;
             }
         } catch (error) {
             setShowErrors(values => ({ ...values, "errAmount": true }));
+=======
+                setShowErrors(values => ({ ...values, ['errAmount']: true }));
+                fieldsValid = false;
+            }
+        } catch (error) {
+            setShowErrors(values => ({ ...values, ['errAmount']: true }));
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
             fieldsValid = false;
         }
 
         try {
             if (validator.isEmpty(productPeso)) {
+<<<<<<< HEAD
                 setShowErrors(values => ({ ...values, "errPeso": true }));
                 fieldsValid = false;
             }
         } catch (error) {
             setShowErrors(values => ({ ...values, "errPeso": true }));
+=======
+                setShowErrors(values => ({ ...values, ['errPeso']: true }));
+                fieldsValid = false;
+            }
+        } catch (error) {
+            setShowErrors(values => ({ ...values, ['errPeso']: true }));
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
             fieldsValid = false;
         }
 
         try {
             if (validator.isEmpty(dimensionsLength)) {
+<<<<<<< HEAD
                 setShowErrors(values => ({ ...values, "errDimensionsL": true }));
                 fieldsValid = false;
             }
         } catch (error) {
             setShowErrors(values => ({ ...values, "errDimensionsL": true }));
+=======
+                setShowErrors(values => ({ ...values, ['errDimensionsL']: true }));
+                fieldsValid = false;
+            }
+        } catch (error) {
+            setShowErrors(values => ({ ...values, ['errDimensionsL']: true }));
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
             fieldsValid = false;
         }
         try {
             if (validator.isEmpty(dimensionsWidth)) {
+<<<<<<< HEAD
                 setShowErrors(values => ({ ...values, "errDimensionsW": true }));
                 fieldsValid = false;
             }
         } catch (error) {
             setShowErrors(values => ({ ...values, "errDimensionsW": true }));
+=======
+                setShowErrors(values => ({ ...values, ['errDimensionsW']: true }));
+                fieldsValid = false;
+            }
+        } catch (error) {
+            setShowErrors(values => ({ ...values, ['errDimensionsW']: true }));
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
             fieldsValid = false;
         }
         try {
             if (validator.isEmpty(dimensionsHeight)) {
+<<<<<<< HEAD
                 setShowErrors(values => ({ ...values, "errDimensionsH": true }));
+=======
+                setShowErrors(values => ({ ...values, ['errDimensionsH']: true }));
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
                 fieldsValid = false;
             }
         }
         catch (error) {
+<<<<<<< HEAD
             setShowErrors(values => ({ ...values, "errDimensionsH": true }));
+=======
+            setShowErrors(values => ({ ...values, ['errDimensionsH']: true }));
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
             fieldsValid = false;
         }
 
@@ -283,6 +359,10 @@ const UpdateProducts = () => {
 
 
     const handleSubmit = (event) => {
+<<<<<<< HEAD
+=======
+        console.log("categoria:" + document.getElementById('categorySelected').value);
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
         event.preventDefault();
 
         if (validateInputs() === true) {
@@ -340,8 +420,13 @@ const UpdateProducts = () => {
                         <div className='col-12 col-md-6' style={{ textAlign: "center" }}>
                             <div className='col' style={{ marginBottom: 10, position: "relative" }}>
                                 <div className='row' style={{ marginBottom: 10, maxWidth: "100%" }}>
+<<<<<<< HEAD
                                     <Col><input type="file" onChange={handleFileSelect1} style={{ position: "absolute", top: "45%" }} /></Col>
                                     <Col style={{ textAlign: "right" }}><div className='col'><button style={{ color: "white", backgroundColor: "#E94E1B", borderColor: "#E94E1B" }} className='btn' onClick={() => { showPreview() }}>Preview</button></div></Col>
+=======
+                                    <Col><input type="file" onChange={handleFileSelect1} style={{ position: "absolute", top: "50%" }} /></Col>
+                                    <Col style={{ textAlign: "right" }}><div className='col'><button style={{ color: "white", backgroundColor: "#E94E1B", borderColor: "#E94E1B" }} className='btn' onClick={() => { showas() }}>Preview</button></div></Col>
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
                                 </div>
                                 <img alt='' id="img1" src={'https://yellowrabbitbucket.s3.amazonaws.com/' + listProduct.image_one} style={{ width: "90%" }} />
                                 <img alt='' src={preview1} style={{ width: "90%" }} />
@@ -349,17 +434,29 @@ const UpdateProducts = () => {
                             <div className='col'>
                                 <div className='row'>
                                     <div className='col' style={{ position: "relative" }}>
+<<<<<<< HEAD
                                         <input type="file" onChange={handleFileSelect2} style={{ position: "absolute", top: "40%" }} />
+=======
+                                        <input type="file" onChange={handleFileSelect2} style={{ position: "absolute", top: "50%" }} />
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
                                         <img alt='' id="img2" src={'https://yellowrabbitbucket.s3.amazonaws.com/' + listProduct.image_two} style={{ width: "90%" }} />
                                         <img alt='' src={preview2} style={{ width: "90%" }} />
                                     </div>
                                     <div className='col' style={{ position: "relative" }}>
+<<<<<<< HEAD
                                         <input type="file" onChange={handleFileSelect3} style={{ position: "absolute", top: "40%" }} />
+=======
+                                        <input type="file" onChange={handleFileSelect3} style={{ position: "absolute", top: "50%" }} />
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
                                         <img alt='' id='img3' src={'https://yellowrabbitbucket.s3.amazonaws.com/' + listProduct.image_three} style={{ width: "90%" }} />
                                         <img alt='' src={preview3} style={{ width: "90%" }} />
                                     </div>
                                     <div className='col' style={{ position: "relative" }}>
+<<<<<<< HEAD
                                         <input type="file" onChange={handleFileSelect4} style={{ position: "absolute", top: "40%" }} />
+=======
+                                        <input type="file" onChange={handleFileSelect4} style={{ position: "absolute", top: "50%" }} />
+>>>>>>> 99d6619918d3b76249be676eb8b24b48d139332b
                                         <img alt='' id='img4' src={'https://yellowrabbitbucket.s3.amazonaws.com/' + listProduct.image_four} style={{ width: "90%" }} />
                                         <img alt='' src={preview4} style={{ width: "90%" }} />
                                     </div>
