@@ -52,7 +52,7 @@ const AdminProductosAgregar = () => {
 
 
     /* Messages */
-    const [warnings, setWarnings] = useState({
+    const [warnings] = useState({
         msgProductName: "Ingrese el nombre del producto.",
         msgShortDescription: "Especifique los detalles.",
         msgDescription: "Ingrese la descripción.",
@@ -232,31 +232,31 @@ const AdminProductosAgregar = () => {
 
         // validate
         if (validator.isEmpty(productName)) {
-            setShowErrors(values => ({ ...values, ['errProductName']: true }));
+            setShowErrors(values => ({ ...values, "errProductName": true }));
             fieldsValid = false
         }
 
         if (validator.isEmpty(productPrice)) {
-            setShowErrors(values => ({ ...values, ['errPrice']: true }));
+            setShowErrors(values => ({ ...values, "errPrice": true }));
             fieldsValid = false
         }
 
         if (validator.isEmpty(productAmount)) {
-            setShowErrors(values => ({ ...values, ['errAmount']: true }));
+            setShowErrors(values => ({ ...values, "errAmount": true }));
             fieldsValid = false
         }
 
         if (validator.isEmpty(productDescription)) {
-            setShowErrors(values => ({ ...values, ['errDescription']: true }));
+            setShowErrors(values => ({ ...values, "errDescription": true }));
             fieldsValid = false
         }
 
         if (validator.isEmpty(productShortDesc)) {
-            setShowErrors(values => ({ ...values, ['errShortDesc']: true }));
+            setShowErrors(values => ({ ...values, "errShortDesc": true }));
             fieldsValid = false
         }
         if (validator.isEmpty(productCategory)) {
-            setShowErrors(values => ({ ...values, ['errCategory']: true }));
+            setShowErrors(values => ({ ...values, "errCategory": true }));
             fieldsValid = false
         }
 
