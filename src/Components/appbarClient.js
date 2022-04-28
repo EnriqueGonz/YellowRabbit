@@ -4,16 +4,23 @@ import fondo from '../images/fondoAppbarClient.png';
 import { Button,Modal,Tab,Tabs,Col,Form,Row } from 'react-bootstrap';
 import { ReactComponent as IconPerfil } from '../images/icons/IconPerfilBlack.svg';
 import axios from 'axios';
-
+import { MdNotifications,MdDelete } from "react-icons/md"
 import '../config';
+const token = localStorage.getItem('tokenClient');
 
+const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Token ${token}`
+};
 
 var baseUrl = global.config.yellow.rabbit.url;
+var numNotificaciones = 0;
 
 const urlLogin = baseUrl+"/access/api/login/";
 
 const Appbar = () =>{
     const [userData, setuserData] = useState(false);
+    const [listNotificaciones, setlistNotificaciones] = useState([]);
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);  
@@ -21,6 +28,10 @@ const Appbar = () =>{
     const [show2, setShow2] = useState(false);
     const handleClose2 = () => setShow2(false);
     const handleShow2 = () => setShow2(true);  
+
+    const [show3, setShow3] = useState(false);
+    const handleClose3 = () => setShow3(false);
+    const handleShow3 = () => setShow3(true);
 
     const [inputs, setInputs] = useState({
         email: "",
@@ -97,17 +108,13 @@ const Appbar = () =>{
 
 
     function methodName() {
-    
         localStorage.clear();
         window.location.href = "/inicio";
-
-        
     }
 
     useEffect(() =>{  
         try {
             if(localStorage.getItem('tokenClient') !== null){
-                console.log('Tiene token');
                 setuserData(true);
                 document.getElementById('botonIniciarSesion').style.display="none";
             }else{
@@ -119,6 +126,57 @@ const Appbar = () =>{
             console.log(error)
         }
     },[setuserData])
+
+
+    useEffect(() =>{  
+        axios.get(baseUrl+'/inbox/api/my-notifications/', {headers})
+        .then((response) => {
+            console.log(response);
+            setlistNotificaciones(response.data[0])
+            numNotificaciones = response.data[1][0]["unread_notifications: "];
+        })
+        .catch(err => console.log(err));
+    },[setlistNotificaciones])
+
+    function delNotificacion(id) {
+        console.log(id);
+
+        axios.delete(baseUrl+'/inbox/api/delete-notification/'+id+'/',{ headers })
+        .then((response) => {
+            console.log(response)
+            ActualizarNotificaciones();
+
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+      
+      }
+
+      function ActualizarNotificaciones() {
+        axios.get(baseUrl+'/inbox/api/my-notifications/', {headers})
+        .then((response) => {
+            console.log(response);
+            setlistNotificaciones(response.data[0])
+            numNotificaciones = response.data[1][0]["unread_notifications: "];
+        })
+        .catch(err => console.log(err));
+        
+    }
+
+    function readNotificacion(id,idorder){
+        console.log(id)
+        axios.put(baseUrl+'/inbox/api/mark-read-notification/'+id+'/')
+        .then((response) => {
+            console.log(response)
+            ActualizarNotificaciones();
+            //window.location.href = '/detallescanje/'+idorder
+        })
+        .catch((error) => {
+            console.log(error.response);
+        });
+    }
+
 
     
 
@@ -134,11 +192,18 @@ const Appbar = () =>{
                       <span></span>
                   </div>
                   <div>
-                    <div>
-                    <Button id="botonIniciarSesion" style={{padding:0, display:"block"}} variant="text" onClick = {() => { handleShow2()} }><p style={{marginBottom:0}}><IconPerfil style={{width:30,height:"100%",marginRight:10}}/>Iniciar Sesión</p></Button>
+                    <div style={{display:"inline-flex",placeItems:"center"}}>
+                        <button className="btn position-relative" onClick={handleShow3} style={{margin:0,padding:1}}>
+                            <MdNotifications style={{fontSize:25}}></MdNotifications>
+                        <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{padding:4}}>
+                            {numNotificaciones}
+                            <span className="visually-hidden">unread messages</span>
+                        </span>
+                        </button>
+                        <Button id="botonIniciarSesion" style={{padding:0, display:"block"}} variant="text" onClick = {() => { handleShow2()} }><p style={{marginBottom:0}}><IconPerfil style={{width:30,height:"100%",marginRight:10}}/>Iniciar Sesión</p></Button>
                         <div className="dropdown" id="dropdown">
                             <a className="nav-link active dropdown-toggle" aria-current="page" href="/#" data-bs-toggle="dropdown" aria-expanded="false">{localStorage.getItem('username')} </a>
-                            <ul className="dropdown-menu" aria-labelledby="dropdownMenu2">
+                            <ul className="dropdown-menu">
                                 <li><a  className="dropdown-item"  type="button" href="/user/mi-perfil">Mi Perfil</a></li>
                                 <li><a  className="dropdown-item"  type="button" href="/user/mis-pedidos">Mis pedidos</a></li>
                                 <li><a  className="dropdown-item"  type="button" href="/user/mi-wishlist">Mi Wishlist</a></li>
@@ -254,6 +319,40 @@ const Appbar = () =>{
                 </Tab>
             </Tabs>
             </div>
+            </Modal.Body>
+        </Modal>
+
+        <Modal  show={show3} size="md" onHide={handleClose3} >
+            <Modal.Body style={{margin:20}}>
+            {listNotificaciones.map((item,index) => (
+                <div key={index}>
+                    {
+                    item.unread === true
+                    ? <div>
+                            <div className='row'>
+                                <div className='col-10'>
+                                    <button style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}} className="btn dropdown-item" onClick = {() => { readNotificacion(item.id,item.actor_object_id)} } >{item.description}</button>
+                                </div>
+                                <div className='col-2'>
+                                    <button className='btn'  onClick = {() => { delNotificacion(item.id)} }  ><MdDelete className='btnDel' style={{width:"100%",fontSize:24}}></MdDelete></button>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    : <div style={{backgroundColor:"beige"}} >
+                            <div className='row'>
+                                <div className='col-10'>
+                                    <button style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}} className="btn dropdown-item">{item.description}</button>
+                                </div>
+                                <div className='col-2'>
+                                    <button className='btn' onClick = {() => { delNotificacion(item.id)} } ><MdDelete className='btnDel' style={{width:"100%",fontSize:24}}></MdDelete></button>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            ))}
             </Modal.Body>
         </Modal>
         

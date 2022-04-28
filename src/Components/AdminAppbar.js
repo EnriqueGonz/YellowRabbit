@@ -1,5 +1,6 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import imgLogo from '../images/logo.png';
+import axios from 'axios';
 
 import { ReactComponent as IconTelefono } from '../images/icons/IconTelefono.svg';
 import { ReactComponent as IconCorreo } from '../images/icons/IconCorreo.svg';
@@ -11,11 +12,18 @@ import { Button,Modal} from 'react-bootstrap';
 import '../config';
 
 
-//var baseUrl = global.config.yellow.rabbit.url;
+var baseUrl = global.config.yellow.rabbit.url;
+
+const token = localStorage.getItem('tokenAdmin');
+
+const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Token ${token}`
+};
 
 
 const AdminAppBar = () =>{
-
+    const [numNotificaciones, setnumNotificaciones] = useState(0);
     const [show2, setShow2] = useState(false);
     const handleClose2 = () => setShow2(false);
     const handleShow2 = () => setShow2(true);  
@@ -25,8 +33,15 @@ const AdminAppBar = () =>{
         window.location.href = "/inicio";        
     }
 
+    useEffect(() =>{  
+        axios.get(baseUrl+'/inbox/api/my-notifications/', {headers})
+        .then((response) => {
+            console.log(response);
+            setnumNotificaciones(response.data[1][0]["unread_notifications: "])
+        })
+        .catch(err => console.log(err));
+    },[setnumNotificaciones])
 
-    
 
 
 
@@ -78,7 +93,15 @@ const AdminAppBar = () =>{
                         <a className='aNoSelected' href='/admin/productos' >PRODUCTOS</a>
                         <a className='aNoSelected' href='/admin/añadir' >AÑADIR</a>
                         <a className='aNoSelected' href='/admin/pedidos' >PEDIDOS</a>
-                        <a className='aNoSelected' href='/admin/buzon' >BUZÓN</a>
+                        <button type="button" className="btn position-relative">
+                            <a className='aNoSelected' href='/admin/notificaciones' >
+                                NOTIFICACIONES
+                            </a>
+                            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {numNotificaciones}
+                            </span>
+                        </button>
+                        
                     </div>
                 </div>
 

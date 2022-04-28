@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Modal } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
 import Appbar from './appbarClient';
 import Footer from './footer';
 import axios from 'axios';
@@ -25,8 +25,6 @@ const ProductoEspecifico = () => {
     const [amount, setAmount] = useState(1);
     const [initialCost, setInitialCost] = useState(null);
 
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
 
     var { idproduct } = useParams(); // params
     const notify = () => {
@@ -142,8 +140,12 @@ const ProductoEspecifico = () => {
 
 
     const sumarCantidad = () => {
-        setAmount(amount + 1);
-        updateCosto(1);
+        if(amount < listProducto.unit_of_existence){
+            setAmount(amount + 1);
+            updateCosto(1);
+
+        }
+        
     }
 
     const updateCosto = (num) => {
@@ -216,6 +218,7 @@ const ProductoEspecifico = () => {
                                 <div className='container'>
                                     <h3>{listProducto.product_name}</h3>
                                     <p className="card__info"><span className='simbol_price'>$</span>{listProducto.price} <span className='simbol_price'>+ envio</span></p>
+                                    <span className='simbol_price'>Stock: {listProducto.unit_of_existence}  </span>
                                 </div>
 
                                 <div className='container'>
@@ -266,19 +269,6 @@ const ProductoEspecifico = () => {
                 </div>
             </div>
 
-
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Hola </Modal.Title>
-                </Modal.Header>
-                <Modal.Body style={{ fontSize: "19px" }}>¡Por favor! seleccione los detalles de tu producto.</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Cerrar
-                    </Button>
-
-                </Modal.Footer>
-            </Modal>
 
             <Footer></Footer>
         </>

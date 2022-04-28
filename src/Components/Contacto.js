@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import imgcontacto from '../images/contacto.png';
 
 import { ReactComponent as IconTelefono } from '../images/icons/IconTelefono.svg';
@@ -38,7 +38,7 @@ const Contacto = () => {
         mensajeAmigo: "",
     })
 
-    const [warnings, setWarnings] = useState({
+    const [warnings] = useState({
         nombrePersonal: "Escriba su nombre.",
         emailPersonal: "Escriba su correo electrónico.",
         mensajePersonal: "Escriba su mensaje.",
@@ -48,7 +48,7 @@ const Contacto = () => {
     })
 
 
-    const [mensajeEnviado, setMensajeEnviado] = useState({
+    const [mensajeEnviado] = useState({
         mensajePersonal: "Mensaje enviado.",
         mensajeAmigo: "Mensaje enviado.",
         mensajePersonalErr: "¡Upss! Su mensaje no pudo ser enviado.",
@@ -105,17 +105,17 @@ const Contacto = () => {
                         emailjs.send(emailJsData.service_id, emailJsData.template_id, body, emailJsData.public_key)
                             .then((result) => {
                                 setInputs("");
-                                setShowSuccessErr(values => ({ ...values, ['msgPersonalSuccess']: true }));
+                                setShowSuccessErr(values => ({ ...values, "msgPersonalSuccess": true }));
                             }, (error) => {
                                 console.log(error.text);
-                                setShowSuccessErr(values => ({ ...values, ['msgPersonalError']: true }));
+                                setShowSuccessErr(values => ({ ...values, "msgPersonalError": true }));
                             });
                     })
                     .catch((error) => {
                         console.log(error);
                     });
             } catch (error) {
-                //
+                
             }
         }
     }
@@ -125,8 +125,8 @@ const Contacto = () => {
     function mailInivitarAmigo() {
         
         if (validarInputsIA() === true) {
-            if (token === undefined || token === null || token === '' || token === NaN) {
-                setShowSuccessErr(values => ({ ...values, ['msgInvalidToken']: true }));
+            if (token === undefined || token === null || token === '' || token === isNaN) {
+                setShowSuccessErr(values => ({ ...values, "msgInvalidToken": true }));
                 return;
             } else {
                 axios.post(baseUrl + '/mailing/api/invite-a-frind/', {
@@ -136,11 +136,11 @@ const Contacto = () => {
                 }, { headers })
                     .then((response) => {
                         setInputs("");
-                        setShowSuccessErr(values => ({ ...values, ['msgAmigoSuccess']: true }));
+                        setShowSuccessErr(values => ({ ...values, "msgAmigoSuccess": true }));
                     })
                     .catch((error) => {
                         console.log(error);
-                        setShowSuccessErr(values => ({ ...values, ['msgAmigoError']: true }));
+                        setShowSuccessErr(values => ({ ...values, "msgAmigoError": true }));
                     });
 
             }
@@ -156,17 +156,17 @@ const Contacto = () => {
 
         try {
             if (validator.isEmpty(inputs.nombrePersonal)) {
-                setValidarInput(values => ({ ...values, ['nombrePersonal']: true }));
+                setValidarInput(values => ({ ...values, "nombrePersonal": true }));
                 camposValidos = false;
             }
 
             if (!validator.isEmail(inputs.emailPersonal)) {
-                setValidarInput(values => ({ ...values, ['emailPersonal']: true }));
+                setValidarInput(values => ({ ...values, "emailPersonal": true }));
                 camposValidos = false;
             }
 
             if (validator.isEmpty(inputs.mensajePersonal)) {
-                setValidarInput(values => ({ ...values, ['mensajePersonal']: true }));
+                setValidarInput(values => ({ ...values, "mensajePersonal": true }));
                 camposValidos = false;
             }
 
@@ -183,17 +183,17 @@ const Contacto = () => {
 
         try {
             if (validator.isEmpty(inputs.nombreAmigo)) {
-                setValidarInput(values => ({ ...values, ['nombreAmigo']: true }));
+                setValidarInput(values => ({ ...values, "nombreAmigo": true }));
                 camposValidosIA = false;
             }
 
             if (!validator.isEmail(inputs.emailAmigo)) {
-                setValidarInput(values => ({ ...values, ['emailAmigo']: true }));
+                setValidarInput(values => ({ ...values, "emailAmigo": true }));
                 camposValidosIA = false;
             }
 
             if (validator.isEmpty(inputs.mensajeAmigo)) {
-                setValidarInput(values => ({ ...values, ['mensajeAmigo']: true }));
+                setValidarInput(values => ({ ...values, "mensajeAmigo": true }));
                 camposValidosIA = false;
             }
 
@@ -205,12 +205,12 @@ const Contacto = () => {
 
 
     function setFalseErrors() {
-        setValidarInput(values => ({ ...values, ['nombrePersonal']: false }));
-        setValidarInput(values => ({ ...values, ['emailPersonal']: false }));
-        setValidarInput(values => ({ ...values, ['mensajePersonal']: false }));
-        setValidarInput(values => ({ ...values, ['nombreAmigo']: false }));
-        setValidarInput(values => ({ ...values, ['emailAmigo']: false }));
-        setValidarInput(values => ({ ...values, ['mensajeAmigo']: false }));
+        setValidarInput(values => ({ ...values, "nombrePersonal": false }));
+        setValidarInput(values => ({ ...values, "emailPersonal": false }));
+        setValidarInput(values => ({ ...values, "mensajePersonal": false }));
+        setValidarInput(values => ({ ...values, "nombreAmigo": false }));
+        setValidarInput(values => ({ ...values, "emailAmigo": false }));
+        setValidarInput(values => ({ ...values, "mensajeAmigo": false }));
     }
 
 

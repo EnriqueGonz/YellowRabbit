@@ -38,7 +38,7 @@ const Productos = () =>{
     const [listCategoria,setlistCategoria] = useState([]);
 
     const notify = () => 
-    {toast('Producto agregado a tu whitelist🔥', {
+    {toast('Producto agregado🔥', {
         position: "bottom-center",
         autoClose: 1000,
         hideProgressBar: true,
@@ -58,7 +58,7 @@ const Productos = () =>{
         progress: undefined,
     })}
     const notifylisto = () => 
-    {toast('Ese producto ya esta en tu whitelist', {
+    {toast('Ese producto ya esta agregado', {
         position: "bottom-center",
         autoClose: 1000,
         hideProgressBar: true,
@@ -164,10 +164,16 @@ const Productos = () =>{
             amount: 1
             },{headers})
             .then((response) => {
-                console.log(response);
+                if(response.status === 200){
+                    notify();
+                }
+                if(response.status === 208){
+                    notifylisto();
+                }
             })
             .catch((error) => {
-                console.log(error);
+                //console.log(error);
+                notifyerror();
             });
         } catch (error) {
             console.log(' . ', error);
@@ -256,7 +262,7 @@ const Productos = () =>{
 
         <div className='row'>
             <div className='col-12 col-md-2' style={{padding:0}} >
-                <div style={{width:"100%",backgroundColor:"#E94E1B"}}>
+                <div style={{width:"100%",backgroundColor:"#E94E1B",textAlign:"center"}}>
                     <button className='btn'>
                         <IconBtnCarshop style={{width:"40%",height:"auto"}}/><br></br>
                         <span style={{color:"white",fontSize:12}}>Ir al carrito de compras</span>
@@ -305,7 +311,7 @@ const Productos = () =>{
                                 <div className='container' style={{textAlign:"right",padding:0}}>
                                     <MdOutlineFavorite style={{marginLeft:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodName(item.id);} } ></MdOutlineFavorite>
                                     <MdAddShoppingCart style={{marginLeft:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodAddCarshop(item.id);} } ></MdAddShoppingCart>
-                                    <ToastContainer></ToastContainer>
+                                    <ToastContainer rtl></ToastContainer>
                                 </div>
                             
                         </div>

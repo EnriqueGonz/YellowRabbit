@@ -72,7 +72,7 @@ const UserDirecciones = () =>{
       function handleChange(evt) {
         const name = evt.target.name;
         const value = evt.target.value;
-        console.log(name + value)
+        //console.log(name + value)
         setinputsDireccion(values => ({ ...values, [name]: value }))
     }
 
@@ -95,7 +95,7 @@ const UserDirecciones = () =>{
         }
         )
         .then((response) => {
-            console.log(response);
+            //console.log(response);
             window.location = '/user/mis-direcciones'
         })
         .catch(err => console.log(err));
@@ -112,7 +112,7 @@ const UserDirecciones = () =>{
         try {
             axios.delete(baseUrl+'/addresses/api/delete/'+idDireccion+'/',{headers})
             .then((response) => {
-                console.log(response.status);
+                //console.log(response.status);
                 window.location.href = "/user/mis-direcciones"
             })
             .catch((error) => {

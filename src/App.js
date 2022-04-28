@@ -29,6 +29,7 @@ import AdminProductosAgregar from './Components/AdminProductosAgregar';
 import AdminPedidos from './Components/AdminPedidos';
 import AdminProductos from './Components/AdminProductos';
 import AdminUpdateProduct from './Components/AdminUpdateProduct';
+import ConfirmEmail from './Components/ConfirmEmail';
 
 
 
@@ -40,6 +41,10 @@ function App() {
 
                 <Route exact path="/">
                         <IndexClient></IndexClient>
+                    </Route>
+
+                    <Route path="/mailing/api/confirm-mail/:idinvitacion/:tokeninvitacion/">
+                        <ConfirmEmail></ConfirmEmail>
                     </Route>
 
                     <Route path="/inicio">
@@ -122,6 +127,11 @@ function App() {
                     <Route path="/admin/pedidos">
                         <AdminPedidos></AdminPedidos>
                     </Route>
+                    <Route path="/admin/notificaciones">
+                        <AdminPedidos></AdminPedidos>
+                    </Route>
+
+
                 </Switch>
             </Router>
         </div>

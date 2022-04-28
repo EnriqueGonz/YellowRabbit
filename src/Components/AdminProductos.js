@@ -41,7 +41,6 @@ const AdminProductos = () =>{
     const handleClose2 = () => setShow2(false);
     const handleShow2 = () => setShow2(true);
 
-
     const [listCategoria,setlistCategoria] = useState([]);
 
     useEffect(() =>{  
@@ -210,7 +209,7 @@ const AdminProductos = () =>{
                         </div>
                         <div className='col'>
                             <Form.Select  id='selectCategoria' onChange={BuscarPorCampana} style={{width:"auto",float:"right"}}>
-                                <option value="">Filtrar por categoria</option>
+                                <option value="">Sin filtros</option>
                                 {listCategoria.map((item, index) => (
                                     <option key={index} value={item.category_name} >{item.category_name}</option>
                                 ))}

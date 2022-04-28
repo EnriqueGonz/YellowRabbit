@@ -15,6 +15,13 @@ import '../config';
 var baseUrl = global.config.yellow.rabbit.url;
 
 const urlLogin = baseUrl+"/access/api/login/";
+const token = localStorage.getItem('tokenClient');
+
+const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Token ${token}`
+};
+
 
 const Appbar = () =>{
     const [show, setShow] = useState(false);
@@ -47,23 +54,26 @@ const Appbar = () =>{
     function handleChange(evt) {
         const name = evt.target.name;
         const value = evt.target.value;
-        console.log(name + value)
+        //console.log(name + value)
         setInputs(values => ({ ...values, [name]: value }))
     }
 
     const handleSubmitLogin = (event) => {
+            document.getElementById('loadLogin').style.display = "block"
             axios.post(urlLogin, {
                 email: inputs.email,
                 password: inputs.password
             })
             .then((response) => {
-                console.log(response.data);
+                document.getElementById('loadLogin').style.display = "none"
+                //console.log(response.data);
+                localStorage.clear();
                 if(response.data.is_admin === true){
                     localStorage.setItem('tokenAdmin', response.data.token);
                     localStorage.setItem('nameAdmin', response.data.first_name);
                     localStorage.setItem('AdminId', response.data.pk);
                     localStorage.setItem('usernameAdmin', response.data.username);
-                    //window.location.href = "/admin/añadir";
+                    window.location.href = "/admin/productos";
 
                 }else{
                     localStorage.setItem('tokenClient', response.data.token);
@@ -74,6 +84,8 @@ const Appbar = () =>{
                 }
             })
             .catch(err => console.log(err));
+            document.getElementById('msgErrorLogin').style.display = "block"
+            document.getElementById('loadLogin').style.display = "none"
     }
 
     const handleSubmitRegister = (event) => {
@@ -84,7 +96,6 @@ const Appbar = () =>{
 
             if(inputs.passwordNew === inputs.passwordNew2){
                 if(document.getElementById('check').checked === true){
-                    console.log(inputs.nombreRegistro+inputs.username+inputs.emailNew+inputs.passwordNew2);
                     axios.post(baseUrl+'/users/api/register-customer/', {
                         first_name: inputs.nombreRegistro,
                         last_name:inputs.username,
@@ -93,7 +104,7 @@ const Appbar = () =>{
                         age:18
                     })
                     .then((response) => {
-                        console.log(response);
+                        //console.log(response);
                         window.location.href = "/inicio";
                     })
                     .catch(err => console.log(err));
@@ -117,8 +128,12 @@ const Appbar = () =>{
 
     useEffect(() =>{  
         if(localStorage.getItem('tokenClient') !== null){
-            console.log('Tiene token');
             document.getElementById('botonIniciarSesion').style.display="none";
+            axios.get(baseUrl+'/inbox/api/my-notifications/', {headers})
+            .then((response) => {
+                console.log(response);
+            })
+            .catch(err => console.log(err));
         }else{
             document.getElementById('dropdown').style.display="none";
         }
@@ -200,6 +215,8 @@ const Appbar = () =>{
                             <Button style={{marginLeft:10,float:"right",backgroundColor:"#E94E1B",borderColor:"#E94E1B"}} onClick={handleSubmitLogin}>
                                 Iniciar sesion
                             </Button>
+                            <div className="spinner-border text-secondary" id="loadLogin" style={{float:"right",display:"none"}} role="status"></div>
+                            <span id="msgErrorLogin" style={{color:"red",display:"none"}}>Error al iniciar sesion, verifica tus datos</span>
                         </Form>  
                     </div>
                 </Tab>
