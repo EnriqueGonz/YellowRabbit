@@ -9,10 +9,11 @@ import Footer from './footer';
 import axios from 'axios';
 
 import { MdOutlineFavorite, MdRemoveShoppingCart, MdAdd, MdRemove } from "react-icons/md";
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip,Modal,Row,Col } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../config';
+import ConfirmOrderModal from './ConfirmOrderModal';
 
 
 var baseUrl = global.config.yellow.rabbit.url;
@@ -20,7 +21,10 @@ var baseUrl = global.config.yellow.rabbit.url;
 var token = localStorage.getItem('tokenClient');
 var username = localStorage.getItem('usernameClient');
 var idusuario = localStorage.getItem('userId');
-
+var state = "";
+var postalCode = "";
+var rowProductos = [];
+var rowUser = [];
 
 const headers = {
     'Content-Type': 'application/json',
@@ -30,6 +34,34 @@ const headers = {
 
 const UserCarShop = () => {
     const [list, setList] = useState([]);
+
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const [show2, setShow2] = useState(false);
+    const handleClose2 = () => setShow2(false);
+    const handleShow2 = () => setShow2(true);  
+
+    const [inputsDireccion, setinputsDireccion] = useState({
+        user: 0, 
+        street: "",
+        avenue: "",
+        neighborhood: "",
+        street_number: 0,
+        apartment_number: "",
+        postal_code: 0,
+        city: "",
+        state: "",
+        additional_data: "",
+    })
+
+    function handleChange(evt) {
+        const name = evt.target.name;
+        const value = evt.target.value;
+        //console.log(name + value)
+        setinputsDireccion(values => ({ ...values, [name]: value }))
+    }
 
     const notify = () => {
         toast('Producto agregado a tu whitelist🔥', {
@@ -224,6 +256,66 @@ const UserCarShop = () => {
         
     }
 
+    function processPay(){
+        let datasOrderRow = []
+        list.map((item) =>(
+            datasOrderRow.push({
+                products: item[0][0]["products_id"],
+                amount: item[0][0]["amount"],
+            })
+        ))
+        rowProductos = datasOrderRow;
+        console.log(datasOrderRow)
+
+         axios.get(baseUrl+'/addresses/api/my-addresses/'+username+"/", { headers })
+        .then((response) => {
+            let datasUserRow = {
+                user: idusuario,
+                addresses: response.data[0].id,
+            }
+            rowUser = datasUserRow;
+            postalCode = response.data[0].postal_code;
+            state = response.data[0].state;
+            //console.log(response.data[0].postal_code)
+            if(response.data.length === 0){
+                handleShow();
+            }else{
+                handleShow2();
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            window.location.href = "/user/mi-carrito"
+        });
+    }
+
+    const handleSubmitDireccion = (event) => {
+        axios.post(baseUrl+'/addresses/api/register/', {
+            user: idusuario,
+            street: inputsDireccion.street,
+            avenue: inputsDireccion.avenue,
+            neighborhood: inputsDireccion.neighborhood,
+            street_number: inputsDireccion.street_number,
+            apartment_number: inputsDireccion.apartment_number,
+            postal_code: inputsDireccion.postal_code,
+            city: inputsDireccion.city,
+            state: document.getElementById('state').value,
+            additional_data: inputsDireccion.additional_data,
+        },{
+            headers:{
+                "Authorization" : "Token "+token
+            }
+        }
+        )
+        .then((response) => {
+            //console.log(response);
+            window.location = '/user/mi-carrito'
+        })
+        .catch(err => console.log(err));
+
+        return false;
+    }
+
 
     return (
         <>
@@ -331,7 +423,7 @@ const UserCarShop = () => {
                         <p>{"Subtotal: ("+CantidadTotal+" productos):"}</p>
                         <p>{"$"+costo_total+" MXN"}</p>
 
-                        <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", fontSize: "14px" }} > Proceder al pago </Button>
+                        <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", fontSize: "14px"}}  onClick = {() => { processPay();} } > Proceder al pago </Button>
                         <br/><br/>
                         
                         </div>
@@ -344,6 +436,117 @@ const UserCarShop = () => {
             </div>
             <Footer></Footer>
 
+
+        <Modal  show={show} size="md" onHide={handleClose} >
+            <Modal.Body style={{margin:20}}>
+                <h4>Para calcular costos de envimos agrega una direccion</h4>
+                <Form onSubmit={handleSubmitDireccion}>
+                    <Row className="mb-3">
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Calle</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="text" name="street" value={inputsDireccion.street} onChange={handleChange} />
+                        </Form.Group>
+
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Barrio/Colonia</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="text" name="neighborhood" value={inputsDireccion.neighborhood} onChange={handleChange}  />
+                        </Form.Group>
+
+                        
+                    </Row>
+                    <Row className="mb-3">
+
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Avenida</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="text" name="avenue" value={inputsDireccion.avenue} onChange={handleChange}  />
+                        </Form.Group>
+
+                        
+                    </Row>
+                    <Row className="mb-3">
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Numero de calle</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="number" name="street_number" value={inputsDireccion.street_number} onChange={handleChange}/>
+                        </Form.Group>
+
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Numero de casa</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="number" name="apartment_number" value={inputsDireccion.apartment_number} onChange={handleChange} />
+                        </Form.Group>
+                    </Row>
+                    <Row className="mb-3">
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Estado:</Form.Label>
+                        <Form.Select style={{backgroundColor:"#DFDFDF"}} aria-label="Default select example" id="state">
+                        <option value="CX">Seleccione uno...</option>
+                        <option value="AG">Aguascalientes</option>
+                        <option value="BC">Baja California</option>
+                        <option value="BS">Baja California Sur</option>
+                        <option value="CM">Campeche</option>
+                        <option value="CS">Chiapas</option>
+                        <option value="CH">Chihuahua</option>
+                        <option value="CX">Ciudad de México</option>
+                        <option value="CO">Coahuila</option>
+                        <option value="CL">Colima</option>
+                        <option value="DG">Durango</option>
+                        <option value="EM">Estado de México</option>
+                        <option value="GT">Guanajuato</option>
+                        <option value="GR">Guerrero</option>
+                        <option value="HG">Hidalgo</option>
+                        <option value="JC">Jalisco</option>
+                        <option value="MI">Michoacán</option>
+                        <option value="MO">Morelos</option>
+                        <option value="NA">Nayarit</option>
+                        <option value="NL">Nuevo León</option>
+                        <option value="OA">Oaxaca</option>
+                        <option value="PU">Puebla</option>
+                        <option value="QT">Querétaro</option>
+                        <option value="QR">Quintana Roo</option>
+                        <option value="SL">San Luis Potosí</option>
+                        <option value="SI">Sinaloa</option>
+                        <option value="SO">Sonora</option>
+                        <option value="TB">Tabasco</option>
+                        <option value="TM">Tamaulipas</option>
+                        <option value="TL">Tlaxcala</option>
+                        <option value="VE">Veracruz</option>
+                        <option value="YU">Yucatán</option>
+                        <option value="ZA">Zacatecas</option>
+                        </Form.Select>
+                        </Form.Group>
+
+                    </Row>
+
+                    <Row className="mb-3">
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Codigo Postal (CP)</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="number" name="postal_code" value={inputsDireccion.postal_code} onChange={handleChange} />
+                        </Form.Group>
+
+                        <Form.Group as={Col} controlId="">
+                        <Form.Label>Ciudad/Pueblo</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} required type="text" name="city" value={inputsDireccion.city} onChange={handleChange} />
+                        </Form.Group>
+                    </Row>
+                    
+                    <Form.Group className="mb-3" controlId="">
+                        <Form.Label>Informacion adicional</Form.Label>
+                        <Form.Control style={{backgroundColor:"#DFDFDF"}} as="textarea" required type="text"  name="additional_data" value={inputsDireccion.additional_data} onChange={handleChange} />
+                    </Form.Group>
+                    <Button style={{marginLeft:10,float:"right",backgroundColor:"#E94E1B",borderColor:"#E94E1B"}} onClick={handleSubmitDireccion}>
+                        Agregar
+                    </Button>
+                </Form>
+            </Modal.Body>
+        </Modal>
+
+        <Modal  show={show2} size="lg" onHide={handleClose2} >
+            <Modal.Body style={{margin:20}}>
+            <div>
+                <p>{postalCode}</p>
+                <ConfirmOrderModal estado={state} codigopostal={postalCode} rowProductos={rowProductos} rowUser={rowUser} costoTotalAllProductos={costo_total} cantidadProductos={CantidadTotal}></ConfirmOrderModal>
+            </div>
+            </Modal.Body>
+        </Modal>
         </>
     )
 

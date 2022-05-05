@@ -94,6 +94,10 @@ function App() {
                         <ConfirmOrder></ConfirmOrder>
                     </Route>
 
+                    <Route path="/pagar/carrito/">
+                        <ConfirmOrder></ConfirmOrder>
+                    </Route>
+
                     <Route path="/pagar/con/oxxo/:idusuario/:idorder/:productName/:envio/:total">
                         <PayWithOxxo></PayWithOxxo>
                     </Route>
@@ -113,6 +117,8 @@ function App() {
                     <Route path="/not/found">
                         <PageNotFound></PageNotFound>
                     </Route>
+
+                    
 
 
                     <Route path="/admin/products/api/update/:idproduct/:idcategoria/">
