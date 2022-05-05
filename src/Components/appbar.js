@@ -15,12 +15,12 @@ import '../config';
 var baseUrl = global.config.yellow.rabbit.url;
 
 const urlLogin = baseUrl+"/access/api/login/";
-const token = localStorage.getItem('tokenClient');
+//const token = localStorage.getItem('tokenClient');
 
-const headers = {
+/* const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Token ${token}`
-};
+}; */
 
 
 const Appbar = () =>{
@@ -129,11 +129,6 @@ const Appbar = () =>{
     useEffect(() =>{  
         if(localStorage.getItem('tokenClient') !== null){
             document.getElementById('botonIniciarSesion').style.display="none";
-            axios.get(baseUrl+'/inbox/api/my-notifications/', {headers})
-            .then((response) => {
-                console.log(response);
-            })
-            .catch(err => console.log(err));
         }else{
             document.getElementById('dropdown').style.display="none";
         }

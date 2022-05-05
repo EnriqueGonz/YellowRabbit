@@ -22,6 +22,7 @@ const AdminPedidos = () =>{
         try {
           axios.post(baseUrl+'/orders/api/all-orders/',{
             first_name:"",
+            delivery_number:""
           },{headers})
           .then((response) => {
             console.log(response);

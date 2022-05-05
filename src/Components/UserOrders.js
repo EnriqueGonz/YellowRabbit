@@ -50,7 +50,7 @@ const UserOrders = () =>{
             setListOrders(response.data);
           })
           .catch((error) => {
-            console.log(error);
+            console.log(error.response);
           });
     
         } catch (error) {
@@ -71,8 +71,8 @@ const UserOrders = () =>{
     
     function SendMsj() {
         var cadena;
-        console.log(inputs.asunto)
-        console.log(inputs.mensaje)
+        //console.log(inputs.asunto)
+        //console.log(inputs.mensaje)
         cadena = "https://api.whatsapp.com/send/?phone=529671551588&text=¡Hola!%20"+inputs.asunto+"%20"+inputs.mensaje+".%20Referencia%20de%20pedido:%20"+referencia;
         window.location.href = cadena;
         

@@ -43,11 +43,12 @@ const UserOrderDetails = () =>{
       },[setListOrderDetalles],[setListOrderProductos],[setListOrderPago])
 
 
-let i = 0;
 
+
+let precioTotal = 0;
 
 ListOrderPago.map((item) =>(
-    i += parseInt(item.total_price)
+    precioTotal += parseInt(item.total_price)
 
 ))
 
@@ -94,6 +95,16 @@ ListOrderPago.map((item) =>(
                                         </td>
                                     </tr>
                                 ))}
+                                <tr>
+                                    <td colSpan="3">
+                                    </td>
+                                    <td colSpan="1">
+                                        <b>Total</b>
+                                    </td>
+                                    <td colSpan="1">
+                                        {precioTotal}
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         
@@ -141,10 +152,18 @@ ListOrderPago.map((item) =>(
                                             </tr>
                                             <tr>
                                                 <td colSpan="2" className='paddinth' style={{textAlign:"start"}}>
+                                                    <span>Total en productos:</span>
+                                                </td>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"end"}}>
+                                                    <span>{precioTotal}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"start"}}>
                                                     <span>Envio:</span>
                                                 </td>
                                                 <td colSpan="2" className='paddinth' style={{textAlign:"end"}}>
-                                                    <span>{new Intl.NumberFormat().format(i)}</span>
+                                                    <span>{(ListOrderDetalles.full_payment - precioTotal)}</span>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -152,7 +171,7 @@ ListOrderPago.map((item) =>(
                                                     <span>Total</span>
                                                 </td>
                                                 <td colSpan="2" className='paddinth' style={{textAlign:"end"}}>
-                                                    <span>{new Intl.NumberFormat().format(i)}</span>
+                                                    <span>{ListOrderDetalles.full_payment}</span>
                                                 </td>
                                             </tr>
                                         </tbody>

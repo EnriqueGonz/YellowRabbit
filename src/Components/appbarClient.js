@@ -131,7 +131,6 @@ const Appbar = () =>{
     useEffect(() =>{  
         axios.get(baseUrl+'/inbox/api/my-notifications/', {headers})
         .then((response) => {
-            console.log(response);
             setlistNotificaciones(response.data[0])
             numNotificaciones = response.data[1][0]["unread_notifications: "];
         })
@@ -143,7 +142,6 @@ const Appbar = () =>{
 
         axios.delete(baseUrl+'/inbox/api/delete-notification/'+id+'/',{ headers })
         .then((response) => {
-            console.log(response)
             ActualizarNotificaciones();
 
         })
@@ -156,7 +154,6 @@ const Appbar = () =>{
       function ActualizarNotificaciones() {
         axios.get(baseUrl+'/inbox/api/my-notifications/', {headers})
         .then((response) => {
-            console.log(response);
             setlistNotificaciones(response.data[0])
             numNotificaciones = response.data[1][0]["unread_notifications: "];
         })
@@ -168,7 +165,6 @@ const Appbar = () =>{
         console.log(id)
         axios.put(baseUrl+'/inbox/api/mark-read-notification/'+id+'/')
         .then((response) => {
-            console.log(response)
             ActualizarNotificaciones();
             //window.location.href = '/detallescanje/'+idorder
         })

@@ -293,7 +293,8 @@ const AdminProductosAgregar = () => {
                         formData
                         , { headers })
                         .then((response) => {
-                            console.log(response);
+                            //console.log(response);
+                            window.location.href = '/admin/productos'
                             setFalseErrors();
                         })
                         .catch(err => {

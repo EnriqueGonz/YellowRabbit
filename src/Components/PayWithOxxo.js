@@ -1,31 +1,23 @@
 import React, { useState } from 'react';
-import { Form, Button, Row, Col, Modal, Container, InputGroup } from 'react-bootstrap';
+import { Form, Button, Row, Col, Modal, Container } from 'react-bootstrap';
 import Appbar from './appbarClient';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import imgOXXOPay from '../images/icons/iconOxxoPay.svg';
 import imgErrorOrSuccessOrder from '../images/icons/iconErrorOrder.svg';
 import imgFinishingPurchase from '../images/icons/iconFinishingPurchase.gif';
+import { useParams } from 'react-router-dom';
 
 // Payment
 import { loadStripe } from '@stripe/stripe-js';
 import { useStripe } from '@stripe/react-stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import validator from 'validator';
 
 
 var token = localStorage.getItem('tokenClient');
-var idusuario = localStorage.getItem('userId');
 
-try {
-    // datas(4): user datas, datas order, product datas, payment method, 
-    var dataToPayOrder = JSON.parse(localStorage.getItem('dataToPayOrder'));
-    var orderData = dataToPayOrder[1];
-    var productData = dataToPayOrder[2];
-    var getOrderId = dataToPayOrder[3];
 
-} catch (error) {
-    //
-}
 
 const headers = {
     'Content-Type': 'application/json',
@@ -34,34 +26,42 @@ const headers = {
 
 
 const PagarConOxxo = () => {
+    var { idusuario,idorder,productName,envio,total } = useParams(); // params
+    const stripe = useStripe();
     const [inputsUser, setInputsUser] = useState({
         fullName: "",
         email: "",
     })
 
-    // Show Error
-    const [showErrorOxxo, setShowErrorOxxo] = useState(false);
-    const [validated, setValidated] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false); // Backend Error Message
-    const [finalizingPurchaseMsg, setFinalizingPurchaseMsg] = useState(false); // Finalizing purchase message 
-    const [successPurchase, setSuccessPurchase] = useState(false); //successful purchase message
-    const stripe = useStripe();
+    /* Messages */
+    const [warnings] = useState({
+        warningFullName: "Ingrese su nombre completo.",
+        warningEmail: "Ingrese su correo electrónico.",
+    })
+
+    // Errors
+    const [showErrors, setShowErrors] = useState({
+        errFullName: false,
+        errEmail: false,
+        errorMessage: false,
+        successPurchase: false,
+        finalizingPurchase: false,
+    });
 
 
     //Data of the product to pay
     try {
         var dataProductPay = {
-            user_id: idusuario,
-            order_id: parseInt(getOrderId),
-            product_name: productData.product_name,
-            price: parseFloat(orderData[0].total_price), // Total price
-            currency: 'mxn',
-            quantity: parseInt(orderData[0].amount),  // amount of productos
+            user: idusuario,
+            order: idorder,
+            product_name: productName,
+            shipping_price: envio // Puede enviarse como número entero o como double (máximo 2 dígitos)
         }
     } catch (error) {
-        window.location = '/not/found';
+        //window.location = '/not/found';
         return;
     }
+
 
     function handleChangeOXXO(evt) {
         const name = evt.target.name;
@@ -70,111 +70,121 @@ const PagarConOxxo = () => {
     }
 
 
-    function handleSubmitPayOXXO(event) {
-        setShowErrorOxxo(false);
-        const form = event.currentTarget;
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        setValidated(true);
-
+    function handleSubmitPayOXXO() {
         if (validateInputsUser() === true) {
             /*
-            * NOTA: OXXO sólo acepta pesos mexicanos en el pago "MXN" por lo tanto en el currency debe de ir 'mxn'
-            * quantity y product_name: no son campos necesarios para el método de pago con OXXO
-            * Lo mínimo a pagar deben ser $10.00 mxn.
+            * NOTA: Lo mínimo a pagar en OXXO son $10.00 mxn.
             */
-            setFinalizingPurchaseMsg(true);
-            setTimeout(() => { makeThePayment(); }, 2000); // sleep 2 seconds
+            setShowErrors(values => ({ ...values, "finalizingPurchase": true }));
+            setTimeout(() => { makeThePayment(); }, 3000); // sleep 2 seconds
         } else {
-            //
+            return;
         }
     }
 
 
 
     const makeThePayment = async () => {
-        setErrorMessage(false);
-        setSuccessPurchase(false);
-
+        var baseUrl = global.config.yellow.rabbit.url;
         // Create a payment intent on the server
-        const { error: backendError, clientSecret } = await axios.post('https://yellowrabbit.herokuapp.com/payment/api/create-payment-intent-oxxo/', dataProductPay, { headers })
-            .then(function (r) {
-                return r.data;
-            })
+        try {
+            const { error: backendError, clientSecret } = await axios.post(baseUrl + '/payment/api/create-payment-intent-oxxo/', dataProductPay, { headers })
+                .then(function (r) {
+                    return r.data;
+                })
+                .catch((er) => {
+                    // Si ya se ha gereado un intento de pago, retornará un error 307: HTTP_307_TEMPORARY_REDIRECT
+                    console.log(er.response.status);
+                    setShowErrors(values => ({ ...values, "errorMessage": true }));
+                    return;
+                });
 
-        if (backendError) {
-            setFinalizingPurchaseMsg(false);
-            setSuccessPurchase(false);
-            setErrorMessage(true);
-            return;
-        }
 
-        const { error } = await stripe.confirmOxxoPayment(
-            clientSecret,
-            {
-                payment_method: {
-                    billing_details: {
-                        name: inputsUser.fullName,
-                        email: inputsUser.email,
-                    },
-                },
+            if (backendError) {
+                console.log('Error del backend');
+                setShowErrors(values => ({ ...values, "errorMessage": true }));
+                return;
             }
-        )
 
-        if (error) {
-            setFinalizingPurchaseMsg(false);
-            setSuccessPurchase(false);
-            setErrorMessage(true);
+            const { error } = await stripe.confirmOxxoPayment(
+                clientSecret,
+                {
+                    payment_method: {
+                        billing_details: {
+                            name: inputsUser.fullName,
+                            email: inputsUser.email,
+                        },
+                    },
+                }
+            )
+
+
+            if (error) {
+                setShowErrors(values => ({ ...values, "errorMessage": true }));
+                return;
+            } 
+
+        } catch (err) {
+            setShowErrors(values => ({ ...values, "errorMessage": true }));
             return;
         }
+
 
         //localStorage.removeItem('dataToPayOrder');
-        setErrorMessage(false);
-        setFinalizingPurchaseMsg(false);
-        setSuccessPurchase(true);
+        setInputsUser("");
+        setShowErrors(values => ({ ...values, "successPurchase": true }));
     }
 
 
     const handleTryAgain = () => {
-        setErrorMessage(false);
+        setShowErrors(values => ({ ...values, "errorMessage": false }));
         setTimeout(() => { makeThePayment(); }, 2000); // sleep 2 seconds
     }
 
 
     function validateInputsUser() {
-        let userFullName = inputsUser.fullName;
-        var fnArray = userFullName.split(/(\s+)/);
-        // Remove space
-        let rmArray = fnArray.filter(function (str) {
-            return /\S/.test(str);
-        });
+        setFalseErrors();
+        let fullName = inputsUser.fullName;
+        let email = inputsUser.email;
+        let isValid = true;
 
-        // Name, Last name, Mother´s last name
-        if (rmArray.length >= 3) {
-            setShowErrorOxxo(false);
-            return true;
+        if (validator.isEmpty(fullName)) {
+            setShowErrors(values => ({ ...values, "errFullName": true }));
+            isValid = false;
         } else {
-            if (rmArray.length >= 1) {
-                setShowErrorOxxo(true);
-                return false;
+            let fnArray = fullName.split(/(\s+)/);
+            // Remove space
+            let rmArray = fnArray.filter(function (str) {
+                return /\S/.test(str);
+            });
+
+            // Name, Last name, Mother´s last name
+            if (rmArray.length < 3) {
+                setShowErrors(values => ({ ...values, "errFullName": true }));
+                isValid = false;
             }
         }
+
+        if (!validator.isEmail(email)) {
+            setShowErrors(values => ({ ...values, "errEmail": true }));
+            isValid = false;
+        }
+
+        return isValid;
     }
 
 
-    /*input user message */
-    const InputsUserMessage = () => (
-        <div style={{ marginBottom: "1%" }}>
-            <span style={{ color: "#FF5733" }}>El nombre ingresado no es aceptable</span>
-        </div>
-    )
+    function setFalseErrors() {
+        setShowErrors(values => ({ ...values, "errFullName": false }));
+        setShowErrors(values => ({ ...values, "errEmail": false }));
+        setShowErrors(values => ({ ...values, "errorMessage": false }));
+        setShowErrors(values => ({ ...values, "successPurchase": false }));
+        setShowErrors(values => ({ ...values, "finalizingPurchase": false }));
+    }
 
 
-    // Close error message
-    const hideErrorMessage = () => setErrorMessage(false);
-    const hideSuccessPurchase = () => setSuccessPurchase(false);
+    // Close message
+    const hideErrorMessage = () => setFalseErrors();
 
     function goToDashboard() {
         window.location = '/inicio';
@@ -183,6 +193,7 @@ const PagarConOxxo = () => {
     function keetBuying() {
         window.location = '/productos';
     }
+
 
     return (
         <>
@@ -196,58 +207,54 @@ const PagarConOxxo = () => {
                                     <img alt='OXXO' src={imgOXXOPay} style={{ width: "80%", height: "100%", marginTop: "20%" }} />
                                 </div>
                                 <div style={{ fontSize: "19px", paddingLeft: 10, paddingBottom: 6, textAlign: "center" }}>Valor: <span style={{ fontWeight: "bold" }}>MXN</span></div>
-                                <div style={{ fontSize: "19px", paddingLeft: 10, textAlign: "center" }}> <span style={{ color: "#358AE5", fontWeight: "bold" }}>TOTAL A PAGAR: </span> <span style={{ fontWeight: "bold" }}>${orderData[0].total_price} MXN</span></div>
+                                <div style={{ fontSize: "19px", paddingLeft: 10, textAlign: "center" }}> <span style={{ color: "#358AE5", fontWeight: "bold" }}>TOTAL A PAGAR: </span> <span style={{ fontWeight: "bold" }}>${total} MXN</span></div>
 
                             </div>
                         </Col>
                         <Col xs lg="4" style={{ padding: 0 }}>
                             <div name="formContent" id='formContent' className='container' style={{ marginTop: "20%" }}>
-                                <Form noValidate validated={validated} onSubmit={handleSubmitPayOXXO} style={{ backgroundColor: "#FFFFFF" }}>
+                                <Form style={{ backgroundColor: "#FFFFFF" }}>
                                     <Row className="mb-3">
                                         <Form.Group as={Col} controlId="validationCustomUsername">
                                             <Form.Label>Nombre completo</Form.Label>
-                                            <InputGroup hasValidation>
-                                                <Form.Control
-                                                    style={{ backgroundColor: "#DFDFDF" }}
-                                                    name="fullName"
-                                                    value={inputsUser.fullName}
-                                                    onChange={handleChangeOXXO}
-                                                    type="text"
-                                                    aria-describedby="inputGroupPrepend"
-                                                    required
-                                                />
-                                                <Form.Control.Feedback type="invalid">
-                                                    Por favor, ingrese su nombre completo.
-                                                </Form.Control.Feedback>
-                                            </InputGroup>
+                                            <Form.Control
+                                                style={{ backgroundColor: "#DFDFDF" }}
+                                                name="fullName"
+                                                value={inputsUser.fullName || ""}
+                                                onChange={handleChangeOXXO}
+                                                type="text"
+                                                aria-describedby="inputGroupPrepend"
+                                                placeholder="Nombre y apellidos"
+                                                required
+                                            />
+                                            <div>
+                                                <span style={{ color: "#FF5733" }}>{showErrors.errFullName ? warnings.warningFullName : null}</span>
+                                            </div>
                                         </Form.Group>
-                                        {/* Error message */}
-                                        {showErrorOxxo ? <InputsUserMessage /> : null}
                                     </Row>
                                     <Row className="mb-3">
 
                                         <Form.Group as={Col} controlId="validationCustomUsername">
                                             <Form.Label>Correo electrónico</Form.Label>
-                                            <InputGroup hasValidation>
-                                                <Form.Control
-                                                    style={{ backgroundColor: "#DFDFDF" }}
-                                                    name="email"
-                                                    value={inputsUser.email}
-                                                    onChange={handleChangeOXXO}
-                                                    type="email"
-                                                    aria-describedby="inputGroupPrepend"
-                                                    required
-                                                />
-                                                <Form.Control.Feedback type="invalid">
-                                                    Por favor, ingrese su correo electrónico.
-                                                </Form.Control.Feedback>
-                                            </InputGroup>
+                                            <Form.Control
+                                                style={{ backgroundColor: "#DFDFDF" }}
+                                                name="email"
+                                                value={inputsUser.email || ""}
+                                                onChange={handleChangeOXXO}
+                                                type="email"
+                                                aria-describedby="inputGroupPrepend"
+                                                placeholder="Correo electrónico"
+                                                required
+                                            />
                                         </Form.Group>
+                                        <div>
+                                            <span style={{ color: "#FF5733" }}>{showErrors.errEmail ? warnings.warningEmail : null}</span>
+                                        </div>
 
                                     </Row>
 
                                     <div style={{ margin: "auto", textAlign: "center" }}>
-                                        <Button style={{ float: "right", backgroundColor: "#E94E1B", borderColor: "#E94E1B", width: "auto", fontWeight: "bold", marginBottom: "2%" }} onClick={handleSubmitPayOXXO}>
+                                        <Button style={{ float: "right", backgroundColor: "#E94E1B", borderColor: "#E94E1B", width: "auto", fontWeight: "bold", marginBottom: "2%" }} onClick={() => { handleSubmitPayOXXO() }}>
                                             Procesar pedido
                                         </Button>
                                     </div>
@@ -259,7 +266,7 @@ const PagarConOxxo = () => {
 
                     {/** MODALS */}
                     {/* Message-error */}
-                    <Modal show={errorMessage} onHide={hideErrorMessage}>
+                    <Modal show={showErrors.errorMessage} onHide={hideErrorMessage}>
                         <Modal.Header closeButton style={{ borderBottom: "0" }}></Modal.Header>
                         <Modal.Body>
                             <div style={{ textAlign: "center" }}>
@@ -270,10 +277,10 @@ const PagarConOxxo = () => {
                                 error persiste, contáctanos y te ayudaremos con tu compra.</p>
 
                             <div style={{ backgroundColor: "#0000", textAlign: "center" }}>
-                                <Button style={{ backgroundColor: "#E94E1B", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight:"600" }} onClick={handleTryAgain}>
+                                <Button style={{ backgroundColor: "#E94E1B", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight: "600" }} onClick={handleTryAgain}>
                                     Intentar de nuevo
                                 </Button>
-                                <Button style={{ backgroundColor: "#F7C169", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight:"600" }}>
+                                <Button style={{ backgroundColor: "#F7C169", borderStyle: "none", margin: "2%", fontSize: "17px", fontWeight: "600" }}>
                                     Ayuda
                                 </Button>
                             </div>
@@ -282,7 +289,7 @@ const PagarConOxxo = () => {
 
 
                     {/* Finishing Purchase  */}
-                    <Modal show={finalizingPurchaseMsg}>
+                    <Modal show={showErrors.finalizingPurchase}>
                         <Modal.Body>
                             <div style={{ textAlign: "center", marginBottom: "3%" }}>
                                 <img alt='error' src={imgFinishingPurchase} style={{ width: "13%", height: "13%", marginBottom: "3%" }} />
@@ -294,7 +301,7 @@ const PagarConOxxo = () => {
 
 
                     {/* Successful purchase message */}
-                    <Modal show={successPurchase} onHide={hideSuccessPurchase}>
+                    <Modal show={showErrors.successPurchase} onHide={hideErrorMessage}>
                         <Modal.Body>
                             <div style={{ textAlign: "center", marginBottom: "3%" }}>
                                 <img alt='error' src={imgErrorOrSuccessOrder} style={{ width: "12%", height: "12%", marginBottom: "1%" }} />

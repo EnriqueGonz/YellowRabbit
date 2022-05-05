@@ -16,7 +16,6 @@ const headers = {
     'Authorization': `Token ${token}`
 };
 
-
 class PaymentOptions {
     // Start -Pay with credit card
     payWithCreditCard(dataProductPay) {
@@ -29,6 +28,7 @@ class PaymentOptions {
                     if (data.sessionURL === undefined | data.sessionURL === null | data.sessionURL === ''){
                         return false;
                     }else{
+                        console.log('Session URL',data.sessionURL);
                         window.location.href = data.sessionURL;
                     }
                 })

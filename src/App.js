@@ -90,11 +90,11 @@ function App() {
                         <UserDirecciones></UserDirecciones>
                     </Route>
 
-                    <Route path="/confirmar/pedido">
+                    <Route path="/confirmar/pedido/:idProducto/:cantidad/:estado/:postal/:precio">
                         <ConfirmOrder></ConfirmOrder>
                     </Route>
 
-                    <Route path="/pagar/con/oxxo">
+                    <Route path="/pagar/con/oxxo/:idusuario/:idorder/:productName/:envio/:total">
                         <PayWithOxxo></PayWithOxxo>
                     </Route>
 
@@ -106,7 +106,7 @@ function App() {
                         <FailedCardPayment></FailedCardPayment>
                     </Route>
 
-                    <Route path="/pagar/con/paypal">
+                    <Route path="/pagar/con/paypal/:idusuario/:idorder/:productName/:envio/:total">
                         <PayPal></PayPal>
                     </Route>
 
