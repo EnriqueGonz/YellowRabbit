@@ -13,6 +13,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { useStripe } from '@stripe/react-stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import validator from 'validator';
+import CrearEtiqueta from './CrearEtiqueta';
 
 
 var token = localStorage.getItem('tokenClient');
@@ -86,10 +87,22 @@ const PagarConOxxo = () => {
 
     const makeThePayment = async () => {
         var baseUrl = global.config.yellow.rabbit.url;
+
+        //let 
+        let datosEtiqueta = {
+            user_id: idusuario,
+            order_id: idorder,
+            carrier: 'fedex', // fedex, dhl, estafeta
+            service: 'ground', //express
+            content: productName,
+        }
+
         // Create a payment intent on the server
         try {
             const { error: backendError, clientSecret } = await axios.post(baseUrl + '/payment/api/create-payment-intent-oxxo/', dataProductPay, { headers })
                 .then(function (r) {
+                    //crear etiqueta
+                    CrearEtiqueta.generarEtiqueta(datosEtiqueta);
                     return r.data;
                 })
                 .catch((er) => {

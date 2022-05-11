@@ -6,6 +6,7 @@ import imgRabbit from '../images/icons/iconErrorOrder.svg';
 
 
 const PageNotFound = () => {
+    
     function goToDashboard() {
         window.location = '/inicio';
     }

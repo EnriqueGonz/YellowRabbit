@@ -3,6 +3,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 // Install: npm i @paypal/react-paypal-js
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import CrearEtiqueta from './CrearEtiqueta';
 
 var orderPaypal = "";
 
@@ -45,7 +46,17 @@ const PayPal = () => {
         alert(error);
     }
 
+
     function successmethodpay(){
+
+        let datosEtiqueta = {
+            user_id: idusuario,
+            order_id: idorder,
+            carrier: 'fedex', // fedex, dhl, estafeta
+            service: 'ground', //express
+            content: productName,
+        }
+        
         console.log('respaldo de compra')
         axios.post('https://yellowrabbit.herokuapp.com/payment/api/save-payment-intent-paypal/',{
             user: idusuario,
@@ -55,6 +66,7 @@ const PayPal = () => {
         },{ headers })
         .then((response) => {
             console.log(response)
+            CrearEtiqueta.generarEtiqueta(datosEtiqueta);
             //Mostrar modal o redirigirlo alv
         })
         .catch((error) => {
