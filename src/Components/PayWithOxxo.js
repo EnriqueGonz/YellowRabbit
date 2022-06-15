@@ -26,8 +26,8 @@ const headers = {
 };
 
 
-const PagarConOxxo = () => {
-    var { idusuario,idorder,productName,envio,total } = useParams(); // params
+const PagarConOxxo = (parametros) => {
+
     const stripe = useStripe();
     const [inputsUser, setInputsUser] = useState({
         fullName: "",
@@ -53,10 +53,10 @@ const PagarConOxxo = () => {
     //Data of the product to pay
     try {
         var dataProductPay = {
-            user: idusuario,
-            order: idorder,
-            product_name: productName,
-            shipping_price: envio // Puede enviarse como número entero o como double (máximo 2 dígitos)
+            coupon_id: 0,
+            user: parametros.idusuario,
+            order: parametros.idorder,
+            product_name: parametros.product_name,
         }
     } catch (error) {
         //window.location = '/not/found';
@@ -90,11 +90,11 @@ const PagarConOxxo = () => {
 
         //let 
         let datosEtiqueta = {
-            user_id: idusuario,
-            order_id: idorder,
+            user_id: parametros.idusuario,
+            order_id: parametros.idorder,
             carrier: 'fedex', // fedex, dhl, estafeta
             service: 'ground', //express
-            content: productName,
+            content: parametros.product_name,
         }
 
         // Create a payment intent on the server
@@ -135,7 +135,7 @@ const PagarConOxxo = () => {
             if (error) {
                 setShowErrors(values => ({ ...values, "errorMessage": true }));
                 return;
-            } 
+            }
 
         } catch (err) {
             setShowErrors(values => ({ ...values, "errorMessage": true }));
@@ -186,7 +186,6 @@ const PagarConOxxo = () => {
         return isValid;
     }
 
-
     function setFalseErrors() {
         setShowErrors(values => ({ ...values, "errFullName": false }));
         setShowErrors(values => ({ ...values, "errEmail": false }));
@@ -194,7 +193,6 @@ const PagarConOxxo = () => {
         setShowErrors(values => ({ ...values, "successPurchase": false }));
         setShowErrors(values => ({ ...values, "finalizingPurchase": false }));
     }
-
 
     // Close message
     const hideErrorMessage = () => setFalseErrors();
@@ -211,6 +209,7 @@ const PagarConOxxo = () => {
     return (
         <>
             <div>
+               
                 <Container>
                     <Row className="justify-content-md-center">
 
@@ -220,7 +219,7 @@ const PagarConOxxo = () => {
                                     <img alt='OXXO' src={imgOXXOPay} style={{ width: "80%", height: "100%", marginTop: "20%" }} />
                                 </div>
                                 <div style={{ fontSize: "19px", paddingLeft: 10, paddingBottom: 6, textAlign: "center" }}>Valor: <span style={{ fontWeight: "bold" }}>MXN</span></div>
-                                <div style={{ fontSize: "19px", paddingLeft: 10, textAlign: "center" }}> <span style={{ color: "#358AE5", fontWeight: "bold" }}>TOTAL A PAGAR: </span> <span style={{ fontWeight: "bold" }}>${total} MXN</span></div>
+                                <div style={{ fontSize: "19px", paddingLeft: 10, textAlign: "center" }}> <span style={{ color: "#358AE5", fontWeight: "bold" }}>TOTAL A PAGAR: </span> <span style={{ fontWeight: "bold" }}>${parametros.precio} MXN</span></div>
 
                             </div>
                         </Col>
@@ -339,14 +338,14 @@ const PagarConOxxo = () => {
     )
 }
 
-const RealizarPago = () => {
+const RealizarPago = (parametros) => {
     const stripePromise = loadStripe('pk_test_51K0BPZH8UO4qsCfWtyXUkkwB0qV9Mb0aUYbAC2SGvVdmRIuvTxM58A1tYtriviDsUq0eHEoBTNnI58E8SJP7I5Rv00wCXdhNDJ');
     return (
         <>
             <Appbar></Appbar>
             <div>
                 <Elements stripe={stripePromise}>
-                    <PagarConOxxo></PagarConOxxo>
+                    <PagarConOxxo idusuario={parametros.idusuario} idorder={parametros.idorder} product_name={parametros.product_name} precio={parametros.precio}></PagarConOxxo>
                 </Elements>
             </div>
             {/**

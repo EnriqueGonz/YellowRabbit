@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 // Install: npm i @paypal/react-paypal-js
-import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import CrearEtiqueta from './CrearEtiqueta';
 
@@ -17,8 +16,7 @@ const headers = {
 };
 
 
-const PayPal = () => {
-    var { idusuario,idorder,productName,envio,total } = useParams(); // params
+const PayPal = (parametros) => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [error, setError] = useState(null);
 
@@ -50,19 +48,19 @@ const PayPal = () => {
     function successmethodpay(){
 
         let datosEtiqueta = {
-            user_id: idusuario,
-            order_id: idorder,
+            user_id: parametros.idusuario,
+            order_id: parametros.idorder,
             carrier: 'fedex', // fedex, dhl, estafeta
             service: 'ground', //express
-            content: productName,
+            content: parametros.product_name,
         }
         
         console.log('respaldo de compra')
         axios.post('https://yellowrabbit.herokuapp.com/payment/api/save-payment-intent-paypal/',{
-            user: idusuario,
-            order: idorder,
+            user: parametros.idusuario,
+            coupon_id:0,
+            order: parametros.idorder,
             paypal_order_id: orderPaypal,
-            shipping_price: envio
         },{ headers })
         .then((response) => {
             console.log(response)
@@ -74,9 +72,10 @@ const PayPal = () => {
         });
     }
     return (
-        <><h4>Pagar con PAYPAL</h4>
+        <><h4>{parametros.idusuario}</h4>
+        <h3>{parametros.product_name}</h3>
         <br></br>
-            <PayPalScriptProvider options={{ "client-id": "AaUpVv8WDVM5uezwsQo79K6YBKmqm3EeLSOx5TFTX4RM2_ephwW68aJ4_ASXYPjbI8OyuXchwgkQ7bRl", currency: "MXN" }}>
+            <PayPalScriptProvider options={{ "client-id": "AVqSGBZdn8kfVjYFNOvBwFHWGGUkn-D73qLXbbaYN2BfSpQoO4OcoZGfAM_o9cIGr204vq3eEHkxX0tz", currency: "MXN" }}>
                 <PayPalButtons
                     style={{ color: "silver", layout: "horizontal", height: 48, tagline: false, shape: "pill" }}
 
@@ -94,9 +93,9 @@ const PayPal = () => {
                         return actions.order.create({
                             purchase_units: [
                                 {
-                                    description: productName, // Nombre del producto
+                                    description: parametros.product_name, // Nombre del producto
                                     amount: {
-                                        value: total, // Es el precio en MXN, con todo y costo de envío.
+                                        value: 1, // Es el precio en MXN, con todo y costo de envío.
                                     },
                                 },
                             ]

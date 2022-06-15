@@ -74,7 +74,7 @@ const Productos = () =>{
             category_name:"",
           })
           .then((response) => {
-            console.log(response);
+            //console.log(response);
             setlistCategoria(response.data)
           })
           .catch((error) => {

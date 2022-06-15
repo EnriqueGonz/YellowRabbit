@@ -8,8 +8,10 @@ import { MdOutlineFavorite, MdAddShoppingCart, MdAdd, MdRemove } from "react-ico
 import { OverlayTrigger, Tooltip,Row,Col,Modal,Tab,Tabs } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ReactDOM from 'react-dom'
 
 import '../config';
+import ConfirmOrder from './ConfirmOrder';
 
 
 var baseUrl = global.config.yellow.rabbit.url;
@@ -209,7 +211,11 @@ const ProductoEspecifico = () => {
                 handleShow();
 
             }else{
-                window.location.href = "/confirmar/pedido/"+id+"/"+amount+"/"+response.data[0].state+"/"+response.data[0].postal_code+"/"+precio
+                ReactDOM.render(
+                    <ConfirmOrder idproducto={idproduct} cantidad={amount} precio={new Intl.NumberFormat().format(initialCost)}/>,
+                    document.querySelector("#root")
+                );
+                //window.location.href = "/confirmar/pedido/"+id+"/"+amount+"/"+precio
             }
         })
         .catch((error) => {

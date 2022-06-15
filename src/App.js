@@ -90,17 +90,17 @@ function App() {
                         <UserDirecciones></UserDirecciones>
                     </Route>
 
-                    <Route path="/confirmar/pedido/:idProducto/:cantidad/:estado/:postal/:precio">
+                    {/* <Route path="/confirmar/pedido/:idProducto/:cantidad/:precio">
                         <ConfirmOrder></ConfirmOrder>
-                    </Route>
+                    </Route> */}
 
                     <Route path="/pagar/carrito/">
                         <ConfirmOrder></ConfirmOrder>
                     </Route>
 
-                    <Route path="/pagar/con/oxxo/:idusuario/:idorder/:productName/:envio/:total">
+                   {/*  <Route path="/pagar/con/oxxo/:idusuario/:idorder/:productName/:envio/:total">
                         <PayWithOxxo></PayWithOxxo>
-                    </Route>
+                    </Route> */}
 
                     <Route path="/success:session_id">
                         <SuccessPaymentCard></SuccessPaymentCard>
@@ -110,9 +110,9 @@ function App() {
                         <FailedCardPayment></FailedCardPayment>
                     </Route>
 
-                    <Route path="/pagar/con/paypal/:idusuario/:idorder/:productName/:envio/:total">
+                    {/* <Route path="/pagar/con/paypal/:idusuario/:idorder/:productName/:total">
                         <PayPal></PayPal>
-                    </Route>
+                    </Route> */}
 
                     <Route path="/not/found">
                         <PageNotFound></PageNotFound>

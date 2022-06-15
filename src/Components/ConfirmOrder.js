@@ -8,6 +8,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import PayWithCreditCard from "./PayWithCreditCard.js";
 import '../config';
 import { useParams } from 'react-router-dom';
+import ReactDOM from 'react-dom'
+
+import PayPal from './PayPal';
+import PayWithOxxo from './PayWithOxxo';
 
 
 var baseUrl = global.config.yellow.rabbit.url;
@@ -16,6 +20,8 @@ var baseUrl = global.config.yellow.rabbit.url;
 var token = localStorage.getItem('tokenClient');
 var idusuario = localStorage.getItem('userId');
 var username = localStorage.getItem('usernameClient');
+var idcupon = 0;
+var descuento = 0;
 
 
 
@@ -27,15 +33,14 @@ const headers = {
 
 
 
-const ConfirmOrder = () => {
-    var { idProducto,cantidad,estado,postal,precio } = useParams(); // params
+const ConfirmOrder = (parametros) => {
+    //var { idProducto, cantidad, precio } = useParams(); // params
 
     const [listProducto, setListProducto] = useState([]);
     const [listDireccion, setlistDireccion] = useState([]);
     const [descuento, setDescuento] = useState(0);
-    const [precioDescuento, setprecioDescuento] = useState(0);
+    const [precioDescuento, setprecioDescuento] = useState(parametros.precio);
     const [precioTotal, setprecioTotal] = useState(0);
-    const [costoEnvio, setcostoEnvio] = useState(0);
 
     const [paymentMethod, setPaymentMethod] = useState(null);
 
@@ -67,71 +72,45 @@ const ConfirmOrder = () => {
     //Productos
     useEffect(() => {
         try {
-          axios.get('https://yellowrabbit.herokuapp.com/products/api/specific-product/'+idProducto+'/')
-          .then((response) => {
-            //console.log(response);
-            setListProducto(response.data[0][0])
-            setprecioTotal(response.data[0][0].price * cantidad)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+            axios.get('https://yellowrabbit.herokuapp.com/products/api/specific-product/' + parametros.idproducto + '/')
+                .then((response) => {
+                    //console.log(response);
+                    setListProducto(response.data[0][0])
+                    setprecioTotal(response.data[0][0].price * parametros.cantidad)
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         } catch (error) {
             console.log(' . ', error);
         }// eslint-disable-next-line react-hooks/exhaustive-deps
     }, [setListProducto])
 
-    //Envio
-    useEffect(()=> {
-        try {
-            axios.post(baseUrl+'/parcelservice/api/quote-shipment/', {
-                carrier:'dhl',
-                state:estado,
-                postal_code:postal,
-                content: "producto",
-                amount:1,
-                weight:2,
-                dimensions_length:10,
-                dimensions_width:10,
-                dimensions_height:15,
-            }, { headers }
-            ).then((response) => {
-                console.log(response)
-                setcostoEnvio(response.data.data[0].basePrice)
-                setprecioDescuento((precio * cantidad) + response.data.data[0].basePrice)
-                
-            }).catch((error) => {
-                console.log(error.response);
-            });
-            
-        } catch (error) {
-            
-        }
-    },[setcostoEnvio])
 
     //Direccion
     useEffect(() => {
-        axios.get('https://yellowrabbit.herokuapp.com/addresses/api/my-addresses/'+username+"/", { headers })
-        .then((response) => {
-            console.log(response.data[0])
-            setlistDireccion(response.data[0])
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-    },[setlistDireccion])
+        axios.get('https://yellowrabbit.herokuapp.com/addresses/api/my-addresses/' + username + "/", { headers })
+            .then((response) => {
+                console.log(response.data[0])
+                setlistDireccion(response.data[0])
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, [setlistDireccion])
 
     //Cupon
     function redeemCoupon() {
         console.log(inputCupon.cupon);
         axios.post('https://yellowrabbit.herokuapp.com/redeemedcoupons/api/get-discount/' + username + "/", {
-            coupon_key: 'IOLHEA842712',
-            total_price: (listProducto.price * cantidad)
+            coupon_key: 'BYOasOZO160661',
+            total_price: (parametros.precio)
         }, { headers }) // LIOSEJ174678 // BYOOZO160661 IOLHEA842712
             .then((response) => {
                 console.log(response.data)
-                setDescuento(response.data.discounted_amount)
-                setprecioDescuento((precioTotal) - response.data.discounted_amount + costoEnvio)
+                idcupon = response.data.id
+                setDescuento( descuento + response.data.discounted_amount)
+                setprecioDescuento(parametros.precio - response.data.discounted_amount)
             })
             .catch((error) => {
                 console.log(error.response);
@@ -144,8 +123,8 @@ const ConfirmOrder = () => {
     };
 
 
-    function makeAnOrder(){
-        console.log(paymentMethod)
+    function makeAnOrder() {
+
         let rowOrder = [];
         let datasUserRow = {
             user: idusuario,
@@ -153,56 +132,60 @@ const ConfirmOrder = () => {
         }
 
         let datasOrderRow = {
-            products: idProducto,
-            amount: cantidad,
+            products: parametros.idproducto,
+            amount: parametros.cantidad,
         }
 
         rowOrder.push([datasUserRow]);
         rowOrder.push([datasOrderRow]);
 
-        axios.post(baseUrl+'/orders/api/register/', {
+        axios.post(baseUrl + '/orders/api/register/', {
             order: rowOrder
         }, { headers }
         ).then((response) => {
             console.log(response.data)
             //notifyCouponRedemption(listDataOrder.id);
-            
 
-            if(paymentMethod === "creditCardPayment"){
+            if (paymentMethod === "creditCardPayment") {
                 let dataProductPay = {
+                    coupon_id: idcupon,
                     user: idusuario,
                     order: response.data[0][0].orders_id,
                     product_name: listProducto.product_name,
-                    shipping_price: costoEnvio, //Total price // listProducto.price,
                 }
 
                 PayWithCreditCard.payWithCreditCard(dataProductPay);
             }
-            if(paymentMethod === "oxxoPayment"){
-                window.location.href = "/pagar/con/oxxo/"+idusuario+"/"+response.data[0][0].orders_id+"/"+listProducto.product_name+"/"+costoEnvio+"/"+precioDescuento
+
+
+            if (paymentMethod === "oxxoPayment") {
+                /* window.location.href = "/pagar/con/oxxo/" + idusuario + "/" + response.data[0][0].orders_id + "/" + listProducto.product_name + "/" + precioDescuento */
+                ReactDOM.render(
+                    <PayWithOxxo idusuario={idusuario} idorder={response.data[0][0].orders_id} product_name={listProducto.product_name} precio={precioDescuento} />,
+                    document.querySelector("#root")
+                );
+                
             }
 
-            if(paymentMethod === "payPalPayment"){
-                window.location.href = "/pagar/con/paypal/"+idusuario+"/"+response.data[0][0].orders_id+"/"+listProducto.product_name+"/"+costoEnvio+"/"+precioDescuento
-            }
-        
-            
+            if (paymentMethod === "payPalPayment") {
+                ReactDOM.render(
+                    <PayPal idusuario={idusuario} idorder={response.data[0][0].orders_id} product_name={listProducto.product_name} precio={precioDescuento} />,
+                    document.querySelector("#root")
+                );
 
-            
+            }
+
+
+
+
 
         }).catch((error) => {
             console.log(error)
         });
-        //id del pedido
-        //idusuario
-        //nombre
-        //precio
 
-        
 
-       
-       
-        
+
+
     }
 
 
@@ -219,7 +202,7 @@ const ConfirmOrder = () => {
                         <Col>
                             <div style={{ margin: "3%", fontWeight: "bold", textAlign: "center" }}><h2>Confirma tu compra</h2></div>
                             <div>
-                                <img alt='' style={{ width: "90%", height: 350 }} src={'https://yellowrabbitbucket.s3.amazonaws.com/'+listProducto.image_one} />
+                                <img alt='' style={{ width: "90%", height: 350 }} src={'https://yellowrabbitbucket.s3.amazonaws.com/' + listProducto.image_one} />
                             </div>
                         </Col>
                         <Col>
@@ -235,29 +218,29 @@ const ConfirmOrder = () => {
                                     <Col><Form.Label style={{ fontWeight: "bold", fontSize: "18px" }}>¿Tienes algun cupón?</Form.Label></Col>
                                     <Col>
                                         <Form.Group>
-                                            <Form.Control style={{ backgroundColor: "#DFDFDF" }} type="text"  name="cupon" onChange={handleChange}  placeholder='Ingresa tu cupón' />
+                                            <Form.Control style={{ backgroundColor: "#DFDFDF" }} type="text" name="cupon" onChange={handleChange} placeholder='Ingresa tu cupón' />
                                         </Form.Group>
 
                                     </Col>
-                                    <Col><Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B" }}  onClick={() => { redeemCoupon() }} >Canjear</Button></Col>
+                                    <Col><Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B" }} onClick={() => { redeemCoupon() }} >Canjear</Button></Col>
                                 </Row>
                             </div>
                             <br></br>
 
                             <div className='container'>
                                 <Row>
-                                                                
+
                                     <Col style={{ textAlign: "right", fontSize: "18px" }}>
                                         <div>
                                             <p>Precio por producto: <span style={{ fontWeight: "bold" }}>${listProducto.price}</span> </p>
-                                            <p>Total de productos: <span style={{ fontWeight: "bold" }}>{cantidad}</span></p>
-                                            <p>Costo de envío: <span style={{ fontWeight: "bold" }}>${costoEnvio}</span></p>
+                                            <p>Total de productos: <span style={{ fontWeight: "bold" }}>{parametros.cantidad}</span></p>
+                                            {/* <p>Costo de envío: <span style={{ fontWeight: "bold" }}>${costoEnvio}</span></p> */}
                                             <p>Descuento aplicado: <span style={{ fontWeight: "bold" }}>${descuento}</span></p>
                                             <p>Total sin descuento: <span style={{ fontWeight: "bold" }}>${precioTotal}</span></p>
                                             <p>Total a pagar: <span style={{ fontWeight: "bold" }}>${precioDescuento}</span></p>
                                         </div>
                                     </Col>
-                                    
+
                                     <Col></Col>
 
                                 </Row>
@@ -285,7 +268,7 @@ const ConfirmOrder = () => {
                                         label="Pago en OXXO"
                                     />
                                 </Form>
-                                
+
                                 <hr style={{ height: "5px", backgroundColor: "#EB5929", opacity: 1 }}></hr>
                             </div>
 
@@ -293,10 +276,10 @@ const ConfirmOrder = () => {
 
                             <div className='col-md' style={{ marginTop: "8%" }}>
                                 <span>Hemos calculado los costos de envio para esta dirección:</span>
-                                <div style={{backgroundColor:"#F5F5F5",padding:20}}>
-                                <span>{"CP: "+listDireccion.postal_code +" | "}</span>
-                                    <span>{listDireccion.city +" | "}</span>
-                                    <span>{listDireccion.avenue +" | "}</span>
+                                <div style={{ backgroundColor: "#F5F5F5", padding: 20 }}>
+                                    <span>{"CP: " + listDireccion.postal_code + " | "}</span>
+                                    <span>{listDireccion.city + " | "}</span>
+                                    <span>{listDireccion.avenue + " | "}</span>
                                     <span>{listDireccion.neighborhood + " "}</span>
                                 </div>
 
@@ -304,10 +287,10 @@ const ConfirmOrder = () => {
                             </div>
 
                             <div style={{ textAlign: "center", marginTop: "5%", marginBottom: "2%" }}>
-                                <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", margin: "2%", fontSize: "19px", width: "100px" }}  onClick={() => { makeAnOrder() }} > Comprar </Button>
+                                <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", margin: "2%", fontSize: "19px", width: "100px" }} onClick={() => { makeAnOrder() }} > Comprar </Button>
                                 <Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B", margin: "2%", fontSize: "19px", width: "100px" }} /* onClick={() => { returnToPreviousView() }}  */> Volver </Button>
                             </div>
-                            
+
 
                         </Col>
                     </Row>
