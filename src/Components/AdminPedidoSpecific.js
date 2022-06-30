@@ -1,8 +1,8 @@
 import React,{ useEffect, useState } from 'react';
-
+import bgPedidos from '../images/bgPedidos.png';
 import imgindex1 from '../images/fondouser.png';
-
-import Appbar from './appbarClient';
+import { Carousel } from 'react-bootstrap';
+import Appbar from './AdminAppbar';
 import Footer from './footer';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
@@ -11,29 +11,31 @@ import '../config';
 
 var baseUrl = global.config.yellow.rabbit.url;
 
-var token = localStorage.getItem('tokenClient');
+var token = localStorage.getItem('tokenAdmin');
 
 const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Token ${token}`
 };
 
-const UserOrderDetails = () =>{
+const AdminPedidoSpecific = () =>{
     var { idorder } = useParams(); // params
     const [ListOrderDetalles, setListOrderDetalles] = useState([]);
     const [ListOrderPago, setListOrderPago] = useState([]);
     const [ListOrderProductos, setListOrderProductos] = useState([]);
     const [ListPaqueteria, setListPaqueteria] = useState([]);
+    const [ListMetodoPago, setListMetodoPago] = useState([]);
 
     useEffect(() =>{  
         try {
           axios.get(baseUrl+'/payment/api/specific-order/'+idorder+'/',{ headers })
           .then((response) => {
             console.log(response);
-            setListOrderDetalles(response.data[0][0])
-            setListOrderPago(response.data[1])
-            setListOrderProductos(response.data[2])
-            setListPaqueteria(response.data[3][0])
+            setListMetodoPago(response.data[1][0])
+            setListOrderDetalles(response.data[2][0])
+            setListOrderPago(response.data[3])
+            setListOrderProductos(response.data[4])
+            setListPaqueteria(response.data[5][0])
           })
           .catch((error) => {
             console.log(error);
@@ -42,7 +44,7 @@ const UserOrderDetails = () =>{
         } catch (error) {
           console.log(' . ', error);
         }// eslint-disable-next-line react-hooks/exhaustive-deps
-      },[setListOrderDetalles],[setListOrderProductos],[setListOrderPago],[setListPaqueteria])
+      },[setListMetodoPago],[setListOrderDetalles],[setListOrderProductos],[setListOrderPago],[setListPaqueteria])
 
 
 
@@ -58,6 +60,11 @@ ListOrderPago.map((item) =>(
     return(    
         <>
         <Appbar></Appbar>
+        <Carousel>
+            <Carousel.Item className='contenedor' >
+                <img alt='' src={bgPedidos} style={{width:"100%"}}/>
+            </Carousel.Item>
+        </Carousel>
         <div style={{backgroundImage:"url('"+imgindex1+"')"}}>
 
             <div className='col-12 col-md-10 container' style={{backgroundColor:"white"}}>
@@ -93,18 +100,18 @@ ListOrderPago.map((item) =>(
                                             <span>{ListOrderPago[index].unit_price}</span>
                                         </td>
                                         <td colSpan="1">
-                                            <span>{ListOrderPago[index].total_price}</span>
+                                            <span>${ListOrderPago[index].total_price} MXN</span>
                                         </td>
                                     </tr>
                                 ))}
-                                <tr>
+                                <tr style={{borderTop:"solid",borderTopWidth:1,borderTopColor:"#DFDFDF"}}>
                                     <td colSpan="3">
                                     </td>
                                     <td colSpan="1">
                                         <b>Total</b>
                                     </td>
                                     <td colSpan="1">
-                                        {precioTotal}
+                                        ${precioTotal} MXN
                                     </td>
                                 </tr>
                                 </tbody>
@@ -133,7 +140,14 @@ ListOrderPago.map((item) =>(
                                                     <span>Status:</span>
                                                 </td>
                                                 <td colSpan="2" className='paddinth' style={{textAlign:"end"}}>
-                                                    <span>{ListOrderDetalles.status}</span>
+                                                    <span>{ListMetodoPago.payment_status}</span>
+                                                </td>
+                                            </tr><tr>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"start"}}>
+                                                    <span>Metodo de pago:</span>
+                                                </td>
+                                                <td colSpan="2" className='paddinth' style={{textAlign:"end"}}>
+                                                    <span>{ListMetodoPago.payment_method}</span>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -208,4 +222,4 @@ ListOrderPago.map((item) =>(
     )
 
 }
-export default UserOrderDetails;
+export default AdminPedidoSpecific;

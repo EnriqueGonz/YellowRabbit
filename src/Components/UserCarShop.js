@@ -21,8 +21,7 @@ var baseUrl = global.config.yellow.rabbit.url;
 var token = localStorage.getItem('tokenClient');
 var username = localStorage.getItem('usernameClient');
 var idusuario = localStorage.getItem('userId');
-var state = "";
-var postalCode = "";
+
 var rowProductos = [];
 var rowUser = [];
 
@@ -274,9 +273,6 @@ const UserCarShop = () => {
                 addresses: response.data[0].id,
             }
             rowUser = datasUserRow;
-            postalCode = response.data[0].postal_code;
-            state = response.data[0].state;
-            //console.log(response.data[0].postal_code)
             if(response.data.length === 0){
                 handleShow();
             }else{
@@ -351,8 +347,8 @@ const UserCarShop = () => {
                                                     <img alt="" style={{ width:60, height: 60, borderRadius:30 }} src={'https://yellowrabbitbucket.s3.amazonaws.com/' + item[1][0].image_one}></img>
                                                 </div>
                                                 <div className='col-sm-8'>
-                                                    <a href={'/article/details/' + item[1][0].id} title='Ver producto' style={{ textDecorationLine: "none" }}><p className='module line-clamp' style={{ fontFamily: "'Cairo', sans-serif", fontWeight: "bold", color: "black" }}>{item[1][0].product_name}</p></a>
-                                                    <div className="contianer" style={{display:"flex",alignItems:"center"}}>
+                                                    <a href={'/article/details/' + item[1][0].id} title='Ver producto' style={{ textDecorationLine: "none" }}><p className='module line-clamp' style={{ fontFamily: "'Cairo', sans-serif", fontWeight: "bold", color: "black",margin:0 }}>{item[1][0].product_name}</p></a>
+                                                    <div className="contianer" style={{display:"flex",alignItems:"baseline"}}>
 
                                                         <Form.Label style={{ width: "auto", textAlign: 'center', color:"#EB5929", fontWeight:"bold" }} type="text" name="quantity"> <p style={{ fontFamily: "'Cairo', sans-serif", fontWeight: "bold", color: "black"}}>Cantidad</p> </Form.Label>
                                                             <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Menos</Tooltip>}>
@@ -542,8 +538,7 @@ const UserCarShop = () => {
         <Modal  show={show2} size="lg" onHide={handleClose2} >
             <Modal.Body style={{margin:20}}>
             <div>
-                <p>{postalCode}</p>
-                <ConfirmOrderModal estado={state} codigopostal={postalCode} rowProductos={rowProductos} rowUser={rowUser} costoTotalAllProductos={costo_total} cantidadProductos={CantidadTotal}></ConfirmOrderModal>
+                <ConfirmOrderModal rowProductos={rowProductos} rowUser={rowUser} costoTotalAllProductos={costo_total} cantidadProductos={CantidadTotal}></ConfirmOrderModal>
             </div>
             </Modal.Body>
         </Modal>

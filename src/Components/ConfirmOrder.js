@@ -3,13 +3,12 @@ import { Form, Button, Row, Col, Container } from 'react-bootstrap';
 import Appbar from './appbarClient';
 import Footer from './footer';
 import axios from 'axios';
-import 'react-toastify/dist/ReactToastify.css';
-//import imgErrorOrder from '../images/icons/iconErrorOrder.svg';
-import PayWithCreditCard from "./PayWithCreditCard.js";
-import '../config';
-import { useParams } from 'react-router-dom';
 import ReactDOM from 'react-dom'
+import 'react-toastify/dist/ReactToastify.css';
+import '../config';
 
+
+import PayWithCreditCard from "./PayWithCreditCard.js";
 import PayPal from './PayPal';
 import PayWithOxxo from './PayWithOxxo';
 
@@ -21,8 +20,6 @@ var token = localStorage.getItem('tokenClient');
 var idusuario = localStorage.getItem('userId');
 var username = localStorage.getItem('usernameClient');
 var idcupon = 0;
-var descuento = 0;
-
 
 
 
@@ -34,29 +31,14 @@ const headers = {
 
 
 const ConfirmOrder = (parametros) => {
-    //var { idProducto, cantidad, precio } = useParams(); // params
-
     const [listProducto, setListProducto] = useState([]);
     const [listDireccion, setlistDireccion] = useState([]);
+
     const [descuento, setDescuento] = useState(0);
     const [precioDescuento, setprecioDescuento] = useState(parametros.precio);
     const [precioTotal, setprecioTotal] = useState(0);
 
     const [paymentMethod, setPaymentMethod] = useState(null);
-
-    // Address
-    /* const [inputsDireccion, setinputsDireccion] = useState({
-        user: 0,
-        street: "",
-        avenue: "",
-        neighborhood: "",
-        street_number: 0,
-        apartment_number: "",
-        postal_code: 0,
-        city: "",
-        state: "",
-        additional_data: "",
-    }) */
 
     const [inputCupon, setinputCupon] = useState({
         cupon: "",
@@ -103,16 +85,18 @@ const ConfirmOrder = (parametros) => {
     function redeemCoupon() {
         console.log(inputCupon.cupon);
         axios.post('https://yellowrabbit.herokuapp.com/redeemedcoupons/api/get-discount/' + username + "/", {
-            coupon_key: 'BYOasOZO160661',
+            coupon_key: 'SXEGFY967200',
             total_price: (parametros.precio)
         }, { headers }) // LIOSEJ174678 // BYOOZO160661 IOLHEA842712
             .then((response) => {
+                document.getElementById('msgerror').style.display = "none";
                 console.log(response.data)
                 idcupon = response.data.id
-                setDescuento( descuento + response.data.discounted_amount)
+                setDescuento(response.data.discounted_amount)
                 setprecioDescuento(parametros.precio - response.data.discounted_amount)
             })
             .catch((error) => {
+                document.getElementById('msgerror').style.display = "block";
                 console.log(error.response);
             });
     }
@@ -129,6 +113,7 @@ const ConfirmOrder = (parametros) => {
         let datasUserRow = {
             user: idusuario,
             addresses: listDireccion.id,
+            //shopping_cart: true  //true si es carrito False si es individual
         }
 
         let datasOrderRow = {
@@ -144,7 +129,6 @@ const ConfirmOrder = (parametros) => {
         }, { headers }
         ).then((response) => {
             console.log(response.data)
-            //notifyCouponRedemption(listDataOrder.id);
 
             if (paymentMethod === "creditCardPayment") {
                 let dataProductPay = {
@@ -159,20 +143,17 @@ const ConfirmOrder = (parametros) => {
 
 
             if (paymentMethod === "oxxoPayment") {
-                /* window.location.href = "/pagar/con/oxxo/" + idusuario + "/" + response.data[0][0].orders_id + "/" + listProducto.product_name + "/" + precioDescuento */
                 ReactDOM.render(
-                    <PayWithOxxo idusuario={idusuario} idorder={response.data[0][0].orders_id} product_name={listProducto.product_name} precio={precioDescuento} />,
+                    <PayWithOxxo idusuario={idusuario} idorder={response.data[0][0].orders_id} product_name={listProducto.product_name} precio={precioDescuento} cupon={idcupon} />,
                     document.querySelector("#root")
                 );
-                
             }
 
             if (paymentMethod === "payPalPayment") {
                 ReactDOM.render(
-                    <PayPal idusuario={idusuario} idorder={response.data[0][0].orders_id} product_name={listProducto.product_name} precio={precioDescuento} />,
+                    <PayPal idusuario={idusuario} idorder={response.data[0][0].orders_id} product_name={listProducto.product_name} precio={precioDescuento} cupon={idcupon} />,
                     document.querySelector("#root")
                 );
-
             }
 
 
@@ -220,6 +201,7 @@ const ConfirmOrder = (parametros) => {
                                         <Form.Group>
                                             <Form.Control style={{ backgroundColor: "#DFDFDF" }} type="text" name="cupon" onChange={handleChange} placeholder='Ingresa tu cupón' />
                                         </Form.Group>
+                                        <span id='msgerror' style={{color:"red",display:"none"}}>El cupon ingresado no es valido, verifica tus datos.</span>
 
                                     </Col>
                                     <Col><Button style={{ backgroundColor: "#E94E1B", borderColor: "#E94E1B" }} onClick={() => { redeemCoupon() }} >Canjear</Button></Col>
@@ -234,7 +216,6 @@ const ConfirmOrder = (parametros) => {
                                         <div>
                                             <p>Precio por producto: <span style={{ fontWeight: "bold" }}>${listProducto.price}</span> </p>
                                             <p>Total de productos: <span style={{ fontWeight: "bold" }}>{parametros.cantidad}</span></p>
-                                            {/* <p>Costo de envío: <span style={{ fontWeight: "bold" }}>${costoEnvio}</span></p> */}
                                             <p>Descuento aplicado: <span style={{ fontWeight: "bold" }}>${descuento}</span></p>
                                             <p>Total sin descuento: <span style={{ fontWeight: "bold" }}>${precioTotal}</span></p>
                                             <p>Total a pagar: <span style={{ fontWeight: "bold" }}>${precioDescuento}</span></p>

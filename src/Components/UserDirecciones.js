@@ -181,7 +181,7 @@ const UserDirecciones = () =>{
         <>
         <Appbar></Appbar>
         <div style={{backgroundImage:"url('"+imgindex1+"')"}}>
-            <div className='container' style={{backgroundColor:"white",width:"60%"}}>
+            <div className='container direccionesMovil' style={{backgroundColor:"white"}}>
 
                 <div className='container' style={{width:"90%"}}>
                     <br/><br/>
@@ -210,8 +210,16 @@ const UserDirecciones = () =>{
                                     </div>
                                 </div>
                                 <div className="col-2" style={{alignItems:"flex-end",justifyContent:"space-around",display:"flex"}}>
-                                    <MdDelete style={{fontSize:32}} className='btnFav' onClick = {() => { methodModalDelDireccion(item.id)} }  ></MdDelete>
-                                    <MdEdit style={{fontSize:32}} className='btnFav' onClick = {() => { methodModalUpdateDireccion(item.id)} } ></MdEdit>
+                                    
+                                    <div className='row'>
+                                        <div className='col-12 col-md-6' >
+                                            <MdDelete style={{fontSize:32}} className='btnFav' onClick = {() => { methodModalDelDireccion(item.id)} }  ></MdDelete>
+                                        </div>
+                                        <div className='col-12 col-md-6' >
+                                            <MdEdit style={{fontSize:32}} className='btnFav' onClick = {() => { methodModalUpdateDireccion(item.id)} } ></MdEdit>
+                                        </div>
+
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -312,7 +320,7 @@ const UserDirecciones = () =>{
             </Modal.Body>
         </Modal>
 
-        <Modal  show={show2} size="md" onHide={handleClose2} >
+        <Modal  show={show2} size="lg" onHide={handleClose2} >
             <Modal.Body style={{margin:20}}>
             <div style={{border:"solid",borderColor:"#E94E1B",borderWidth:5,padding:25}}>
                 <Form >

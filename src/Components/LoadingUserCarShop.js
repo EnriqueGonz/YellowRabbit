@@ -12,7 +12,7 @@ const LoadingUserCarShop = () =>{
         <>
         <Appbar></Appbar>
         <div style={{backgroundImage:"url('"+imgindex1+"')"}}>
-            <div className='container' style={{backgroundColor:"white",width:"60%"}}>
+            <div className='container' style={{backgroundColor:"white",width:"60%",height:500}}>
 
                 <div className='container' style={{width:"90%"}}>
                     <br/><br/>

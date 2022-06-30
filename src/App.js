@@ -15,13 +15,10 @@ import UserCarShop from './Components/UserCarShop';
 import UserDirecciones from './Components/UserDirecciones';
 
 import ConfirmOrder from './Components/ConfirmOrder';
-import PayWithOxxo from './Components/PayWithOxxo';
 import PageNotFound from './Components/PageNotFound';
-//Payment with credit card
 import SuccessPaymentCard from './Components/SuccessPaymentCard';
 import FailedCardPayment from './Components/FailedCardPayment';
-// PayPal
-import PayPal from './Components/PayPal';
+
 
 
 //ADMIN
@@ -30,6 +27,7 @@ import AdminPedidos from './Components/AdminPedidos';
 import AdminProductos from './Components/AdminProductos';
 import AdminUpdateProduct from './Components/AdminUpdateProduct';
 import ConfirmEmail from './Components/ConfirmEmail';
+import AdminPedidoSpecific from './Components/AdminPedidoSpecific';
 
 
 
@@ -102,7 +100,7 @@ function App() {
                         <PayWithOxxo></PayWithOxxo>
                     </Route> */}
 
-                    <Route path="/success:session_id">
+                    <Route path="/success/:session_id">
                         <SuccessPaymentCard></SuccessPaymentCard>
                     </Route>
 
@@ -132,6 +130,9 @@ function App() {
                     </Route>
                     <Route path="/admin/pedidos">
                         <AdminPedidos></AdminPedidos>
+                    </Route>
+                    <Route path="/admin/pedido/:idorder/">
+                        <AdminPedidoSpecific></AdminPedidoSpecific>
                     </Route>
                     <Route path="/admin/notificaciones">
                         <AdminPedidos></AdminPedidos>

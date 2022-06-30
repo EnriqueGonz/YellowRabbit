@@ -302,7 +302,7 @@ const Productos = () =>{
                     <div className="card" >
                         <div className="card__content">
                             <div className='row' style={{height:"50%",justifyContent:"center"}}>
-                                <img onClick = {() => { methodShowProduct(item.id);} } alt={'Img'} style={{width:150,height:150}} src={'https://yellowrabbitbucket.s3.amazonaws.com/'+item.image_one}></img>    
+                                <img onClick = {() => { methodShowProduct(item.id);} } alt={'Img'} style={{width:150,height:150,objectFit:"cover",padding:0}} src={'https://yellowrabbitbucket.s3.amazonaws.com/'+item.image_one}></img>    
                             </div>
                             <div className='module line-clamp'>
                                 <a href={'/article/details/'+item.id} style={{color:"black",textDecoration:"none"}}><p style={{fontWeight:"bold"}}>{item.product_name}</p></a>

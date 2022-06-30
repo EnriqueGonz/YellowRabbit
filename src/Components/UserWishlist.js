@@ -152,30 +152,43 @@ const UserWishlist = () =>{
 
                             <div className="card-body">
                                 <div className='row'>
-                                    <div className='col-3 col-md-2'>
-                                        <img alt="Quitar de la wishlist" style={{width:75,height:75,borderRadius:60}} src={ 'https://yellowrabbitbucket.s3.amazonaws.com/'+item[1][0].image_one}></img>
+                                    <div className='col-3 col-md-1'>
+                                        <a href={'/article/details/'+item[1][0].id} title='Ver producto' style={{textDecorationLine:"none"}}><img alt="Quitar de la wishlist" style={{width:50,height:50,borderRadius:60}} src={ 'https://yellowrabbitbucket.s3.amazonaws.com/'+item[1][0].image_one}></img></a>
                                     </div>
-                                    <div className='col-9 col-md-10'>
-                                        <a href={'/article/details/'+item[1][0].id} title='Ver producto' style={{textDecorationLine:"none"}}><p style={{fontFamily:"'Cairo', sans-serif",fontWeight:"bold",color:"#EB5929"}}>{item[1][0].product_name}</p></a>
-                                        <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500}}>{'$'+item[1][0].price}</p>
-                                        <div style={{float:"right"}} className="contianer">
-                                            <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Agregar al carrito de compras</Tooltip>}>
-                                                {({ ref, ...triggerHandler }) => (
-                                                <div variant="light" {...triggerHandler} className="d-inline-flex align-items-center">
-                                                    <span ref={ref} className="ms-1"><MdAddShoppingCart style={{marginRight:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodAddCarshop(item[1][0].id);} } ></MdAddShoppingCart></span>
-                                                </div>
-                                                )}
-                                            </OverlayTrigger>
-                                            
-                                            <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Quitar de la wishlist</Tooltip>}>
-                                                {({ ref, ...triggerHandler }) => (
-                                                <div variant="light" {...triggerHandler} className="d-inline-flex align-items-center">
-                                                    <span ref={ref} className="ms-1"><MdOutlineFavorite style={{fontSize:25}} className='btnQuitarfav' alt="Quitar de la wishlist" onClick = {() => { methodName(item[0][0].id);} }></MdOutlineFavorite></span>
-                                                </div>
-                                                )}
-                                            </OverlayTrigger>
-                                            <ToastContainer></ToastContainer>
+                                    <div className='col-9 col-md-11'>
+                                        <div className='container'>
+                                            <a href={'/article/details/'+item[1][0].id} title='Ver producto' style={{textDecorationLine:"none"}}><p style={{fontFamily:"'Cairo', sans-serif",fontWeight:"bold",color:"#EB5929",marginBottom:0}}>{item[1][0].product_name}</p></a>
                                         </div>
+                                        <div className='container'>
+                                            <div className='row'>
+                                                <div className='col'>
+                                                    <p style={{fontFamily:"'Cairo', sans-serif",fontWeight:500,marginBottom:0}}>{'$'+item[1][0].price}</p>
+                                                </div>
+                                                <div className='col'>
+                                                    <div style={{float:"right"}} className="contianer">
+                                                        <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Agregar al carrito de compras</Tooltip>}>
+                                                            {({ ref, ...triggerHandler }) => (
+                                                            <div variant="light" {...triggerHandler} className="d-inline-flex align-items-center">
+                                                                <span ref={ref} className="ms-1"><MdAddShoppingCart style={{marginRight:"10px",fontSize:25}} className='btnFav' onClick = {() => { methodAddCarshop(item[1][0].id);} } ></MdAddShoppingCart></span>
+                                                            </div>
+                                                            )}
+                                                        </OverlayTrigger>
+                                                        
+                                                        <OverlayTrigger placement="bottom" overlay={<Tooltip id="button-tooltip-2">Quitar de la wishlist</Tooltip>}>
+                                                            {({ ref, ...triggerHandler }) => (
+                                                            <div variant="light" {...triggerHandler} className="d-inline-flex align-items-center">
+                                                                <span ref={ref} className="ms-1"><MdOutlineFavorite style={{fontSize:25}} className='btnQuitarfav' alt="Quitar de la wishlist" onClick = {() => { methodName(item[0][0].id);} }></MdOutlineFavorite></span>
+                                                            </div>
+                                                            )}
+                                                        </OverlayTrigger>
+                                                        <ToastContainer></ToastContainer>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        
+                                        
                                     </div>
                                 </div>
                             </div>

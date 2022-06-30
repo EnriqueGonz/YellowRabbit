@@ -6,7 +6,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import imgOXXOPay from '../images/icons/iconOxxoPay.svg';
 import imgErrorOrSuccessOrder from '../images/icons/iconErrorOrder.svg';
 import imgFinishingPurchase from '../images/icons/iconFinishingPurchase.gif';
-import { useParams } from 'react-router-dom';
 
 // Payment
 import { loadStripe } from '@stripe/stripe-js';
@@ -53,7 +52,7 @@ const PagarConOxxo = (parametros) => {
     //Data of the product to pay
     try {
         var dataProductPay = {
-            coupon_id: 0,
+            coupon_id: parametros.cupon,
             user: parametros.idusuario,
             order: parametros.idorder,
             product_name: parametros.product_name,
@@ -92,9 +91,8 @@ const PagarConOxxo = (parametros) => {
         let datosEtiqueta = {
             user_id: parametros.idusuario,
             order_id: parametros.idorder,
-            carrier: 'fedex', // fedex, dhl, estafeta
+            carrier: 'paquetexpress', // fedex, dhl, estafeta
             service: 'ground', //express
-            content: parametros.product_name,
         }
 
         // Create a payment intent on the server
@@ -345,7 +343,7 @@ const RealizarPago = (parametros) => {
             <Appbar></Appbar>
             <div>
                 <Elements stripe={stripePromise}>
-                    <PagarConOxxo idusuario={parametros.idusuario} idorder={parametros.idorder} product_name={parametros.product_name} precio={parametros.precio}></PagarConOxxo>
+                    <PagarConOxxo idusuario={parametros.idusuario} idorder={parametros.idorder} product_name={parametros.product_name} precio={parametros.precio} cupon={parametros.cupon}></PagarConOxxo>
                 </Elements>
             </div>
             {/**

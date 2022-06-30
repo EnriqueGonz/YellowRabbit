@@ -165,11 +165,12 @@ const Appbar = () =>{
         console.log(id)
         axios.put(baseUrl+'/inbox/api/mark-read-notification/'+id+'/')
         .then((response) => {
+            console.log(response);
             ActualizarNotificaciones();
-            //window.location.href = '/detallescanje/'+idorder
+            window.location.href = '/detallesPedido/'+idorder+'/'
         })
         .catch((error) => {
-            console.log(error.response);
+            console.log(error);
         });
     }
 

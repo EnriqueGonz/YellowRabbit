@@ -36,6 +36,13 @@ const AdminPedidos = () =>{
           console.log(' . ', error);
         }// eslint-disable-next-line react-hooks/exhaustive-deps
       },[setlistPedidos])
+
+      function redirectPedido(id) {
+
+        console.log(id);
+        window.location.href = '/admin/pedido/'+id+'/'
+        
+      }
     
     return(    
         <>
@@ -63,6 +70,8 @@ const AdminPedidos = () =>{
                                         ? <span>Status: <b style={{color:"#2CC132"}}>Entregado</b></span>
                                         : (item[2][0].status === "CANCELADO")
                                         ? <span>Status: <b style={{color:"#C12C30"}}>Cancelado</b></span>
+                                        : (item[2][0].status === "En proceso")
+                                        ? <span>Status: <b style={{color:"#9044B0"}}>En proceso</b></span>
                                         : <></>
                                     }
                                 </div>
@@ -115,7 +124,7 @@ const AdminPedidos = () =>{
                                 </div>
                             </div> 
                             <div className='col-12 col-md-2'>
-                                <button className='btn' style={{width:"100%",backgroundColor:"#E94E1B",color:"white"}}>Ver detalles</button>
+                                <button className='btn' style={{width:"100%",backgroundColor:"#E94E1B",color:"white"}} onClick={ () => (redirectPedido(item[2][0].id))}>Ver detalles</button>
                             
                             </div> 
 

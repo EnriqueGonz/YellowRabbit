@@ -1,6 +1,6 @@
 import axios from "axios";
 import '../config';
-
+import CrearEtiqueta from './CrearEtiqueta';
 
 var baseUrl = global.config.yellow.rabbit.url;
 /** 
@@ -19,6 +19,15 @@ const headers = {
 class PaymentOptions {
     // Start -Pay with credit card
     payWithCreditCard(dataProductPay) {
+        /* console.log(dataProductPay.order)
+        console.log(dataProductPay.user) */
+        let datosEtiqueta = {
+            user_id: dataProductPay.user,
+            order_id: dataProductPay.order,
+            carrier: 'paquetexpress', // fedex, dhl, estafeta
+            service: 'ground', //express
+        }
+        
         try {
             // Create and get Checkout Session ID - card
             axios.post(baseUrl+'/payment/api/create-payment-intent-card/', dataProductPay, { headers })
@@ -28,7 +37,8 @@ class PaymentOptions {
                     if (data.sessionURL === undefined | data.sessionURL === null | data.sessionURL === ''){
                         return false;
                     }else{
-                        console.log('Session URL',data.sessionURL);
+                        CrearEtiqueta.generarEtiqueta(datosEtiqueta);
+                        /* console.log('Session URL',data.sessionURL); */
                         window.location.href = data.sessionURL;
                     }
                 })

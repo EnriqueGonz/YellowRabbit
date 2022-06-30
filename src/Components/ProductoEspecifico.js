@@ -212,7 +212,7 @@ const ProductoEspecifico = () => {
 
             }else{
                 ReactDOM.render(
-                    <ConfirmOrder idproducto={idproduct} cantidad={amount} precio={new Intl.NumberFormat().format(initialCost)}/>,
+                    <ConfirmOrder idproducto={idproduct} cantidad={amount} precio={initialCost}/>,
                     document.querySelector("#root")
                 );
                 //window.location.href = "/confirmar/pedido/"+id+"/"+amount+"/"+precio

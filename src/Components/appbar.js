@@ -59,7 +59,7 @@ const Appbar = () =>{
     }
 
     const handleSubmitLogin = (event) => {
-            document.getElementById('loadLogin').style.display = "block"
+            
             axios.post(urlLogin, {
                 email: inputs.email,
                 password: inputs.password
@@ -179,7 +179,6 @@ const Appbar = () =>{
                                 <li><a  className="dropdown-item"  type="button" href="/user/mis-pedidos">Mis pedidos</a></li>
                                 <li><a  className="dropdown-item"  type="button" href="/user/mi-wishlist">Mi Wishlist</a></li>
                                 <li><a  className="dropdown-item"  type="button" href="/user/mi-carrito">Carrito de compras</a></li>
-                                <li><a  className="dropdown-item"  type="button" href="/user/mis-compras">Mis compras</a></li>
                                 <hr style={{height:"2px",backgroundColor:"#EB5929",opacity:1}}></hr>
                                 <li><button  className="dropdown-item"  type="button" onClick = {handleShow2}>Cerrar sesion</button></li>
                             </ul>

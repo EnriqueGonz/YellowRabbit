@@ -91,7 +91,7 @@ const IndexClient = () =>{
 
         <div className="container" style={{paddingTop:50, paddingBottom:50}}>
             <div className="row">
-                <div className="col" style={{paddingBottom:10}}>
+                <div className="col-12 col-md-6" style={{paddingBottom:10}}>
                     <div style={{backgroundColor:"#EB5929",padding:70,borderRadius:25}}>
                         <div style={{textAlign:"center"}}>
                             <IconMision style={{width:50,height:"100%"}}/>
@@ -103,7 +103,7 @@ const IndexClient = () =>{
 
                     </div> 
                 </div>
-                <div className="col">
+                <div className="col-12 col-md-6">
                     <div style={{backgroundColor:"#F3BE3A",padding:70,height:"100%",borderRadius:25}}>
                         <div style={{textAlign:"center"}}>
                             <IconVision style={{width:50,height:"100%"}}/>

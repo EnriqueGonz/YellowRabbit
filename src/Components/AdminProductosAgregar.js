@@ -24,6 +24,8 @@ const headers = {
 const AdminProductosAgregar = () => {
     const [listCategoria, setlistCategoria] = useState([]);
     const [selectedFile, setSelectedFile] = useState()
+    const [selectedFile2, setSelectedFile2] = useState()
+    const [listProductsErr, setlistProductsErr] = useState([])
     const [preview1, setPreview1] = useState()
     const [preview2, setPreview2] = useState()
     const [preview3, setPreview3] = useState()
@@ -37,6 +39,11 @@ const AdminProductosAgregar = () => {
         precio: "",
 
         category: "",
+
+        ancho: "",
+        largo: "",
+        alto: "",
+        peso: ""
     })
 
 
@@ -88,6 +95,11 @@ const AdminProductosAgregar = () => {
 
     const handleFileSelect = (event) => {
         setSelectedFile(event.target.files)
+
+    }
+
+    const handleFileSelect2 = (event) => {
+        setSelectedFile2(event.target.files[0])
 
     }
 
@@ -181,7 +193,7 @@ const AdminProductosAgregar = () => {
     }
 
     const handleSubmitCategoria = (event) => {
-        console.log('ok')
+
         axios.post(baseUrl + '/categories/api/register/', {
             category_name: inputs.category,
         }, { headers })
@@ -284,6 +296,10 @@ const AdminProductosAgregar = () => {
                     formData.append('quantities_sold', 0)
                     formData.append('description', inputs.descripcionLarga)
                     formData.append('short_description', inputs.descripcionCorta)
+                    formData.append('dimensions_width', inputs.ancho)
+                    formData.append('dimensions_length', inputs.largo)
+                    formData.append('dimensions_height', inputs.alto)
+                    formData.append('peso', inputs.peso)
                     formData.append('image_one', selectedFile[0])
                     formData.append('image_two', selectedFile[1])
                     formData.append('image_three', selectedFile[2])
@@ -330,6 +346,25 @@ const AdminProductosAgregar = () => {
         }
     }
 
+    const handleSubmitExcel = (event) => {
+        event.preventDefault()
+        let formData = new FormData();
+        formData.append('pathfile', selectedFile2)
+
+        axios.post(baseUrl + '/products/api/upload-products/',
+            formData
+            , { headers })
+            .then((response) => {
+                console.log(response);
+                //window.location.href = "/superadmin/lista-Productos/";
+
+            }).catch(err => {
+                console.log(err.response)
+                setlistProductsErr(err.response.data[1])
+                document.getElementById("mensaje").style.display = "block"
+            });
+    }
+
 
     return (
         <>
@@ -352,7 +387,7 @@ const AdminProductosAgregar = () => {
                             <h4>Añadir producto</h4>
 
                             <div className='row'>
-                                <div className='col'>
+                                <div className='col-12 col-md-6'>
                                     <div className='col' style={{ marginBottom: 10, position: "relative" }}>
                                         <div className='row' style={{ marginBottom: 10 }}>
                                             <p id="errorimg">Selecciona 4 imagenes *</p>
@@ -380,7 +415,7 @@ const AdminProductosAgregar = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className='col'>
+                                <div className='col-12 col-md-6'>
                                     <Form>
                                         <Row className="mb-3">
                                             <Form.Group controlId="validationCustom03">
@@ -442,6 +477,30 @@ const AdminProductosAgregar = () => {
                                                     <span style={{ color: "#FF5733" }}>{showErrors.errPrice ? warnings.msgPrice : null}</span>
                                                 </div>
                                             </Form.Group>
+
+                                        </Row>
+                                        <hr></hr>
+                                        <Row className="mb-3">
+                                            <Form.Group as={Col}>
+                                                <Form.Label>Ancho</Form.Label>
+                                                <Form.Control placeholder='cm' min={1} required type="number" name="ancho" value={inputs.ancho} onChange={handleChange} />
+                                            </Form.Group>
+
+                                            <Form.Group as={Col}>
+                                                <Form.Label>Largo</Form.Label>
+                                                <Form.Control placeholder='cm' min={1} required type="number" name="largo" value={inputs.largo} onChange={handleChange} />
+                                            </Form.Group>
+
+                                            <Form.Group as={Col}>
+                                                <Form.Label>Alto</Form.Label>
+                                                <Form.Control placeholder='cm' min={1} required type="number" name="alto" value={inputs.alto} onChange={handleChange} />
+                                            </Form.Group>
+
+                                            <Form.Group as={Col}>
+                                                <Form.Label>{"Peso (Kg)"}</Form.Label>
+                                                <Form.Control placeholder='Kg' min={1} required type="number" name="peso" value={inputs.peso} onChange={handleChange} />
+                                            </Form.Group>
+
                                         </Row>
                                         <Button style={{ marginLeft: 10, float: "right", backgroundColor: "#E94E1B", borderColor: "#E94E1B" }} onClick={handleSubmit}>
                                             Registrar
@@ -503,6 +562,27 @@ const AdminProductosAgregar = () => {
                                 </div>
                             </div>
                         </div>
+                    </Tab>
+                    <Tab eventKey="addexcel" title="Subir por excel">
+                        <div className='container' style={{height:400,textAlign:"center",overflow:"auto"}}>
+                            <div style={{paddingTop:50}}>
+                                <h4>Subir productos por excel</h4>
+                                <form onSubmit={handleSubmitExcel}>
+                                    <input type="file" onChange={handleFileSelect2} accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" /><br></br><br></br>
+                                    <Button type="submit" value="Upload File" style={{ backgroundColor: "#EB5929", borderColor: "#EB5929" }}>Cargar</Button>
+                                </form>
+
+                                <div>
+                                    <p id="mensaje" style={{ display: "none" }}>Hubo unos errores al subir estos productos, verifica sus datos:</p>
+                                    {listProductsErr.map((item, index) => (
+                                        <li key={index} style={{ color: "red" }}>{item.product_name}</li>
+                                    ))}
+                                </div>
+                            </div>
+
+
+                        </div>
+
                     </Tab>
                 </Tabs>
 

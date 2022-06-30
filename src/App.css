@@ -29,7 +29,7 @@
     margin-top:-10px;
   }
   .card__content {
-    width: 95%;
+    width: 100%;
     height: 100%;
     border-radius: 5px;
     padding: 15px;
@@ -150,6 +150,9 @@
         display: grid;
         grid-template-columns: auto;
     }
+    .direccionesMovil{
+        width: 100% !important;
+    }
 
   
   }
@@ -179,6 +182,9 @@
         display: grid;
         grid-template-columns: 45% 45%;
         grid-gap: 10%;
+    }
+    .direccionesMovil{
+        width: 60% !important;
     }
 
   }

@@ -14,7 +14,7 @@ const LoadingUserProducts = () =>{
         <div style={{backgroundImage:"url('"+imgindex1+"')"}}>
             <div className='container' style={{backgroundColor:"white",width:"60%"}}>
 
-                <div className='container' style={{width:"90%"}}>
+                <div className='container' style={{width:"90%",height:500}}>
                     <br/><br/>
                     <h3>WHITELIST</h3>
                     <div className='container' style={{width:"90%"}}>
